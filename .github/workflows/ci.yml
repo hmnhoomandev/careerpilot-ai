@@ -1,0 +1,101 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  backend:
+    name: Python quality and security
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@v7
+        with:
+          enable-cache: true
+          version: "0.11.29"
+      - name: Install Python 3.13
+        run: uv python install 3.13
+      - name: Sync locked environment
+        run: uv sync --all-packages --locked
+      - name: Ruff format
+        run: uv run ruff format --check .
+      - name: Ruff lint
+        run: uv run ruff check .
+      - name: Strict typing
+        run: uv run mypy apps/api/src packages/core/src tests scripts
+      - name: Unit and architecture tests
+        run: uv run pytest
+      - name: Dependency audit
+        run: uv run pip-audit
+      - name: Semgrep
+        run: uv run --isolated --only-group sast semgrep scan --config security/semgrep.yml --error --metrics off .
+      - name: Secret scan
+        run: uv run detect-secrets-hook --baseline .secrets.baseline $(git ls-files)
+      - name: Documentation baseline
+        run: uv run python scripts/validate_phase0.py
+
+  frontend:
+    name: Frontend quality and build
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      NEXT_TELEMETRY_DISABLED: "1"
+    defaults:
+      run:
+        working-directory: apps/web
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v6
+        with:
+          cache: npm
+          cache-dependency-path: apps/web/package-lock.json
+          node-version: 24
+      - run: npm ci
+      - run: npm run format:check
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run build
+
+  documentation:
+    name: Documentation quality
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      PUPPETEER_SKIP_DOWNLOAD: "true"
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@v7
+        with:
+          enable-cache: true
+          version: "0.11.29"
+      - uses: actions/setup-node@v6
+        with:
+          cache: npm
+          cache-dependency-path: tools/documentation/package-lock.json
+          node-version: 24
+      - run: uv python install 3.13
+      - run: uv sync --all-packages --locked
+      - run: npm ci
+        working-directory: tools/documentation
+      - run: npm run lint
+        working-directory: tools/documentation
+      - run: npm run links
+        working-directory: tools/documentation
+      - run: uv run python scripts/validate_mermaid.py

@@ -1,0 +1,27 @@
+rules:
+  - id: careerpilot-python-eval
+    message: Dynamic eval is forbidden in CareerPilot production Python.
+    severity: ERROR
+    languages: [python]
+    pattern: eval(...)
+    metadata:
+      category: security
+      technology: [python]
+
+  - id: careerpilot-python-exec
+    message: Dynamic exec is forbidden in CareerPilot production Python.
+    severity: ERROR
+    languages: [python]
+    pattern: exec(...)
+    metadata:
+      category: security
+      technology: [python]
+
+  - id: careerpilot-subprocess-shell
+    message: Shell-enabled subprocess calls require a documented security review.
+    severity: ERROR
+    languages: [python]
+    pattern: subprocess.$FUNC(..., shell=True, ...)
+    metadata:
+      category: security
+      technology: [python]

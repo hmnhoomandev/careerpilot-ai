@@ -19,8 +19,9 @@ does not validate production behavior.
   phase check rather than relying on memory.
 - `REQUIREMENT_RANGES` defines the accepted stable ID sequences. The loop proves
   no number was accidentally skipped.
-- Markdown discovery checks that each document begins with one H1, Mermaid fences
-  are balanced, local Markdown links resolve, and simple credential-assignment
+- Markdown discovery excludes generated dependency and build directories, then
+  checks that each repository document begins with one H1, Mermaid fences are
+  balanced, local Markdown links resolve, and simple credential-assignment
   patterns do not appear.
 - Errors are accumulated so one run teaches everything that needs correction.
 - Success prints exact counts; failure prints each finding and exits nonzero.

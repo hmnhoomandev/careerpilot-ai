@@ -15,3 +15,5 @@
 | DEC-011 | 2026-08-09 | OIDC isolates identity providers from the domain | Accepted | ADR-0010 |
 | DEC-012 | 2026-08-09 | CHF 0 is a hard development cost ceiling without approval | Accepted | ADR-0011 |
 | DEC-013 | 2026-08-09 | A2UI compatibility means a versioned internal safe component-message contract until an external target is approved | Accepted | ADR-0012 |
+| DEC-014 | 2026-08-09 | Use locked uv/npm workspaces and automated architecture/quality gates | Accepted | ADR-0013 |
+| DEC-015 | 2026-08-09 | Isolate Semgrep's vulnerable MCP transitive dependency in an unused SAST-only environment | Accepted with review trigger | ADR-0013 |

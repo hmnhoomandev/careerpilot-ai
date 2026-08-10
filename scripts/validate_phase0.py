@@ -11,7 +11,6 @@ import re
 import sys
 from pathlib import Path
 
-
 ROOT = Path(__file__).resolve().parents[1]
 
 REQUIRED_FILES = (
@@ -42,16 +41,29 @@ REQUIRED_FILES = (
 )
 
 REQUIREMENT_RANGES = {"FR": 24, "SEC": 22, "NFR": 20, "LEG": 8}
+GENERATED_DIRECTORIES = {
+    ".git",
+    ".mypy_cache",
+    ".next",
+    ".pytest_cache",
+    ".ruff_cache",
+    ".venv",
+    "node_modules",
+}
 
 
 def main() -> int:
     """Return zero when required files, IDs, and Mermaid fences are valid."""
-    errors: list[str] = []
-    markdown_files = sorted(ROOT.glob("**/*.md"))
-
-    for relative_path in REQUIRED_FILES:
-        if not (ROOT / relative_path).is_file():
-            errors.append(f"missing required file: {relative_path}")
+    errors = [
+        f"missing required file: {relative_path}"
+        for relative_path in REQUIRED_FILES
+        if not (ROOT / relative_path).is_file()
+    ]
+    markdown_files = sorted(
+        path
+        for path in ROOT.glob("**/*.md")
+        if GENERATED_DIRECTORIES.isdisjoint(path.relative_to(ROOT).parts)
+    )
 
     requirements_path = ROOT / "docs/product/REQUIREMENTS.md"
     requirements = requirements_path.read_text(encoding="utf-8")

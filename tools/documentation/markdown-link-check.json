@@ -1,0 +1,9 @@
+{
+  "aliveStatusCodes": [200, 206],
+  "ignorePatterns": [
+    { "pattern": "^mailto:" }
+  ],
+  "retryCount": 2,
+  "retryOn429": true,
+  "timeout": "10s"
+}

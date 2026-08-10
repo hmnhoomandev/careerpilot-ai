@@ -1,0 +1,33 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "CareerPilot: setup",
+      "type": "shell",
+      "command": "make setup",
+      "problemMatcher": []
+    },
+    {
+      "label": "CareerPilot: all quality checks",
+      "type": "shell",
+      "command": "make check",
+      "group": { "kind": "test", "isDefault": true },
+      "problemMatcher": []
+    },
+    {
+      "label": "CareerPilot: Python tests",
+      "type": "shell",
+      "command": "uv run pytest",
+      "group": "test",
+      "problemMatcher": []
+    },
+    {
+      "label": "CareerPilot: frontend dev server",
+      "type": "shell",
+      "command": "npm run dev",
+      "options": { "cwd": "${workspaceFolder}/apps/web" },
+      "isBackground": true,
+      "problemMatcher": []
+    }
+  ]
+}

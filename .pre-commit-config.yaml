@@ -1,0 +1,33 @@
+minimum_pre_commit_version: "4.3.0"
+default_install_hook_types: [pre-commit, pre-push]
+default_stages: [pre-commit]
+repos:
+  - repo: local
+    hooks:
+      - id: ruff-check
+        name: Ruff lint
+        entry: uv run ruff check --force-exclude
+        language: system
+        types: [python]
+      - id: ruff-format
+        name: Ruff format
+        entry: uv run ruff format --check --force-exclude
+        language: system
+        types: [python]
+      - id: detect-secrets
+        name: Detect secrets
+        entry: uv run detect-secrets-hook --baseline .secrets.baseline
+        language: system
+        types: [text]
+        exclude: (^apps/web/package-lock\.json$|^uv\.lock$)
+      - id: frontend-prettier
+        name: Frontend Prettier
+        entry: npm --prefix apps/web run format:check --
+        language: system
+        files: ^apps/web/.*\.(css|json|js|mjs|ts|tsx)$
+        pass_filenames: false
+      - id: phase0-doc-validator
+        name: Phase 0 documentation baseline
+        entry: uv run python scripts/validate_phase0.py
+        language: system
+        pass_filenames: false

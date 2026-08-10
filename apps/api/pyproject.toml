@@ -1,0 +1,18 @@
+[project]
+name = "careerpilot-api"
+version = "0.1.0"
+description = "CareerPilot AI HTTP API package shell."
+requires-python = ">=3.13,<3.14"
+dependencies = [
+  "careerpilot-core",
+  "fastapi>=0.135,<0.136",
+  "pydantic-settings>=2.10,<3",
+  "uvicorn[standard]>=0.35,<1",
+]
+
+[tool.uv.sources]
+careerpilot-core = { workspace = true }
+
+[build-system]
+requires = ["uv_build>=0.11.29,<0.12"]
+build-backend = "uv_build"

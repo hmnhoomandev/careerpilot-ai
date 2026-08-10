@@ -1,0 +1,14 @@
+{
+  "config": {
+    "MD013": false,
+    "MD024": { "siblings_only": true },
+    "MD033": false,
+    "MD041": true,
+    "MD060": false
+  },
+  "ignores": [
+    "../../CAREERPILOT_CODEX_MASTER_PROMPT.md",
+    "../../node_modules/**",
+    "../../apps/web/node_modules/**"
+  ]
+}

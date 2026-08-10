@@ -27,3 +27,28 @@ Remaining gaps intentionally deferred:
 - Concrete schemas and authorization policies (Phases 3–4).
 - Retrieval and agent evaluation implementation (Phases 5–10).
 - Deployment, security operations, and production measurements (Phases 15–20).
+
+## Phase 1
+
+Concepts introduced:
+
+- Manifest constraints versus exact cross-platform lockfiles.
+- `uv` workspace membership and the need for `--all-packages` synchronization.
+- Node LTS engine enforcement and peer-dependency compatibility.
+- Inward dependency direction and AST architecture tests.
+- Local pre-commit feedback versus clean-environment CI evidence.
+- SAST, dependency auditing, secret baselines, and tool-risk isolation.
+- Docker CLI, Compose plugin, and daemon as separate prerequisites.
+- Markdown linting, remote link checking, and rendered Mermaid validation.
+
+Tutorial: `docs/tutorials/phase-01-developer-setup.md`
+
+Exercises: `docs/exercises/phase-01-exercises.md`
+
+Answers: `docs/exercises/phase-01-answers.md`
+
+Remaining gaps intentionally deferred:
+
+- Product API/UI behavior and end-to-end persistence (Phase 2).
+- Full identity and authorization implementation (Phase 3).
+- Supply-chain signatures, SBOM/provenance, and hardened containers (Phase 17).

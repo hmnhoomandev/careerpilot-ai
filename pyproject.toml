@@ -1,0 +1,100 @@
+[project]
+name = "careerpilot-workspace"
+version = "0.1.0"
+description = "CareerPilot AI Python workspace and quality-tool root."
+readme = "README.md"
+requires-python = ">=3.13,<3.14"
+dependencies = []
+
+[dependency-groups]
+dev = [
+  "detect-secrets>=1.5,<2",
+  "mypy>=1.17,<2",
+  "pip-audit>=2.9,<3",
+  "pre-commit>=4.3,<5",
+  "pyyaml>=6.0,<7",
+  "pytest>=9.0.3,<10",
+  "pytest-asyncio>=1.1,<2",
+  "ruff>=0.12,<1",
+  "types-PyYAML>=6.0,<7",
+]
+sast = ["semgrep==1.172.0"]
+
+[tool.uv]
+package = false
+default-groups = ["dev"]
+
+[tool.uv.workspace]
+members = ["apps/api", "packages/core"]
+
+[tool.ruff]
+target-version = "py313"
+line-length = 88
+extend-exclude = ["apps/web"]
+
+[tool.ruff.lint]
+select = [
+  "A",
+  "ANN",
+  "ARG",
+  "ASYNC",
+  "B",
+  "BLE",
+  "C4",
+  "DTZ",
+  "E",
+  "F",
+  "FA",
+  "FBT",
+  "FLY",
+  "FURB",
+  "I",
+  "ICN",
+  "INP",
+  "LOG",
+  "N",
+  "PERF",
+  "PIE",
+  "PL",
+  "PT",
+  "PTH",
+  "RET",
+  "RSE",
+  "RUF",
+  "S",
+  "SIM",
+  "SLF",
+  "T20",
+  "TC",
+  "TRY",
+  "UP",
+  "W",
+]
+ignore = ["ANN401", "S101"]
+
+[tool.ruff.lint.per-file-ignores]
+"scripts/validate_phase0.py" = ["PLR0912", "T201"]
+"scripts/validate_mermaid.py" = ["S603", "T201"]
+"tests/**/*.py" = ["ANN", "PLR2004"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["careerpilot_api", "careerpilot_core"]
+
+[tool.mypy]
+python_version = "3.13"
+strict = true
+warn_unreachable = true
+show_error_codes = true
+pretty = true
+mypy_path = ["apps/api/src", "packages/core/src"]
+exclude = ["apps/web", ".venv"]
+
+[tool.pytest.ini_options]
+addopts = ["--strict-config", "--strict-markers", "-ra"]
+asyncio_mode = "strict"
+testpaths = ["tests"]
+pythonpath = ["apps/api/src", "packages/core/src"]
+markers = [
+  "architecture: repository dependency-boundary tests",
+  "live_model: opt-in tests that require explicit cost confirmation",
+]

@@ -1,8 +1,9 @@
 # CareerPilot AI
 
 CareerPilot AI is an evidence-grounded, human-controlled career intelligence and
-job-application platform. The repository is currently in Phase 0: product
-discovery and architecture baseline. It contains no production application code.
+job-application platform. The repository is currently in Phase 1: repository
+foundation and developer experience. It contains package and UI shells but no
+product workflow.
 
 Start with:
 
@@ -12,7 +13,19 @@ Start with:
 - [Threat model](docs/security/THREAT_MODEL.md)
 - [Project state](docs/project/PROJECT_STATE.md)
 - [Roadmap](docs/project/ROADMAP.md)
-- [Phase 0 review](docs/reviews/phase-00-review.md)
+- [Phase 1 review](docs/reviews/phase-01-review.md)
+
+## Development quick start
+
+Use Python 3.13 and Node.js 24 LTS, then run:
+
+```sh
+make setup
+make check
+```
+
+The complete macOS and VS Code guide is in
+[`docs/tutorials/phase-01-developer-setup.md`](docs/tutorials/phase-01-developer-setup.md).
 
 All development uses synthetic data and CHF 0 local/fake infrastructure unless
 the owner explicitly approves a cost.

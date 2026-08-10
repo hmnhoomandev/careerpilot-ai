@@ -1,0 +1,12 @@
+{
+  "recommendations": [
+    "charliermarsh.ruff",
+    "davidanson.vscode-markdownlint",
+    "editorconfig.editorconfig",
+    "esbenp.prettier-vscode",
+    "ms-azuretools.vscode-docker",
+    "ms-python.mypy-type-checker",
+    "ms-python.python",
+    "ms-python.vscode-pylance"
+  ]
+}
