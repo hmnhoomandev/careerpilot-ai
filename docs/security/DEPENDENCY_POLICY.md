@@ -20,6 +20,7 @@
 | Next.js | Web application framework | MIT | Vite SPA | Matches ADR-0006; server/client boundary needs review |
 | React/React DOM | Accessible component UI | MIT | Vue/Svelte | Matches ADR-0006; rendering must sanitize untrusted data |
 | careerpilot-core | Internal framework-independent package | Repository license | Monolithic API package | Enforces ADR-0001 dependency direction |
+| OpenTelemetry API | Vendor-neutral trace/correlation API | Apache-2.0 | Custom trace context | No exporter or content capture; 1.37 line satisfies isolated Semgrep lock constraints |
 
 ## Development dependencies
 
@@ -29,6 +30,11 @@ detect-secrets and pip-audit provide secret/SCA checks. Semgrep Community Editio
 adds SAST and has stronger copyleft licensing considerations than runtime tools;
 it is development-only and not distributed with production artifacts. Exact
 licenses must be rechecked from locked package metadata during release review.
+
+Phase 2 adds BSD-3-Clause `httpx2` for Starlette's supported test client and
+MPL-2.0 `axe-core` as a development-only accessibility test engine. Neither is
+part of the browser production dependency graph. The previous `httpx` fallback
+was removed after Starlette reported it as deprecated.
 
 Current Semgrep 1.172.0 hard-pins vulnerable `mcp==1.23.3`. Semgrep therefore
 lives in a non-default `sast` dependency group and is invoked only for a local,

@@ -52,3 +52,29 @@ Remaining gaps intentionally deferred:
 - Product API/UI behavior and end-to-end persistence (Phase 2).
 - Full identity and authorization implementation (Phase 3).
 - Supply-chain signatures, SBOM/provenance, and hardened containers (Phase 17).
+
+## Phase 2
+
+Concepts introduced:
+
+- Vertical slices across UI, HTTP, application, port, and adapter boundaries.
+- Immutable domain values and dependency inversion through a repository protocol.
+- Deterministic placeholder behavior versus model inference.
+- Strict Pydantic contracts, OpenAPI evidence, and safe error envelopes.
+- Correlation propagation, metadata-only structured logs, and no-op tracing APIs.
+- Liveness versus readiness and process-local persistence limitations.
+- Native form semantics, live regions, focus visibility, and axe smoke tests.
+- Composite end-to-end evidence and restart-behavior tests.
+
+Tutorial: `docs/tutorials/phase-02-deterministic-walking-skeleton.md`
+
+Exercises: `docs/exercises/phase-02-exercises.md`
+
+Answers: `docs/exercises/phase-02-answers.md`
+
+Remaining gaps intentionally deferred:
+
+- Identity, tenant context, authorization, and audit (Phase 3).
+- Durable PostgreSQL storage, migrations, and profile evidence (Phase 4).
+- Evaluated retrieval, agents, models, and workflow durability (Phases 5–12).
+- Production telemetry export, SLO measurement, and cost routing (Phase 15).

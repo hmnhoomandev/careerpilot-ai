@@ -12,6 +12,14 @@
 | NFR-009–NFR-012 | CI, contracts foundation, telemetry/model-test boundaries | CI and offline test markers/fake-first structure | Pytest, Vitest, CI config tests | Partially implemented |
 | NFR-015–NFR-018 | Environment structure, documentation quality, i18n-ready UI shell, architecture boundary | workspace, VS Code, web shell, AST boundary test | Ruff, MyPy, Pytest, ESLint, TypeScript, build | Implemented in Phase 1 |
 | SEC-006/SEC-014/SEC-019 | Secret boundary, synthetic/offline default, dependency/security scanning | `.env.example`, secret baseline, SAST/SCA/CI configs | detect-secrets, pip-audit, npm audit, Semgrep | Implemented foundation |
+| FR-001 | Minimal local profile creation design | Core profile model/service, versioned profile endpoint, Phase 2 UI | Unit, API, UI, and end-to-end tests | Partially implemented; durable evidence profile deferred to Phase 4 |
+| FR-003 | User-supplied job-description input | Strict analysis request and accessible UI field | API invalid-input, UI, and end-to-end tests | Implemented for synthetic Phase 2 slice |
+| FR-004 | Structured job analysis design | Deterministic exact-term result only | Service and end-to-end assertions | Placeholder foundation; extraction/RAG deferred to Phases 5–7 |
+| NFR-002 | Correlatable API/error measurement foundation | Correlation middleware and duration metadata | API header/body and log tests | Partially implemented; production metrics/SLOs deferred to Phase 15 |
+| NFR-010 | OpenTelemetry correlation foundation | OTel API span plus response/log correlation IDs | API and end-to-end correlation assertions | Partially implemented; exporter disabled |
+| NFR-011 | Logs, traces, errors, and runbook impact for new behavior | Metadata-only JSON logs, safe errors, health paths, tutorial | Observability unit and API tests | Implemented for Phase 2 behavior |
+| NFR-017 | Accessible English-first UI behavior | Labeled bounded inputs, focus styles, live result/error region | Testing Library and axe-core smoke test | Implemented for Phase 2 page |
+| SEC-009/SEC-014 | PII-safe telemetry and synthetic development data | Allow-listed log fields, no request bodies/spans, synthetic fixtures | Formatter exclusion and journey tests | Implemented Phase 2 foundation |
 
 ## Mapping rules for future phases
 

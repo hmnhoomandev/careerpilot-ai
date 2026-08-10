@@ -9,6 +9,7 @@ dependencies = []
 [dependency-groups]
 dev = [
   "detect-secrets>=1.5,<2",
+  "httpx2>=2,<3",
   "mypy>=1.17,<2",
   "pip-audit>=2.9,<3",
   "pre-commit>=4.3,<5",
@@ -75,6 +76,7 @@ ignore = ["ANN401", "S101"]
 [tool.ruff.lint.per-file-ignores]
 "scripts/validate_phase0.py" = ["PLR0912", "T201"]
 "scripts/validate_mermaid.py" = ["S603", "T201"]
+"scripts/dev.py" = ["S603", "T201"]
 "tests/**/*.py" = ["ANN", "PLR2004"]
 
 [tool.ruff.lint.isort]
@@ -96,5 +98,7 @@ testpaths = ["tests"]
 pythonpath = ["apps/api/src", "packages/core/src"]
 markers = [
   "architecture: repository dependency-boundary tests",
+  "contract: API and client contract tests",
+  "e2e: deterministic tests crossing HTTP, application, and repository boundaries",
   "live_model: opt-in tests that require explicit cost confirmation",
 ]

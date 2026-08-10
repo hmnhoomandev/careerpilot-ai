@@ -3,8 +3,8 @@
 | Phase | Outcome | Status |
 |---:|---|---|
 | 0 | Product discovery and architecture baseline | Accepted |
-| 1 | Repository foundation and developer experience | Awaiting acceptance |
-| 2 | Deterministic walking skeleton | Not started |
+| 1 | Repository foundation and developer experience | Accepted |
+| 2 | Deterministic walking skeleton | Awaiting acceptance |
 | 3 | Identity, tenancy, authorization, and audit | Not started |
 | 4 | PostgreSQL profile and evidence library | Not started |
 | 5 | Secure document ingestion and evaluated RAG | Not started |

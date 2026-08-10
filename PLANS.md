@@ -125,3 +125,82 @@ implementing product behavior.
 Complete `docs/reviews/phase-01-review.md`, report exact evidence, and wait for:
 
 `APPROVE PHASE 1 AND START PHASE 2`
+
+## Completed implementation plan: Phase 2
+
+**Objective:** prove one deterministic, visible journey across the web, HTTP,
+application, and temporary persistence boundaries without agents or live models.
+
+### Scope and acceptance mapping
+
+- Create a local professional profile from a display name and short summary.
+- Submit a bounded, user-supplied job description.
+- Return a deterministic placeholder match analysis and show it in the UI.
+- Add versioned FastAPI contracts, application service, repository protocol,
+  in-memory adapter, health/readiness, safe errors, and correlation IDs.
+- Establish structured privacy-safe logs and OpenTelemetry propagation APIs.
+- Add unit, API, contract, frontend accessibility-smoke, and end-to-end tests.
+- Map FR-001, FR-003, NFR-002, NFR-010, NFR-011, and relevant security/privacy
+  foundations to source and test evidence without claiming later-phase completion.
+
+### Expected files
+
+- Core domain/application modules under `packages/core/src/careerpilot_core/`.
+- API contracts, adapters, telemetry, middleware, and app factory under
+  `apps/api/src/careerpilot_api/`.
+- UI form, API client, and tests under `apps/web/src/`.
+- Phase 2 test suites under `tests/` plus updated CI and local commands.
+- ADR/update notes, annotated source, tutorial, exercises, traceability, learning
+  log, and `docs/reviews/phase-02-review.md`.
+
+### Architecture, security, and privacy decisions
+
+- Core stays framework-independent; adapters depend inward through a protocol.
+- Analysis is a pure deterministic function with no provider fallback.
+- Inputs have explicit length/content validation and synthetic examples.
+- Logs and traces carry opaque correlation IDs and operation metadata, not profile
+  or job-description content.
+- API errors use a stable safe envelope and do not expose stack traces.
+- The in-memory repository is process-local and its restart data loss is visible,
+  tested, and documented; PostgreSQL remains Phase 4 work.
+
+### Risks and mitigations
+
+- Browser/API origin mismatch: configure one explicit local public API URL and
+  narrowly scoped local CORS behavior.
+- Contract drift: validate OpenAPI plus shared fixtures at API/client boundaries.
+- False product claims: label output deterministic placeholder analysis and avoid
+  inferred skills, rankings, or evidence claims.
+- Personal-data leakage: use minimized fields, bounded inputs, synthetic tests,
+  and metadata-only telemetry.
+- Scope creep into identity/database/agents: keep those adapters absent and record
+  the phase ownership in docs and tests.
+
+### Automated verification
+
+- Lock freshness; Python and frontend format, lint, and strict typing.
+- Unit, API, contract, frontend, accessibility-smoke, and end-to-end tests.
+- OpenAPI schema and structured error/correlation assertions.
+- Production frontend build, security scans, dependency audits, docs/link/Mermaid
+  checks, pre-commit, and full diff review.
+
+### Manual verification
+
+- Start API and web through one documented command.
+- Enter synthetic profile and job data and observe the deterministic analysis.
+- Confirm the correlation ID is visible.
+- Trigger invalid input and inspect the understandable safe error.
+- Restart the API and confirm the documented in-memory persistence limitation.
+
+### Exclusions
+
+- Real identity, tenants, authorization, audit ledger, or organization features.
+- PostgreSQL application persistence, schemas, or migrations.
+- LLMs, agents, retrieval, uploads, scraping, or external provider calls.
+- Cloud resources, deployment, paid APIs, or non-synthetic customer data.
+
+### Stop condition
+
+Complete `docs/reviews/phase-02-review.md`, report exact evidence, and wait for:
+
+`APPROVE PHASE 2 AND START PHASE 3`

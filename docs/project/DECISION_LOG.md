@@ -17,3 +17,4 @@
 | DEC-013 | 2026-08-09 | A2UI compatibility means a versioned internal safe component-message contract until an external target is approved | Accepted | ADR-0012 |
 | DEC-014 | 2026-08-09 | Use locked uv/npm workspaces and automated architecture/quality gates | Accepted | ADR-0013 |
 | DEC-015 | 2026-08-09 | Isolate Semgrep's vulnerable MCP transitive dependency in an unused SAST-only environment | Accepted with review trigger | ADR-0013 |
+| DEC-016 | 2026-08-10 | Prove the first journey with exact-term comparison and process-local persistence | Accepted for Phase 2 | ADR-0014 |

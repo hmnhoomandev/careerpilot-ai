@@ -1,11 +1,11 @@
 # Project State
 
 - **Project:** CareerPilot AI
-- **Current phase:** Phase 1 — Repository foundation and developer experience
+- **Current phase:** Phase 2 — deterministic walking skeleton
 - **Phase status:** Implementation and verification complete; awaiting owner acceptance
-- **Last updated:** 2026-08-09
-- **Working tree at phase start:** Clean at `6bc90e9` on `main`, tracking `origin/main`
-- **Production code:** Foundation shells only; no product behavior
+- **Last updated:** 2026-08-10
+- **Working tree at phase start:** Clean at `5c74107` on `main`, tracking `origin/main`
+- **Production code:** Phase 1 foundation plus the approved Phase 2 slice in progress
 - **Cloud resources created:** None
 - **Paid calls made:** None
 
@@ -54,6 +54,6 @@
 
 ## Next action
 
-Review `docs/reviews/phase-01-review.md` and stop for:
+Review `docs/reviews/phase-02-review.md` and stop for:
 
-`APPROVE PHASE 1 AND START PHASE 2`
+`APPROVE PHASE 2 AND START PHASE 3`

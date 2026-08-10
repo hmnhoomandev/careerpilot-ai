@@ -31,9 +31,13 @@
 
 - `tutorials/phase-00-architecture-baseline.md`
 - `tutorials/phase-01-developer-setup.md`
+- `tutorials/phase-02-deterministic-walking-skeleton.md`
 - `exercises/phase-00-exercises.md`
 - `exercises/phase-00-answers.md`
 - `exercises/phase-01-exercises.md`
 - `exercises/phase-01-answers.md`
+- `exercises/phase-02-exercises.md`
+- `exercises/phase-02-answers.md`
 - `reviews/phase-00-review.md`
 - `reviews/phase-01-review.md`
+- `reviews/phase-02-review.md`

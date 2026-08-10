@@ -1,5 +1,13 @@
-"""Framework-independent CareerPilot AI core package.
+"""Framework-independent CareerPilot AI core package."""
 
-The core package must not import web frameworks, persistence adapters, model
-providers, remote agent services, or infrastructure SDKs.
-"""
+from careerpilot_core.models import JobAnalysis, ProfessionalProfile
+from careerpilot_core.ports import ProfileRepository
+from careerpilot_core.services import CareerJourneyService, ProfileNotFoundError
+
+__all__ = [
+    "CareerJourneyService",
+    "JobAnalysis",
+    "ProfessionalProfile",
+    "ProfileNotFoundError",
+    "ProfileRepository",
+]

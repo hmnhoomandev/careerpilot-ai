@@ -1,9 +1,12 @@
-.PHONY: setup format format-check lint typecheck test audit security docs-check frontend-check check
+.PHONY: setup dev format format-check lint typecheck test audit security docs-check frontend-check check
 
 setup:
 	uv sync --all-packages --locked
 	cd apps/web && npm ci
 	cd tools/documentation && PUPPETEER_SKIP_DOWNLOAD=true npm ci
+
+dev:
+	uv run python scripts/dev.py
 
 format:
 	uv run ruff check --fix .

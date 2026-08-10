@@ -35,7 +35,7 @@ jobs:
         run: uv run ruff check .
       - name: Strict typing
         run: uv run mypy apps/api/src packages/core/src tests scripts
-      - name: Unit and architecture tests
+      - name: Unit, API, contract, architecture, and end-to-end tests
         run: uv run pytest
       - name: Dependency audit
         run: uv run pip-audit
