@@ -95,3 +95,10 @@ LEG-004, and LEG-006.
 ## Required legal reviews
 
 See `LEG-001` through `LEG-008` in `docs/product/REQUIREMENTS.md`.
+
+## Phase 5 deletion note
+
+Local confirmed deletion removes source bytes and active chunks/vectors, then marks
+document/evidence provenance deleted. The 30-day recoverable window, backups, legal
+holds, and final schedules remain unimplemented and require professional legal review.
+No certified or guaranteed GDPR/Swiss FADP compliance is claimed.

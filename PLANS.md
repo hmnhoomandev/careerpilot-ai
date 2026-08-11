@@ -17,6 +17,111 @@ Every phase plan must state:
 
 Plans are living documents. Update status without erasing decisions or evidence.
 
+## Completed implementation plan: Phase 5
+
+**Status:** Complete on 2026-08-11; awaiting owner acceptance. Phase 6 has not
+started.
+
+**Objective:** ingest synthetic user documents safely and provide evaluated,
+cited, tenant-isolated hybrid retrieval without a live model or paid service.
+
+### Scope and acceptance mapping
+
+- Accept bounded text/PDF bytes through authenticated multipart upload; validate
+  name, declared type, magic bytes, size, hash, and a local scanner policy before
+  moving content out of quarantine.
+- Store raw bytes behind a `DocumentStorage` port using a local adapter; production
+  object storage remains an explicit adapter boundary.
+- Parse UTF-8 text and bounded PDF text, normalize deterministically, preserve page
+  provenance, chunk with overlap, label every chunk untrusted, and detect a versioned
+  indirect prompt-injection pattern set.
+- Generate deterministic local hash embeddings for default/free behavior and store
+  them in PostgreSQL `vector` columns beside a full-text index.
+- Combine tenant/document-authorized lexical and vector candidates with reciprocal
+  rank fusion, deterministic token-overlap reranking, bounded context assembly, and
+  document/chunk/page citations.
+- Add index-version metadata and an explicit re-index operation.
+- Propagate an explicitly confirmed document deletion to raw local bytes, chunks,
+  vectors, and retrieval results; keep the limitation of synchronous Phase 5
+  approval visible until the durable Phase 8 approval workflow exists.
+- Add a versioned synthetic retrieval dataset and thresholds for recall@k,
+  precision@k, MRR, grounding, and citation correctness.
+
+### Expected files and migrations
+
+- Document/retrieval domain values and ports under `packages/core/`.
+- Local storage/scanner/parser, deterministic embedder, RAG service, and PostgreSQL
+  repository under `apps/api/`.
+- Alembic revision `0002` enabling pgvector and adding documents/chunks/index fields.
+- Authenticated upload, search, re-index, and confirmed-deletion API/UI flows.
+- Unit/API/PostgreSQL/evaluation/injection/deletion/tenant-leakage test suites.
+- ADR, annotated source, tutorial, exercises, security/privacy updates, traceability,
+  and `docs/reviews/phase-05-review.md`.
+
+### Architecture, dependency, security, privacy, and cost decisions
+
+- PostgreSQL owns metadata, lexical search, and vectors; raw bytes stay behind an
+  object-storage port. Local development uses `.data/documents`, which is ignored.
+- `pgvector` (BSD-3-Clause) supplies SQLAlchemy/Psycopg vector types; `pypdf`
+  (BSD-3-Clause) supplies bounded text extraction; `python-multipart` (Apache-2.0)
+  enables FastAPI streaming multipart parsing. Direct custom vector encoding, a
+  custom multipart parser, and PDF subprocess tooling are rejected as less mature.
+- `UploadFile` is read with a 10 MiB plus one-byte bound; oversized inputs fail closed.
+  PDF page/content-stream limits reduce, but cannot eliminate, parser/decompression
+  risk. Scanner and parser isolation remain production hardening work.
+- Deterministic embeddings are a tested local adapter, not a quality-equivalent
+  production embedding model. No provider fallback or external disclosure occurs.
+- Retrieved text is always untrusted data and never instruction. Injection matches
+  label and constrain results rather than attempting to interpret them.
+- Every retrieval SQL query includes tenant, owner/delegation, active document,
+  and index-version predicates before ranking.
+- Development uses synthetic fixtures. No cloud resource, paid API, model call, or
+  recurring service is authorized or required.
+
+### Risks and mitigations
+
+- Parser bombs/exploits: strict byte/page/content-stream/output limits, quarantine,
+  safe errors, pinned/scanned dependency, and no OCR/script execution.
+- Tenant leakage: authorization before storage/retrieval plus predicates inside both
+  lexical and vector candidate queries and hostile-ID integration tests.
+- Retrieval quality illusion: versioned fixtures and numeric thresholds; disclose
+  deterministic embedding limitations and empty results.
+- Stale indexes: explicit component/index versions and transactional replacement.
+- Deletion/object-store inconsistency: remove local bytes first, then transactionally
+  delete derivatives; a metadata retry may be required if the DB step fails.
+- Prompt injection: versioned detection corpus, untrusted labels, quoted context,
+  and no agent/tool execution in this phase.
+
+### Automated verification
+
+- Ruff, strict MyPy, Pytest, OpenAPI, frontend format/lint/type/test/build.
+- Alembic upgrade/downgrade/drift and real PostgreSQL/pgvector integration tests.
+- Chunk/provenance, parser-limit, tenant leakage, hybrid retrieval, injection,
+  re-index, deletion-propagation, empty-result, and evaluation-threshold tests.
+- Dependency/secret/SAST scans, documentation/link/Mermaid checks, pre-commit,
+  and complete diff review.
+
+### Manual verification
+
+- Start PostgreSQL, migrate, upload a synthetic text/PDF resume, inspect processing
+  and citations, search known/unknown facts, upload injection text, re-index, confirm
+  deletion, and verify the document disappears after API restart.
+
+### Explicit exclusions
+
+- OCR and searchable image content; image-to-text/model processing.
+- Live/local neural embedding model downloads or external model calls.
+- Generated answers, match/gap reasoning, LangGraph, agents, or tools.
+- Cloud object storage, malware-engine service, sandbox/container isolation, RLS,
+  unrestricted URL fetch, scraping, or external sources.
+- Durable multi-state approval workflow, which remains Phase 8.
+
+### Stop condition
+
+Complete `docs/reviews/phase-05-review.md`, report exact evidence, and wait for:
+
+`APPROVE PHASE 5 AND START PHASE 6`
+
 ## Active implementation plan: Phase 4
 
 **Objective:** replace process-local profile persistence with a versioned,

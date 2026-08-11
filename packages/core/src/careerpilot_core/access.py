@@ -24,10 +24,13 @@ class Permission(StrEnum):
     PROFILE_UPDATE = "profile.update"
     EVIDENCE_CREATE = "evidence.create"
     EVIDENCE_READ = "evidence.read"
+    DOCUMENT_CREATE = "document.create"
     ANALYSIS_RUN = "analysis.run"
     AUDIT_VIEW = "audit.view"
     MEMBERSHIP_MANAGE = "membership.manage"
     DOCUMENT_READ = "document.read"
+    DOCUMENT_REINDEX = "document.reindex"
+    DOCUMENT_DELETE = "document.delete"
     TOOL_INVOKE = "tool.invoke"
 
 
@@ -40,8 +43,11 @@ ROLE_PERMISSIONS: dict[Role, frozenset[Permission]] = {
             Permission.PROFILE_UPDATE,
             Permission.EVIDENCE_CREATE,
             Permission.EVIDENCE_READ,
+            Permission.DOCUMENT_CREATE,
             Permission.ANALYSIS_RUN,
             Permission.DOCUMENT_READ,
+            Permission.DOCUMENT_REINDEX,
+            Permission.DOCUMENT_DELETE,
             Permission.TOOL_INVOKE,
         }
     ),
@@ -129,8 +135,11 @@ class AccessPolicy:
             Permission.PROFILE_UPDATE,
             Permission.EVIDENCE_CREATE,
             Permission.EVIDENCE_READ,
+            Permission.DOCUMENT_CREATE,
             Permission.ANALYSIS_RUN,
             Permission.DOCUMENT_READ,
+            Permission.DOCUMENT_REINDEX,
+            Permission.DOCUMENT_DELETE,
             Permission.TOOL_INVOKE,
         }
     )

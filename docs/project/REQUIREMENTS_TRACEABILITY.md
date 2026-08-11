@@ -29,6 +29,10 @@
 | SEC-003/SEC-004 | Tenant isolation at activated API/service/repository boundaries; document/tool policy foundation | Auth middleware, authorized service, tenant repository, fail-closed permissions | Forgery, cross-tenant, same-tenant IDOR, repository, document/tool tests | Verified for active Phase 3 boundaries |
 | SEC-005 | Auditable security success/denial and tamper-evident design | Frozen audit events, SHA-256 chain, authorized tenant viewer | Completeness, filtering, role, denial, last-owner, integrity tests | Implemented temporary foundation; durable/signed audit deferred |
 | NFR-009/NFR-011 | Versioned identity/audit/error contracts and operational evidence | API v0.3, 401/403/404/409 envelopes, correlation/audit actions | OpenAPI and API contract tests | Implemented for Phase 3 APIs |
+| FR-002/FR-005 | ADR-0017 and secure ingestion design | Bounded text/PDF storage, chunks, vectors, cited passages, reindex/delete API and UI | Document API, processing, evaluation, and PostgreSQL tests | Verified for Phase 5 local scope |
+| SEC-003/SEC-004 | Retrieval data-boundary invariant | Tenant/owner/active/index predicates inside full-text and vector SQL | Cross-tenant pgvector integration and foreign-profile API tests | Verified for activated retrieval boundary |
+| SEC-008/SEC-010 | Upload, parser, and injection controls | Bounded validation/scanning plus visible `UNTRUSTED` labels | Rejection tests and versioned injection corpus | Baseline verified; production scanner/sandbox deferred |
+| NFR-013/NFR-019 | Evaluated, migrated retrieval | Versioned quality fixture and Alembic `0002` with GIN/HNSW indexes | Metrics gate, offline SQL, real migration/pgvector test | Verified locally |
 
 ## Mapping rules for future phases
 

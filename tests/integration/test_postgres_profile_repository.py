@@ -10,9 +10,14 @@ import pytest
 from alembic import command
 from alembic.config import Config
 from fastapi.testclient import TestClient
+from sqlalchemy import func, select
 from sqlalchemy.exc import IntegrityError
 
-from careerpilot_api.database import PostgresProfileRepository, create_postgres_engine
+from careerpilot_api.database import (
+    PostgresProfileRepository,
+    create_postgres_engine,
+    document_chunks,
+)
 from careerpilot_api.main import create_app
 from careerpilot_core import AuthorizationContext, ProfessionalProfile, Role, Skill
 from careerpilot_core.ports import StaleProfileVersionError
@@ -20,6 +25,7 @@ from tests.api.helpers import login_headers
 
 if TYPE_CHECKING:
     from collections.abc import Iterator
+    from pathlib import Path
 
 DATABASE_URL = os.environ.get("CAREERPILOT_TEST_DATABASE_URL")
 pytestmark = pytest.mark.postgres
@@ -108,3 +114,77 @@ def test_api_profile_survives_application_restart(
         )
     assert loaded.status_code == 200
     assert loaded.json()["display_name"] == "Persistent Ada"
+
+
+def test_pgvector_retrieval_tenant_filter_reindex_and_deletion(
+    repository: PostgresProfileRepository,
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    del repository
+    assert DATABASE_URL is not None
+    monkeypatch.setenv("CAREERPILOT_DATABASE_URL", DATABASE_URL)
+    monkeypatch.setenv("CAREERPILOT_DOCUMENT_ROOT", str(tmp_path / "documents"))
+    with TestClient(create_app()) as client:
+        ada_headers = login_headers(client, "ada", "tenant-ada")
+        grace_headers = login_headers(client, "grace", "tenant-grace")
+        profile_id = client.post(
+            "/api/v1/profiles",
+            headers=ada_headers,
+            json={
+                "display_name": "Persistent Candidate",
+                "professional_summary": "A synthetic PostgreSQL retrieval profile.",
+            },
+        ).json()["profile_id"]
+        uploaded = client.post(
+            "/api/v1/documents",
+            headers=ada_headers,
+            data={"profile_id": profile_id, "title": "Database evidence"},
+            files={
+                "file": (
+                    "database.txt",
+                    b"Reduced PostgreSQL restore time to twelve minutes.",
+                    "text/plain",
+                )
+            },
+        )
+        assert uploaded.status_code == 201
+        document_id = uploaded.json()["document_id"]
+        found = client.post(
+            "/api/v1/retrieval/search",
+            headers=ada_headers,
+            json={"query": "PostgreSQL restore time"},
+        )
+        assert found.status_code == 200
+        assert found.json()["passages"][0]["citation"]["document_id"] == document_id
+        leaked = client.post(
+            "/api/v1/retrieval/search",
+            headers=grace_headers,
+            json={"query": "PostgreSQL restore time"},
+        )
+        assert leaked.status_code == 200
+        assert leaked.json()["passages"] == []
+        assert (
+            client.post(
+                f"/api/v1/documents/{document_id}/reindex", headers=ada_headers
+            ).status_code
+            == 200
+        )
+        assert (
+            client.post(
+                f"/api/v1/documents/{document_id}/deletion",
+                headers=ada_headers,
+                json={"confirmed": True},
+            ).status_code
+            == 204
+        )
+
+    engine = create_postgres_engine(DATABASE_URL)
+    with engine.connect() as connection:
+        remaining = connection.scalar(
+            select(func.count())
+            .select_from(document_chunks)
+            .where(document_chunks.c.document_id == document_id)
+        )
+    engine.dispose()
+    assert remaining == 0

@@ -72,3 +72,12 @@ versions, and synthetic test data.
   isolation, and decompression controls remain Phase 5/16 residual work.
 - Deletion timestamps and purge targets exist in schema, but destructive execution
   remains disabled pending durable approval and legally reviewed retention rules.
+
+## Phase 5 control evidence
+
+- TM-008 retrieval leakage is tested with tenant/owner predicates inside both
+  full-text and pgvector queries. RLS remains future defense in depth.
+- Upload parsing now has byte, page, PDF stream, UTF-8, and extracted-output bounds.
+  In-process decompression and parser vulnerabilities remain until production isolation.
+- Indirect instructions receive visible `suspected` labels and assembled context is
+  `UNTRUSTED`; this does not prove undetected content is safe.

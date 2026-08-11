@@ -79,6 +79,7 @@ ignore = ["ANN401", "S101"]
 "scripts/dev.py" = ["S603", "T201"]
 "apps/api/src/careerpilot_api/main.py" = ["PLR0913", "PLR0915"]
 "packages/core/src/careerpilot_core/services.py" = ["PLR0913"]
+"packages/core/src/careerpilot_core/rag_service.py" = ["PLR0913", "PLR0917"]
 "tests/**/*.py" = ["ANN", "PLR2004"]
 
 [tool.ruff.lint.isort]
@@ -92,6 +93,10 @@ show_error_codes = true
 pretty = true
 mypy_path = ["apps/api/src", "packages/core/src"]
 exclude = ["apps/web", ".venv"]
+
+[[tool.mypy.overrides]]
+module = ["pgvector.*"]
+ignore_missing_imports = true
 
 [tool.pytest.ini_options]
 addopts = ["--strict-config", "--strict-markers", "-ra"]

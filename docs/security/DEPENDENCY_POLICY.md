@@ -21,6 +21,9 @@
 | React/React DOM | Accessible component UI | MIT | Vue/Svelte | Matches ADR-0006; rendering must sanitize untrusted data |
 | careerpilot-core | Internal framework-independent package | Repository license | Monolithic API package | Enforces ADR-0001 dependency direction |
 | OpenTelemetry API | Vendor-neutral trace/correlation API | Apache-2.0 | Custom trace context | No exporter or content capture; 1.37 line satisfies isolated Semgrep lock constraints |
+| pgvector | SQLAlchemy vector mapping | BSD-3-Clause | Handwritten vector SQL | Keeps pgvector typed; no service/data transfer |
+| pypdf | Local text-based PDF extraction | BSD-3-Clause | PDFium or cloud parser | Untrusted parser requires bounds now and production isolation later |
+| python-multipart | FastAPI multipart upload parsing | Apache-2.0 | Custom multipart parser | Smaller risk than custom parsing; upload limits remain mandatory |
 
 ## Development dependencies
 

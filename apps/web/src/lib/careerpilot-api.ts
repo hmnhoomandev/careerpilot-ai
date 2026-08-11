@@ -64,6 +64,42 @@ export type EvidenceItem = {
   version: number;
 };
 
+export type DocumentRecord = {
+  document_id: string;
+  evidence_id: string;
+  profile_id: string;
+  title: string;
+  filename: string;
+  media_type: string;
+  size_bytes: number;
+  status: string;
+  injection_risk: string;
+  parser_version: string;
+  chunker_version: string;
+  embedding_version: string;
+  index_version: string;
+};
+
+export type RetrievalResult = {
+  query: string;
+  context: string;
+  disclaimer: string;
+  passages: Array<{
+    content: string;
+    score: number;
+    injection_risk: string;
+    citation: {
+      document_id: string;
+      chunk_id: string;
+      document_title: string;
+      filename: string;
+      page_number: number;
+      start_offset: number;
+      end_offset: number;
+    };
+  }>;
+};
+
 type ErrorResponse = {
   error?: {
     message?: string;
@@ -218,4 +254,54 @@ export async function registerEvidence(input: {
     }),
   });
   return parseResponse<EvidenceItem>(response);
+}
+
+export async function uploadDocument(input: {
+  session: LocalSession;
+  tenantId: string;
+  profileId: string;
+  title: string;
+  file: File;
+}): Promise<DocumentRecord> {
+  const body = new FormData();
+  body.set("profile_id", input.profileId);
+  body.set("title", input.title);
+  body.set("file", input.file);
+  const headers = authenticatedHeaders(input.session, input.tenantId);
+  delete headers["Content-Type"];
+  const response = await fetch(`${API_BASE_URL}/api/v1/documents`, {
+    method: "POST",
+    headers,
+    body,
+  });
+  return parseResponse<DocumentRecord>(response);
+}
+
+export async function searchDocuments(input: {
+  session: LocalSession;
+  tenantId: string;
+  query: string;
+}): Promise<RetrievalResult> {
+  const response = await fetch(`${API_BASE_URL}/api/v1/retrieval/search`, {
+    method: "POST",
+    headers: authenticatedHeaders(input.session, input.tenantId),
+    body: JSON.stringify({ query: input.query, limit: 5 }),
+  });
+  return parseResponse<RetrievalResult>(response);
+}
+
+export async function deleteDocument(input: {
+  session: LocalSession;
+  tenantId: string;
+  documentId: string;
+}): Promise<void> {
+  const response = await fetch(
+    `${API_BASE_URL}/api/v1/documents/${input.documentId}/deletion`,
+    {
+      method: "POST",
+      headers: authenticatedHeaders(input.session, input.tenantId),
+      body: JSON.stringify({ confirmed: true }),
+    },
+  );
+  if (!response.ok) await parseResponse(response);
 }

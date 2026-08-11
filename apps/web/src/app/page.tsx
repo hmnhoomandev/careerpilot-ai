@@ -6,18 +6,23 @@ import type { FormEvent } from "react";
 import {
   CareerPilotApiError,
   changeLocalRole,
+  deleteDocument,
   loadAuditEvents,
   loginLocalUser,
   registerEvidence,
+  searchDocuments,
   runDeterministicJourney,
   updateProfile,
+  uploadDocument,
 } from "../lib/careerpilot-api";
 import type {
   AnalysisResult,
   AuditEvent,
   EvidenceItem,
+  DocumentRecord,
   LocalSession,
   Profile,
+  RetrievalResult,
 } from "../lib/careerpilot-api";
 
 export default function HomePage() {
@@ -26,6 +31,8 @@ export default function HomePage() {
   const [analysis, setAnalysis] = useState<AnalysisResult | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [evidence, setEvidence] = useState<EvidenceItem[]>([]);
+  const [documents, setDocuments] = useState<DocumentRecord[]>([]);
+  const [retrieval, setRetrieval] = useState<RetrievalResult | null>(null);
   const [auditEvents, setAuditEvents] = useState<AuditEvent[]>([]);
   const [notice, setNotice] = useState("");
   const [error, setError] = useState<CareerPilotApiError | null>(null);
@@ -129,6 +136,61 @@ export default function HomePage() {
     }
   }
 
+  async function handleDocumentUpload(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!session || !tenantId || !profile) return;
+    const form = event.currentTarget;
+    const data = new FormData(form);
+    const file = data.get("documentFile");
+    if (!(file instanceof File)) return;
+    setError(null);
+    try {
+      const document = await uploadDocument({
+        session,
+        tenantId,
+        profileId: profile.profile_id,
+        title: String(data.get("documentTitle")),
+        file,
+      });
+      setDocuments((items) => [...items, document]);
+      setNotice("Document indexed locally. Retrieved text remains untrusted.");
+      form.reset();
+    } catch (caught) {
+      setError(toApiError(caught));
+    }
+  }
+
+  async function handleSearch(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!session || !tenantId) return;
+    const data = new FormData(event.currentTarget);
+    setError(null);
+    try {
+      setRetrieval(
+        await searchDocuments({
+          session,
+          tenantId,
+          query: String(data.get("retrievalQuery")),
+        }),
+      );
+    } catch (caught) {
+      setError(toApiError(caught));
+    }
+  }
+
+  async function confirmDelete(documentId: string) {
+    if (!session || !tenantId) return;
+    if (!window.confirm("Delete this document and all searchable derivatives?")) return;
+    try {
+      await deleteDocument({ session, tenantId, documentId });
+      setDocuments((items) => items.filter((item) => item.document_id !== documentId));
+      setRetrieval(null);
+      setNotice("Document bytes, chunks, and vectors were deleted.");
+    } catch (caught) {
+      setError(toApiError(caught));
+    }
+  }
+
   async function promoteSam() {
     if (!session || !tenantId) return;
     setError(null);
@@ -146,6 +208,8 @@ export default function HomePage() {
     setAnalysis(null);
     setProfile(null);
     setEvidence([]);
+    setDocuments([]);
+    setRetrieval(null);
     setAuditEvents([]);
     setNotice("Local session cleared from this browser tab.");
   }
@@ -287,6 +351,72 @@ export default function HomePage() {
           ) : null}
 
           {profile ? (
+            <section className="panel" aria-labelledby="retrieval-heading">
+              <p className="eyebrow">Phase 5 · local secure retrieval</p>
+              <h2 id="retrieval-heading">Index and search documents</h2>
+              <p className="help">
+                Upload UTF-8 text or text-based PDF files up to 10 MB. Document text is
+                treated as untrusted data and results always include source citations.
+              </p>
+              <form onSubmit={handleDocumentUpload}>
+                <div className="field">
+                  <label htmlFor="documentTitle">Document title</label>
+                  <input
+                    id="documentTitle"
+                    name="documentTitle"
+                    minLength={2}
+                    required
+                  />
+                </div>
+                <div className="field">
+                  <label htmlFor="documentFile">Choose document</label>
+                  <input
+                    id="documentFile"
+                    name="documentFile"
+                    type="file"
+                    accept="text/plain,application/pdf"
+                    required
+                  />
+                </div>
+                <button type="submit">Upload and index locally</button>
+              </form>
+              {documents.length ? (
+                <ul className="evidence-list">
+                  {documents.map((document) => (
+                    <li key={document.document_id}>
+                      <span>
+                        <strong>{document.title}</strong>
+                        <br />
+                        {document.filename} · injection: {document.injection_risk}
+                      </span>
+                      <button
+                        type="button"
+                        className="secondary"
+                        onClick={() => confirmDelete(document.document_id)}
+                      >
+                        Delete
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              ) : null}
+              <form onSubmit={handleSearch}>
+                <div className="field">
+                  <label htmlFor="retrievalQuery">Search your indexed evidence</label>
+                  <input
+                    id="retrievalQuery"
+                    name="retrievalQuery"
+                    minLength={2}
+                    required
+                  />
+                </div>
+                <button type="submit">Find cited passages</button>
+              </form>
+              {retrieval ? <RetrievalPanel result={retrieval} /> : null}
+            </section>
+          ) : null}
+
+          {profile ? (
             <section className="panel" aria-labelledby="evidence-heading">
               <p className="eyebrow">Metadata-only security preview</p>
               <h2 id="evidence-heading">Register evidence</h2>
@@ -366,6 +496,26 @@ export default function HomePage() {
         {auditEvents.length > 0 ? <AuditPanel events={auditEvents} /> : null}
       </div>
     </main>
+  );
+}
+
+function RetrievalPanel({ result }: { result: RetrievalResult }) {
+  return (
+    <div className="retrieval-results" aria-live="polite">
+      <h3>Retrieved passages</h3>
+      {result.passages.length === 0 ? <p>No supporting passage was found.</p> : null}
+      {result.passages.map((passage) => (
+        <blockquote key={passage.citation.chunk_id}>
+          <p>{passage.content}</p>
+          <cite>
+            {passage.citation.document_title} · {passage.citation.filename} · page{" "}
+            {passage.citation.page_number} · offsets {passage.citation.start_offset}–
+            {passage.citation.end_offset} · injection: {passage.injection_risk}
+          </cite>
+        </blockquote>
+      ))}
+      <p className="disclaimer">{result.disclaimer}</p>
+    </div>
   );
 }
 

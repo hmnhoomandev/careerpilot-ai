@@ -249,6 +249,22 @@ button:disabled {
   color: #557064;
 }
 
+.retrieval-results {
+  margin-top: 1.5rem;
+}
+
+blockquote {
+  margin: 1rem 0;
+  padding: 1rem;
+  border-left: 4px solid #65a98b;
+  background: #f4faf7;
+}
+
+cite {
+  color: #557064;
+  font-size: 0.82rem;
+}
+
 table {
   width: 100%;
   border-collapse: collapse;

@@ -6,9 +6,10 @@ import os
 import time
 import uuid
 from contextlib import asynccontextmanager
-from typing import TYPE_CHECKING
+from pathlib import Path
+from typing import TYPE_CHECKING, Annotated
 
-from fastapi import FastAPI, Request, status
+from fastapi import FastAPI, File, Form, Request, UploadFile, status
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, Response
@@ -18,7 +19,10 @@ from careerpilot_api.contracts import (
     AnalysisCreateRequest,
     AnalysisResponse,
     AuditEventResponse,
+    CitationResponse,
     CurrentContextResponse,
+    DocumentDeletionRequest,
+    DocumentResponse,
     EducationContract,
     ErrorDetail,
     ErrorResponse,
@@ -33,12 +37,26 @@ from careerpilot_api.contracts import (
     ProfileCreateRequest,
     ProfileResponse,
     ProfileUpdateRequest,
+    RetrievalSearchRequest,
+    RetrievalSearchResponse,
+    RetrievedPassageResponse,
     SessionResponse,
     TenantSummary,
 )
 from careerpilot_api.database import PostgresProfileRepository, create_postgres_engine
+from careerpilot_api.document_processing import (
+    BoundedDocumentParser,
+    DeterministicHashEmbedder,
+    InMemoryDocumentStorage,
+    LocalDocumentScanner,
+    LocalFilesystemDocumentStorage,
+)
 from careerpilot_api.observability import configure_logging, get_tracer
 from careerpilot_api.repository import InMemoryProfileRepository
+from careerpilot_api.retrieval_repository import (
+    InMemoryDocumentRepository,
+    PostgresDocumentRepository,
+)
 from careerpilot_api.security import (
     AuthenticationError,
     InMemoryIdentityAccess,
@@ -51,6 +69,9 @@ from careerpilot_core import (
     AuditEventDraft,
     AuthorizationContext,
     CareerJourneyService,
+    DeletionConfirmationError,
+    DocumentNotFoundError,
+    DocumentValidationError,
     Education,
     EvidenceValidationError,
     Experience,
@@ -58,8 +79,10 @@ from careerpilot_core import (
     ProfileConflictError,
     ProfileNotFoundError,
     ProfileValidationError,
+    RagService,
     Role,
 )
+from careerpilot_core.rag_service import MAX_UPLOAD_BYTES
 
 if TYPE_CHECKING:
     from collections.abc import AsyncIterator, Callable
@@ -134,6 +157,26 @@ def create_app(
         if service_factory
         else CareerJourneyService(repository, access_policy, audit_log)
     )
+    document_storage = (
+        LocalFilesystemDocumentStorage(
+            Path(os.environ.get("CAREERPILOT_DOCUMENT_ROOT", ".data/documents"))
+        )
+        if engine
+        else InMemoryDocumentStorage()
+    )
+    document_repository = (
+        PostgresDocumentRepository(engine) if engine else InMemoryDocumentRepository()
+    )
+    rag_service = RagService(
+        repository,
+        document_repository,
+        document_storage,
+        LocalDocumentScanner(),
+        BoundedDocumentParser(),
+        DeterministicHashEmbedder(),
+        access_policy,
+        audit_log,
+    )
     logger = configure_logging()
     tracer = get_tracer()
 
@@ -147,14 +190,16 @@ def create_app(
 
     app = FastAPI(
         title="CareerPilot API",
-        version="0.4.0",
-        description="Tenant-safe profile and quarantined evidence metadata foundation.",
+        version="0.5.0",
+        description="Tenant-safe profiles and cited local document retrieval.",
         lifespan=lifespan,
         responses={500: {"model": ErrorResponse}},
     )
     app.state.audit_log = audit_log
     app.state.identity_access = identity_access
     app.state.repository = repository
+    app.state.document_repository = document_repository
+    app.state.document_storage = document_storage
     app.add_middleware(
         CORSMiddleware,
         allow_origins=["http://127.0.0.1:3000", "http://localhost:3000"],
@@ -338,6 +383,40 @@ def create_app(
             message="The evidence metadata did not meet the upload security policy.",
             status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
             fields={error.field: [error.reason]},
+        )
+
+    @app.exception_handler(DocumentValidationError)
+    async def document_validation(
+        request: Request, error: DocumentValidationError
+    ) -> JSONResponse:
+        return _safe_error(
+            request,
+            code="document_not_accepted",
+            message="The document did not meet the ingestion or retrieval policy.",
+            status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
+            fields={error.field: [error.reason]},
+        )
+
+    @app.exception_handler(DocumentNotFoundError)
+    async def document_not_found(
+        request: Request, _error: DocumentNotFoundError
+    ) -> JSONResponse:
+        return _safe_error(
+            request,
+            code="document_not_found",
+            message="The document is unavailable.",
+            status_code=status.HTTP_404_NOT_FOUND,
+        )
+
+    @app.exception_handler(DeletionConfirmationError)
+    async def deletion_confirmation(
+        request: Request, _error: DeletionConfirmationError
+    ) -> JSONResponse:
+        return _safe_error(
+            request,
+            code="confirmation_required",
+            message="Explicit human confirmation is required before deletion.",
+            status_code=status.HTTP_409_CONFLICT,
         )
 
     @app.exception_handler(ProfileValidationError)
@@ -661,6 +740,86 @@ def create_app(
             )
             for item in service.list_evidence(request_context(request), profile_id)
         ]
+
+    def document_response(document: object) -> DocumentResponse:
+        return DocumentResponse.model_validate(document, from_attributes=True)
+
+    @app.post(
+        "/api/v1/documents",
+        response_model=DocumentResponse,
+        status_code=status.HTTP_201_CREATED,
+        tags=["documents"],
+    )
+    async def upload_document(
+        request: Request,
+        profile_id: Annotated[str, Form()],
+        title: Annotated[str, Form()],
+        file: Annotated[UploadFile, File()],
+    ) -> DocumentResponse:
+        filename = file.filename or ""
+        media_type = file.content_type or "application/octet-stream"
+        content = await file.read(MAX_UPLOAD_BYTES + 1)
+        await file.close()
+        document = rag_service.ingest(
+            request_context(request),
+            profile_id,
+            title=title,
+            filename=filename,
+            media_type=media_type,
+            content=content,
+        )
+        return document_response(document)
+
+    @app.post(
+        "/api/v1/retrieval/search",
+        response_model=RetrievalSearchResponse,
+        tags=["retrieval"],
+    )
+    async def search_documents(
+        body: RetrievalSearchRequest, request: Request
+    ) -> RetrievalSearchResponse:
+        result = rag_service.search(
+            request_context(request), body.query, limit=body.limit
+        )
+        return RetrievalSearchResponse(
+            query=result.query,
+            passages=[
+                RetrievedPassageResponse(
+                    content=passage.content,
+                    score=passage.score,
+                    injection_risk=passage.injection_risk,
+                    citation=CitationResponse.model_validate(
+                        passage.citation, from_attributes=True
+                    ),
+                )
+                for passage in result.passages
+            ],
+            context=result.context,
+            disclaimer=result.disclaimer,
+        )
+
+    @app.post(
+        "/api/v1/documents/{document_id}/reindex",
+        response_model=DocumentResponse,
+        tags=["documents"],
+    )
+    async def reindex_document(document_id: str, request: Request) -> DocumentResponse:
+        return document_response(
+            rag_service.reindex(request_context(request), document_id)
+        )
+
+    @app.post(
+        "/api/v1/documents/{document_id}/deletion",
+        status_code=status.HTTP_204_NO_CONTENT,
+        tags=["documents"],
+    )
+    async def delete_document(
+        document_id: str, body: DocumentDeletionRequest, request: Request
+    ) -> Response:
+        rag_service.delete(
+            request_context(request), document_id, confirmed=body.confirmed
+        )
+        return Response(status_code=status.HTTP_204_NO_CONTENT)
 
     @app.post(
         "/api/v1/analyses",

@@ -79,6 +79,55 @@ class EvidenceResponse(StrictContract):
     version: int
 
 
+class DocumentResponse(StrictContract):
+    document_id: str
+    evidence_id: str
+    profile_id: str
+    title: str
+    filename: str
+    media_type: str
+    size_bytes: int
+    status: str
+    injection_risk: str
+    parser_version: str
+    chunker_version: str
+    embedding_version: str
+    index_version: str
+
+
+class RetrievalSearchRequest(StrictContract):
+    query: Annotated[str, Field(min_length=2, max_length=500)]
+    limit: Annotated[int, Field(ge=1, le=10)] = 5
+
+
+class CitationResponse(StrictContract):
+    document_id: str
+    chunk_id: str
+    document_title: str
+    filename: str
+    page_number: int
+    start_offset: int
+    end_offset: int
+
+
+class RetrievedPassageResponse(StrictContract):
+    content: str
+    score: float
+    injection_risk: str
+    citation: CitationResponse
+
+
+class RetrievalSearchResponse(StrictContract):
+    query: str
+    passages: list[RetrievedPassageResponse]
+    context: str
+    disclaimer: str
+
+
+class DocumentDeletionRequest(StrictContract):
+    confirmed: bool
+
+
 class AnalysisCreateRequest(StrictContract):
     profile_id: str
     job_description: JobText

@@ -6,12 +6,15 @@ from contextlib import AbstractContextManager
 from datetime import UTC, datetime
 from typing import TYPE_CHECKING
 
+from pgvector.sqlalchemy import VECTOR
 from sqlalchemy import (
     Boolean,
     CheckConstraint,
     Column,
+    Computed,
     DateTime,
     ForeignKeyConstraint,
+    Index,
     Integer,
     MetaData,
     String,
@@ -24,6 +27,7 @@ from sqlalchemy import (
     select,
     update,
 )
+from sqlalchemy.dialects.postgresql import TSVECTOR
 from sqlalchemy.engine import Connection, Engine, RowMapping
 
 from careerpilot_core import (
@@ -139,8 +143,89 @@ evidence_items = Table(
         ["professional_profiles.tenant_id", "professional_profiles.profile_id"],
         ondelete="CASCADE",
     ),
+    UniqueConstraint("tenant_id", "evidence_id"),
     CheckConstraint("size_bytes > 0 AND size_bytes <= 10485760", name="allowed_size"),
     CheckConstraint("version > 0", name="positive_version"),
+)
+
+documents = Table(
+    "documents",
+    metadata,
+    Column("document_id", String(100), primary_key=True),
+    Column("evidence_id", String(100), nullable=False),
+    Column("profile_id", String(100), nullable=False),
+    Column("tenant_id", String(100), nullable=False),
+    Column("owner_actor_id", String(100), nullable=False),
+    Column("title", String(200), nullable=False),
+    Column("filename", String(255), nullable=False),
+    Column("media_type", String(100), nullable=False),
+    Column("size_bytes", Integer, nullable=False),
+    Column("sha256", String(64), nullable=False),
+    Column("storage_key", String(255), nullable=False),
+    Column("status", String(30), nullable=False),
+    Column("injection_risk", String(30), nullable=False),
+    Column("parser_version", String(80), nullable=False),
+    Column("chunker_version", String(80), nullable=False),
+    Column("embedding_version", String(80), nullable=False),
+    Column("index_version", String(80), nullable=False),
+    Column("created_at", DateTime(timezone=True), nullable=False),
+    Column("updated_at", DateTime(timezone=True), nullable=False),
+    Column("deleted_at", DateTime(timezone=True)),
+    ForeignKeyConstraint(
+        ["tenant_id", "profile_id"],
+        ["professional_profiles.tenant_id", "professional_profiles.profile_id"],
+        ondelete="CASCADE",
+    ),
+    ForeignKeyConstraint(
+        ["tenant_id", "evidence_id"],
+        ["evidence_items.tenant_id", "evidence_items.evidence_id"],
+        ondelete="CASCADE",
+    ),
+    UniqueConstraint("tenant_id", "document_id"),
+    CheckConstraint("size_bytes > 0 AND size_bytes <= 10485760", name="allowed_size"),
+)
+
+document_chunks = Table(
+    "document_chunks",
+    metadata,
+    Column("chunk_id", String(100), primary_key=True),
+    Column("document_id", String(100), nullable=False),
+    Column("tenant_id", String(100), nullable=False),
+    Column("owner_actor_id", String(100), nullable=False),
+    Column("chunk_index", Integer, nullable=False),
+    Column("page_number", Integer, nullable=False),
+    Column("start_offset", Integer, nullable=False),
+    Column("end_offset", Integer, nullable=False),
+    Column("content", Text, nullable=False),
+    Column("embedding", VECTOR(64), nullable=False),
+    Column("injection_risk", String(30), nullable=False),
+    Column("index_version", String(80), nullable=False),
+    Column(
+        "search_vector",
+        TSVECTOR,
+        Computed("to_tsvector('english', content)", persisted=True),
+        nullable=False,
+    ),
+    ForeignKeyConstraint(
+        ["tenant_id", "document_id"],
+        ["documents.tenant_id", "documents.document_id"],
+        ondelete="CASCADE",
+    ),
+    UniqueConstraint("tenant_id", "document_id", "chunk_index"),
+    CheckConstraint("page_number > 0", name="positive_page"),
+    CheckConstraint("start_offset >= 0 AND end_offset > start_offset", name="offsets"),
+)
+
+Index(
+    "ix_document_chunks_search_vector",
+    document_chunks.c.search_vector,
+    postgresql_using="gin",
+)
+Index(
+    "ix_document_chunks_embedding_hnsw",
+    document_chunks.c.embedding,
+    postgresql_using="hnsw",
+    postgresql_ops={"embedding": "vector_cosine_ops"},
 )
 
 

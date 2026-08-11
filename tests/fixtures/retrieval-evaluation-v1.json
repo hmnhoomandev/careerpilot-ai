@@ -1,0 +1,44 @@
+{
+  "version": "retrieval-evaluation-v1",
+  "documents": [
+    {
+      "title": "Synthetic platform resume",
+      "filename": "platform.txt",
+      "content": "Designed a PostgreSQL migration system and reduced restore time to twelve minutes."
+    },
+    {
+      "title": "Synthetic accessibility evidence",
+      "filename": "accessibility.txt",
+      "content": "Led WCAG accessibility reviews for a public service used by synthetic customers."
+    },
+    {
+      "title": "Synthetic forecasting evidence",
+      "filename": "forecasting.txt",
+      "content": "Built a solar forecasting pipeline in Python with deterministic validation."
+    }
+  ],
+  "queries": [
+    {
+      "query": "PostgreSQL restore time",
+      "relevant_filename": "platform.txt",
+      "expected_text": "twelve minutes"
+    },
+    {
+      "query": "WCAG accessibility reviews",
+      "relevant_filename": "accessibility.txt",
+      "expected_text": "public service"
+    },
+    {
+      "query": "solar forecasting Python",
+      "relevant_filename": "forecasting.txt",
+      "expected_text": "deterministic validation"
+    }
+  ],
+  "thresholds": {
+    "recall_at_3": 1.0,
+    "precision_at_3": 0.333333,
+    "mrr": 1.0,
+    "grounding": 1.0,
+    "citation_correctness": 1.0
+  }
+}

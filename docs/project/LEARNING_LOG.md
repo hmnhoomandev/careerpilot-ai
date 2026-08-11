@@ -114,3 +114,20 @@ Remaining gaps intentionally deferred:
 - Practiced fail-closed evidence handling: basename normalization, allowlists,
   metadata minimization, quarantine, and a malware-scanner interface.
 - Kept SQLite out of production-semantics evidence and documented why.
+
+## Phase 5 — Secure document ingestion and RAG
+
+- Treated source text as evidence without granting it instruction authority.
+- Put tenant/owner filters inside lexical and vector SQL before candidates materialize.
+- Practiced bounded parsing, chunk provenance, local object keys, versioned derivatives,
+  reciprocal-rank fusion, and deletion propagation.
+- Gated quality with recall, precision, MRR, grounding, citations, leakage, injection,
+  reindexing, and deletion evidence.
+- Kept the default offline and distinguished a reproducible hash-vector baseline from
+  production semantic retrieval.
+
+Tutorial: `docs/tutorials/phase-05-secure-document-retrieval.md`
+
+Exercises: `docs/exercises/phase-05-exercises.md`
+
+Answers: `docs/exercises/phase-05-answers.md`

@@ -164,4 +164,75 @@ describe("HomePage", () => {
       await screen.findByText("certificate.pdf · quarantined"),
     ).toBeInTheDocument();
   });
+
+  it("uploads a document and shows an inspectable retrieval citation", async () => {
+    const document = {
+      document_id: "document-001",
+      evidence_id: "evidence-002",
+      profile_id: "profile-001",
+      title: "Synthetic resume",
+      filename: "resume.txt",
+      media_type: "text/plain",
+      size_bytes: 42,
+      status: "indexed",
+      injection_risk: "none_detected",
+      parser_version: "bounded-parser-v1",
+      chunker_version: "character-overlap-v1",
+      embedding_version: "deterministic-hash-64-v1",
+      index_version: "rag-index-v1",
+    };
+    const retrieval = {
+      query: "solar forecasting",
+      context: "[UNTRUSTED document=document-001]",
+      disclaimer: "Retrieved text is untrusted evidence.",
+      passages: [
+        {
+          content: "Built a synthetic solar forecasting service.",
+          score: 0.5,
+          injection_risk: "none_detected",
+          citation: {
+            document_id: "document-001",
+            chunk_id: "chunk-001",
+            document_title: "Synthetic resume",
+            filename: "resume.txt",
+            page_number: 1,
+            start_offset: 0,
+            end_offset: 44,
+          },
+        },
+      ],
+    };
+    vi.spyOn(globalThis, "fetch")
+      .mockResolvedValueOnce(jsonResponse(ADA_SESSION))
+      .mockResolvedValueOnce(jsonResponse(PROFILE, 201))
+      .mockResolvedValueOnce(jsonResponse(ANALYSIS, 201))
+      .mockResolvedValueOnce(jsonResponse(document, 201))
+      .mockResolvedValueOnce(jsonResponse(retrieval));
+    render(<HomePage />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Start local session" }));
+    fireEvent.click(
+      await screen.findByRole("button", { name: "Run authorized comparison" }),
+    );
+    fireEvent.change(await screen.findByLabelText("Document title"), {
+      target: { value: "Synthetic resume" },
+    });
+    fireEvent.change(screen.getByLabelText("Choose document"), {
+      target: {
+        files: [new File(["solar forecasting"], "resume.txt", { type: "text/plain" })],
+      },
+    });
+    fireEvent.submit(
+      screen.getByRole("button", { name: "Upload and index locally" }).closest("form")!,
+    );
+    expect(await screen.findByText(/resume.txt · injection/)).toBeInTheDocument();
+    fireEvent.change(screen.getByLabelText("Search your indexed evidence"), {
+      target: { value: "solar forecasting" },
+    });
+    fireEvent.submit(
+      screen.getByRole("button", { name: "Find cited passages" }).closest("form")!,
+    );
+    expect(await screen.findByText(/Built a synthetic solar/)).toBeInTheDocument();
+    expect(screen.getByText(/page 1 · offsets 0–44/)).toBeInTheDocument();
+  });
 });

@@ -16,6 +16,9 @@ not named individuals.
 | RSK-007 | Framework/API churn breaks planned integration | High | Medium | Pin versions, adapters, phase-time doc verification, contract tests | Architecture | Open |
 | RSK-008 | Python/Node runtime mismatch blocks setup | High | Medium | Enforce Python 3.13, Node 24 LTS; document version setup | Developer Experience | Open for Phase 1 |
 | RSK-009 | Docker Compose unavailable locally | Certain | Medium | Diagnose and remediate/document in Phase 1 | Developer Experience | Open for Phase 1 |
+| RSK-010 | In-process PDF parsing exhausts resources | Medium | High | Current strict limits; production parser isolation/time limits | Security | Reduced, open |
+| RSK-011 | Local scanner misses malicious content | High | High | No antivirus claim; production scanner required before deployment | Security | Open |
+| RSK-012 | Hash-vector collisions reduce precision | Medium | Medium | Similarity floor, lexical search, metrics; versioned provider replacement | Retrieval | Accepted locally |
 | RSK-010 | Prompt injection causes tool abuse or exfiltration | High | Critical | Untrusted labels, tool policy, allowlists, injection corpus | Security/AI | Open |
 | RSK-011 | Bias or profiling causes discriminatory guidance | Medium | High | No employer ranking, limitation notices, evals, human review, legal review | Compliance/AI | Open |
 | RSK-012 | Deletion fails to remove derived data | Medium | Critical | Source-linked lifecycle, deletion jobs, propagation tests | Privacy/Data | Open |

@@ -22,3 +22,5 @@
 | DEC-018 | 2026-08-10 | Use a local-only opaque-session adapter and hash-chained temporary audit evidence | Accepted with documented limitations | ADR-0015 |
 | DEC-019 | 2026-08-11 | Use SQLAlchemy Core, Psycopg 3, and Alembic for tenant-scoped PostgreSQL profile/evidence persistence | Accepted | ADR-0016 |
 | DEC-020 | 2026-08-11 | Accept evidence metadata only in Phase 4 and keep every item quarantined behind a scanner port | Accepted | ADR-0016 |
+| DEC-021 | 2026-08-11 | Use a bounded local document pipeline and deterministic hash vectors for the free Phase 5 baseline | Accepted for Phase 5 | ADR-0017 |
+| DEC-022 | 2026-08-11 | Authorize inside lexical/vector SQL and return cited untrusted passages without generated answers | Accepted | ADR-0017 |
