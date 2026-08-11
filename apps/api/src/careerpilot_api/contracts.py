@@ -22,9 +22,61 @@ class ProfileCreateRequest(StrictContract):
     professional_summary: SummaryText
 
 
+class ExperienceContract(StrictContract):
+    title: Annotated[str, Field(min_length=2, max_length=160)]
+    organization: Annotated[str, Field(min_length=2, max_length=160)]
+    start_date: Annotated[str, Field(pattern=r"^\d{4}-\d{2}-\d{2}$")]
+    end_date: Annotated[str, Field(pattern=r"^\d{4}-\d{2}-\d{2}$")] | None = None
+    description: Annotated[str, Field(min_length=10, max_length=2000)]
+
+
+class EducationContract(StrictContract):
+    institution: Annotated[str, Field(min_length=2, max_length=200)]
+    qualification: Annotated[str, Field(min_length=2, max_length=200)]
+    start_date: Annotated[str, Field(pattern=r"^\d{4}-\d{2}-\d{2}$")] | None = None
+    end_date: Annotated[str, Field(pattern=r"^\d{4}-\d{2}-\d{2}$")] | None = None
+
+
 class ProfileResponse(StrictContract):
     profile_id: str
     display_name: str
+    professional_summary: str
+    version: int
+    skills: list[str]
+    experiences: list[ExperienceContract]
+    education: list[EducationContract]
+
+
+class ProfileUpdateRequest(StrictContract):
+    """Editable profile fields plus the client's last observed version."""
+
+    display_name: ShortText
+    professional_summary: SummaryText
+    skills: Annotated[list[ShortText], Field(max_length=30)] = []
+    experiences: Annotated[list[ExperienceContract], Field(max_length=50)] = []
+    education: Annotated[list[EducationContract], Field(max_length=50)] = []
+    expected_version: Annotated[int, Field(ge=1)]
+
+
+class EvidenceCreateRequest(StrictContract):
+    """Metadata-only intake; document bytes are not accepted in Phase 4."""
+
+    profile_id: str
+    title: Annotated[str, Field(min_length=2, max_length=200)]
+    filename: Annotated[str, Field(min_length=1, max_length=255)]
+    media_type: Annotated[str, Field(min_length=3, max_length=100)]
+    size_bytes: Annotated[int, Field(ge=1, le=10 * 1024 * 1024)]
+
+
+class EvidenceResponse(StrictContract):
+    evidence_id: str
+    profile_id: str
+    title: str
+    filename: str
+    media_type: str
+    size_bytes: int
+    state: str
+    version: int
 
 
 class AnalysisCreateRequest(StrictContract):

@@ -14,9 +14,28 @@ from careerpilot_core.access import (
     TenantKind,
 )
 from careerpilot_core.audit import AuditEvent, AuditEventDraft, AuditSink
-from careerpilot_core.models import JobAnalysis, ProfessionalProfile
-from careerpilot_core.ports import ExternalIdentity, IdentityVerifier, ProfileRepository
-from careerpilot_core.services import CareerJourneyService, ProfileNotFoundError
+from careerpilot_core.models import (
+    Education,
+    EvidenceItem,
+    EvidenceState,
+    Experience,
+    JobAnalysis,
+    ProfessionalProfile,
+    Skill,
+)
+from careerpilot_core.ports import (
+    ExternalIdentity,
+    IdentityVerifier,
+    MalwareScanner,
+    ProfileRepository,
+)
+from careerpilot_core.services import (
+    CareerJourneyService,
+    EvidenceValidationError,
+    ProfileConflictError,
+    ProfileNotFoundError,
+    ProfileValidationError,
+)
 
 __all__ = [
     "AccessDeniedError",
@@ -27,17 +46,26 @@ __all__ = [
     "AuditSink",
     "AuthorizationContext",
     "CareerJourneyService",
+    "Education",
+    "EvidenceItem",
+    "EvidenceState",
+    "EvidenceValidationError",
+    "Experience",
     "ExternalIdentity",
     "IdentityVerifier",
     "JobAnalysis",
+    "MalwareScanner",
     "Membership",
     "Permission",
     "PolicyDecision",
     "ProfessionalProfile",
+    "ProfileConflictError",
     "ProfileNotFoundError",
     "ProfileRepository",
+    "ProfileValidationError",
     "ResourceAttributes",
     "Role",
+    "Skill",
     "Tenant",
     "TenantKind",
 ]

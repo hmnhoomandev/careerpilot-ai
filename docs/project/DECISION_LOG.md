@@ -20,3 +20,5 @@
 | DEC-016 | 2026-08-10 | Prove the first journey with exact-term comparison and process-local persistence | Accepted for Phase 2 | ADR-0014 |
 | DEC-017 | 2026-08-10 | Derive tenant authority from server-side membership and combine RBAC with resource ABAC | Accepted for Phase 3 | ADR-0015 |
 | DEC-018 | 2026-08-10 | Use a local-only opaque-session adapter and hash-chained temporary audit evidence | Accepted with documented limitations | ADR-0015 |
+| DEC-019 | 2026-08-11 | Use SQLAlchemy Core, Psycopg 3, and Alembic for tenant-scoped PostgreSQL profile/evidence persistence | Accepted | ADR-0016 |
+| DEC-020 | 2026-08-11 | Accept evidence metadata only in Phase 4 and keep every item quarantined behind a scanner port | Accepted | ADR-0016 |

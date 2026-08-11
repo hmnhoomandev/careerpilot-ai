@@ -17,7 +17,15 @@ const ADA_SESSION = {
     },
   ],
 };
-const PROFILE = { profile_id: "profile-001" };
+const PROFILE = {
+  profile_id: "profile-001",
+  display_name: "Ada Example",
+  professional_summary: "Python engineer building accessible data platforms.",
+  version: 1,
+  skills: [],
+  experiences: [],
+  education: [],
+};
 const ANALYSIS = {
   analysis_id: "analysis-001",
   profile_id: "profile-001",
@@ -109,6 +117,51 @@ describe("HomePage", () => {
     ).toBeInTheDocument();
     expect(
       screen.getByText(/00000000-0000-4000-8000-000000000003/),
+    ).toBeInTheDocument();
+  });
+
+  it("shows versioned profile and quarantined evidence controls", async () => {
+    const evidence = {
+      evidence_id: "evidence-001",
+      profile_id: "profile-001",
+      title: "Synthetic certificate",
+      filename: "certificate.pdf",
+      media_type: "application/pdf",
+      size_bytes: 4,
+      state: "quarantined",
+      version: 1,
+    };
+    vi.spyOn(globalThis, "fetch")
+      .mockResolvedValueOnce(jsonResponse(ADA_SESSION))
+      .mockResolvedValueOnce(jsonResponse(PROFILE, 201))
+      .mockResolvedValueOnce(jsonResponse(ANALYSIS, 201))
+      .mockResolvedValueOnce(jsonResponse(evidence, 201));
+    render(<HomePage />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Start local session" }));
+    fireEvent.click(
+      await screen.findByRole("button", { name: "Run authorized comparison" }),
+    );
+    expect(
+      await screen.findByRole("heading", { name: "Edit profile version 1" }),
+    ).toBeInTheDocument();
+
+    fireEvent.change(screen.getByLabelText("Evidence title"), {
+      target: { value: "Synthetic certificate" },
+    });
+    const file = new File(["test"], "certificate.pdf", {
+      type: "application/pdf",
+    });
+    fireEvent.change(screen.getByLabelText("Choose evidence file"), {
+      target: { files: [file] },
+    });
+    const registerButton = screen.getByRole("button", {
+      name: "Register metadata in quarantine",
+    });
+    fireEvent.submit(registerButton.closest("form")!);
+
+    expect(
+      await screen.findByText("certificate.pdf · quarantined"),
     ).toBeInTheDocument();
   });
 });

@@ -8,14 +8,24 @@ import {
   changeLocalRole,
   loadAuditEvents,
   loginLocalUser,
+  registerEvidence,
   runDeterministicJourney,
+  updateProfile,
 } from "../lib/careerpilot-api";
-import type { AnalysisResult, AuditEvent, LocalSession } from "../lib/careerpilot-api";
+import type {
+  AnalysisResult,
+  AuditEvent,
+  EvidenceItem,
+  LocalSession,
+  Profile,
+} from "../lib/careerpilot-api";
 
 export default function HomePage() {
   const [session, setSession] = useState<LocalSession | null>(null);
   const [tenantId, setTenantId] = useState("");
   const [analysis, setAnalysis] = useState<AnalysisResult | null>(null);
+  const [profile, setProfile] = useState<Profile | null>(null);
+  const [evidence, setEvidence] = useState<EvidenceItem[]>([]);
   const [auditEvents, setAuditEvents] = useState<AuditEvent[]>([]);
   const [notice, setNotice] = useState("");
   const [error, setError] = useState<CareerPilotApiError | null>(null);
@@ -43,19 +53,69 @@ export default function HomePage() {
     setSubmitting(true);
     const data = new FormData(event.currentTarget);
     try {
-      setAnalysis(
-        await runDeterministicJourney({
-          session,
-          tenantId,
-          displayName: String(data.get("displayName")),
-          professionalSummary: String(data.get("professionalSummary")),
-          jobDescription: String(data.get("jobDescription")),
-        }),
-      );
+      const result = await runDeterministicJourney({
+        session,
+        tenantId,
+        displayName: String(data.get("displayName")),
+        professionalSummary: String(data.get("professionalSummary")),
+        jobDescription: String(data.get("jobDescription")),
+      });
+      setAnalysis(result.analysis);
+      setProfile(result.profile);
     } catch (caught) {
       setError(toApiError(caught));
     } finally {
       setSubmitting(false);
+    }
+  }
+
+  async function handleProfileUpdate(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!session || !tenantId || !profile) return;
+    setError(null);
+    const data = new FormData(event.currentTarget);
+    try {
+      const saved = await updateProfile({
+        session,
+        tenantId,
+        profile,
+        displayName: String(data.get("profileDisplayName")),
+        professionalSummary: String(data.get("profileSummary")),
+        skills: String(data.get("skills"))
+          .split(",")
+          .map((skill) => skill.trim())
+          .filter(Boolean),
+      });
+      setProfile(saved);
+      setNotice(`Profile saved as version ${saved.version}.`);
+    } catch (caught) {
+      setError(toApiError(caught));
+    }
+  }
+
+  async function handleEvidence(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!session || !tenantId || !profile) return;
+    setError(null);
+    const form = event.currentTarget;
+    const data = new FormData(form);
+    const file = data.get("evidenceFile");
+    if (!(file instanceof File)) return;
+    try {
+      const saved = await registerEvidence({
+        session,
+        tenantId,
+        profileId: profile.profile_id,
+        title: String(data.get("evidenceTitle")),
+        file,
+      });
+      setEvidence((items) => [...items, saved]);
+      setNotice(
+        "Evidence metadata registered in quarantine; file bytes were not sent.",
+      );
+      form.reset();
+    } catch (caught) {
+      setError(toApiError(caught));
     }
   }
 
@@ -84,6 +144,8 @@ export default function HomePage() {
     setSession(null);
     setTenantId("");
     setAnalysis(null);
+    setProfile(null);
+    setEvidence([]);
     setAuditEvents([]);
     setNotice("Local session cleared from this browser tab.");
   }
@@ -179,6 +241,95 @@ export default function HomePage() {
               </button>
             </form>
           </section>
+
+          {profile ? (
+            <section className="panel" aria-labelledby="profile-heading">
+              <p className="eyebrow">Persistent profile foundation</p>
+              <h2 id="profile-heading">Edit profile version {profile.version}</h2>
+              <form onSubmit={handleProfileUpdate}>
+                <div className="field">
+                  <label htmlFor="profileDisplayName">Display name</label>
+                  <input
+                    id="profileDisplayName"
+                    name="profileDisplayName"
+                    minLength={2}
+                    maxLength={100}
+                    required
+                    defaultValue={profile.display_name}
+                  />
+                </div>
+                <div className="field">
+                  <label htmlFor="profileSummary">Professional summary</label>
+                  <textarea
+                    id="profileSummary"
+                    name="profileSummary"
+                    minLength={20}
+                    maxLength={1000}
+                    required
+                    defaultValue={profile.professional_summary}
+                  />
+                </div>
+                <div className="field">
+                  <label htmlFor="skills">Skills</label>
+                  <p id="skills-help" className="help">
+                    Comma-separated, user-asserted skills.
+                  </p>
+                  <input
+                    id="skills"
+                    name="skills"
+                    aria-describedby="skills-help"
+                    defaultValue={profile.skills.join(", ")}
+                  />
+                </div>
+                <button type="submit">Save profile version</button>
+              </form>
+            </section>
+          ) : null}
+
+          {profile ? (
+            <section className="panel" aria-labelledby="evidence-heading">
+              <p className="eyebrow">Metadata-only security preview</p>
+              <h2 id="evidence-heading">Register evidence</h2>
+              <p className="help">
+                PDF, JPEG, or PNG up to 10 MB. Phase 4 sends metadata only; every item
+                stays quarantined until a future scanner marks it clean.
+              </p>
+              <form onSubmit={handleEvidence}>
+                <div className="field">
+                  <label htmlFor="evidenceTitle">Evidence title</label>
+                  <input
+                    id="evidenceTitle"
+                    name="evidenceTitle"
+                    minLength={2}
+                    required
+                  />
+                </div>
+                <div className="field">
+                  <label htmlFor="evidenceFile">Choose evidence file</label>
+                  <input
+                    id="evidenceFile"
+                    name="evidenceFile"
+                    type="file"
+                    accept="application/pdf,image/jpeg,image/png"
+                    required
+                  />
+                </div>
+                <button type="submit">Register metadata in quarantine</button>
+              </form>
+              {evidence.length ? (
+                <ul className="evidence-list">
+                  {evidence.map((item) => (
+                    <li key={item.evidence_id}>
+                      <strong>{item.title}</strong>
+                      <span>
+                        {item.filename} · {item.state}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              ) : null}
+            </section>
+          ) : null}
 
           <section className="panel" aria-labelledby="security-heading">
             <h2 id="security-heading">Security controls</h2>

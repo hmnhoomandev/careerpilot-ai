@@ -17,6 +17,95 @@ Every phase plan must state:
 
 Plans are living documents. Update status without erasing decisions or evidence.
 
+## Active implementation plan: Phase 4
+
+**Objective:** replace process-local profile persistence with a versioned,
+tenant-safe PostgreSQL profile and evidence-metadata foundation while keeping
+development local, synthetic, and free.
+
+### Scope and acceptance mapping
+
+- Add versioned PostgreSQL migrations for profiles, skills, experience,
+  education, evidence metadata, and deletion lifecycle fields.
+- Define explicit repository transaction boundaries and tenant predicates.
+- Support create/read/update profile operations with optimistic concurrency.
+- Add evidence metadata intake with filename, media-type, and size validation;
+  new evidence starts quarantined behind a malware-scanner port.
+- Preserve the in-memory adapter for default unit/API tests and add opt-in real
+  PostgreSQL migration, constraint, transaction, concurrency, and isolation tests.
+- Extend the authenticated UI for profile editing and evidence registration.
+- Map FR-001, FR-002, SEC-001, SEC-002, SEC-008, and NFR-019 to evidence.
+
+### Expected files and migrations
+
+- Richer domain models/services/ports under `packages/core/`.
+- PostgreSQL tables, adapter, unit of work, and Alembic configuration under
+  `apps/api/` and `migrations/`.
+- Versioned profile/evidence HTTP contracts and authenticated web controls.
+- Unit, API, contract, migration, PostgreSQL integration, upload-security,
+  concurrency, transaction, and tenant-isolation tests.
+- ADR, annotated source, tutorial, exercises, project records, and Phase 4 review.
+
+### Architecture, dependency, security, and privacy decisions
+
+- PostgreSQL is authoritative in configured environments; SQLite is not used as
+  evidence for PostgreSQL behavior.
+- SQLAlchemy 2 provides explicit transaction and mapping primitives, Psycopg 3
+  is the PostgreSQL driver, and Alembic owns schema versions. All use permissive
+  licenses. Direct SQL/custom migration runners were rejected because they add
+  maintenance and recovery risk; an ORM does not replace authorization checks.
+- The binary Psycopg distribution is convenient locally but bundles native
+  libraries that must remain dependency-scanned and be reviewed for hardened
+  production images.
+- Every query includes tenant scope. IDs never authorize access by themselves.
+- Stale profile versions fail atomically. Evidence metadata is minimized, and
+  filenames are normalized before persistence. No raw bytes are retained in this
+  phase; real object storage and scanner adapters remain later work.
+- Soft-deletion timestamps and a default 30-day purge target establish lifecycle
+  semantics; final retention periods and exceptions require legal review.
+
+### Risks and mitigations
+
+- The Docker daemon is unavailable: keep PostgreSQL tests opt-in, report them as
+  blocked until a real server runs, and never substitute SQLite results.
+- Schema/application drift: test Alembic head and metadata agreement plus a
+  forward-recovery rehearsal.
+- IDOR or tenant leaks: enforce policy in service/repository and test hostile IDs.
+- Malicious uploads: accept bounded metadata only, use an allowlist, normalize
+  names, quarantine by default, and expose a scanner interface with fail-closed
+  behavior.
+- Accidental overwrite: use integer versions in the update predicate and return a
+  safe conflict response.
+- Cost/cloud impact: none; no resource creation, billing, paid API, or model call.
+
+### Automated verification
+
+- Lock freshness; Ruff format/lint; strict MyPy; Pytest; API/OpenAPI contracts.
+- Alembic upgrade/downgrade/forward-recovery and PostgreSQL repository tests when
+  `CAREERPILOT_TEST_DATABASE_URL` points to an explicitly disposable database.
+- Frontend format/lint/type/test/build; dependency, secret, and Semgrep scans.
+- Documentation, Mermaid, pre-commit, migration review, and complete diff review.
+
+### Manual verification
+
+- Start PostgreSQL, apply migrations, start the app, create/edit a profile, add
+  evidence metadata, reject an unsupported type, trigger a stale update, restart,
+  and confirm persistence and tenant isolation.
+
+### Explicit exclusions
+
+- Parsing, object storage, embeddings, pgvector retrieval, and RAG (Phase 5).
+- A real malware engine, cloud database, backups, deployment, or paid service.
+- Destructive deletion UI without the later durable approval workflow.
+- Model, agent, scraping, email, or automatic application behavior.
+
+### Stop condition
+
+Complete `docs/reviews/phase-04-review.md`, report all passed and blocked evidence,
+and wait for:
+
+`APPROVE PHASE 4 AND START PHASE 5`
+
 ## Completed plan: Phase 0
 
 **Objective:** establish the complete product-discovery and architecture baseline

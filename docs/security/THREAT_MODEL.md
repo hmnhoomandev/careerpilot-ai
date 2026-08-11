@@ -60,3 +60,15 @@ versions, and synthetic test data.
   hash-chained. Durable signed/anchored audit remains open.
 - TM-014/TM-015: document/tool/coach permissions require resource context and
   delegation; those features remain inactive.
+
+## Phase 4 control evidence
+
+- Profile/evidence rows and child foreign keys carry tenant scope; repository reads
+  and writes include authenticated tenant predicates.
+- Optimistic version predicates prevent silent lost updates, and aggregate
+  transactions roll back partial child failures.
+- Evidence filenames are reduced to basename, media type/extension/size are
+  allowlisted, and metadata remains quarantined. Raw bytes, real scanning, parser
+  isolation, and decompression controls remain Phase 5/16 residual work.
+- Deletion timestamps and purge targets exist in schema, but destructive execution
+  remains disabled pending durable approval and legally reviewed retention rules.

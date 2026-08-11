@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from dataclasses import asdict
+from dataclasses import asdict, replace
 from typing import TYPE_CHECKING
 
 import pytest
@@ -13,10 +13,12 @@ from careerpilot_core import (
     AuditEventDraft,
     AuthorizationContext,
     CareerJourneyService,
+    EvidenceItem,
     ProfessionalProfile,
     ProfileNotFoundError,
     Role,
 )
+from careerpilot_core.ports import StaleProfileVersionError
 
 if TYPE_CHECKING:
     from collections.abc import Iterator
@@ -35,6 +37,31 @@ class FakeProfileRepository:
     ) -> ProfessionalProfile | None:
         profile = self.profiles.get(profile_id)
         return profile if profile and profile.tenant_id == context.tenant_id else None
+
+    def update(
+        self,
+        profile: ProfessionalProfile,
+        expected_version: int,
+        context: AuthorizationContext,
+    ) -> ProfessionalProfile:
+        stored = self.get(profile.profile_id, context)
+        if stored is None or stored.version != expected_version:
+            raise StaleProfileVersionError
+        updated = replace(profile, version=expected_version + 1)
+        self.profiles[profile.profile_id] = updated
+        return updated
+
+    def add_evidence(
+        self, evidence: EvidenceItem, context: AuthorizationContext
+    ) -> EvidenceItem:
+        assert evidence.tenant_id == context.tenant_id
+        return evidence
+
+    def list_evidence(
+        self, profile_id: str, context: AuthorizationContext
+    ) -> tuple[EvidenceItem, ...]:
+        del profile_id, context
+        return ()
 
 
 class FakeAuditSink:

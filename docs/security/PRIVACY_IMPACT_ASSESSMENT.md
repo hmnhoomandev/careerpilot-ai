@@ -73,6 +73,15 @@ subprocessors remain `LEGAL REVIEW`.
 - Third-party personal information contained in evidence.
 - International provider processing not understood by the user.
 
+## Phase 4 privacy implementation note
+
+Development uses synthetic profiles. Evidence registration minimizes collection to
+title, normalized basename, declared media type, size, ownership, and lifecycle
+state; the browser does not transmit selected bytes. PostgreSQL fields establish
+soft-deletion and purge-target foundations. The 30-day default, exceptions, legal
+holds, backup propagation, and final Swiss/EU schedule require professional legal
+review before production.
+
 ## Phase 3 identity and audit note
 
 The local adapter uses only fictional identities and pseudonymous stable IDs.

@@ -103,4 +103,5 @@ markers = [
   "contract: API and client contract tests",
   "e2e: deterministic tests crossing HTTP, application, and repository boundaries",
   "live_model: opt-in tests that require explicit cost confirmation",
+  "postgres: integration tests requiring a real PostgreSQL database",
 ]

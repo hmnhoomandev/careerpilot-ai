@@ -1,11 +1,11 @@
 # Project State
 
 - **Project:** CareerPilot AI
-- **Current phase:** Phase 3 — identity, tenancy, authorization, and audit
+- **Current phase:** Phase 4 — PostgreSQL, profile, and evidence library
 - **Phase status:** Implementation and verification complete; awaiting owner acceptance
-- **Last updated:** 2026-08-10
-- **Working tree at phase start:** Clean at `5f2386a` on `main`, tracking `origin/main`
-- **Production code:** Accepted deterministic slice plus Phase 3 security foundation in progress
+- **Last updated:** 2026-08-11
+- **Working tree at phase start:** Clean at `a07ae22` on `main`
+- **Production code:** Accepted Phase 3 security foundation plus Phase 4 persistence work in progress
 - **Cloud resources created:** None
 - **Paid calls made:** None
 
@@ -41,10 +41,20 @@
 - PostgreSQL/pgvector is authoritative production persistence.
 - LangGraph and Temporal have separate graph and durable-process ownership.
 
+## Phase 4 implementation state
+
+- PostgreSQL 17/pgvector runs in the repository's local Docker profile.
+- Alembic revision `0001` defines tenant-scoped profile, skills, experience,
+  education, and evidence metadata tables.
+- SQLAlchemy/Psycopg repository tests prove reconnect persistence, rollback,
+  optimistic concurrency, and tenant isolation against real local PostgreSQL.
+- Evidence intake is metadata-only and fail-closed in quarantine; no document bytes
+  are persisted or sent to a scanner in this phase.
+
 ## Known blockers and constraints
 
-- Docker Compose 5.4.0 is installed and its configuration validates, but the
-  local Docker daemon is not running.
+- Docker Desktop and the local PostgreSQL container must be running for marked
+  integration tests; default tests remain offline.
 - Global Node.js 26 differs from the repository target; Phase 1 verification used
   Node.js 24. Python verification used the selected Python 3.13 runtime.
 - Google Cloud CLI cannot write its default config under the current sandbox.
@@ -54,6 +64,6 @@
 
 ## Next action
 
-Review `docs/reviews/phase-03-review.md` and stop for:
+Review `docs/reviews/phase-04-review.md` and stop for:
 
-`APPROVE PHASE 3 AND START PHASE 4`
+`APPROVE PHASE 4 AND START PHASE 5`

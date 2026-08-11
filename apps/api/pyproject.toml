@@ -4,10 +4,13 @@ version = "0.1.0"
 description = "CareerPilot AI HTTP API package shell."
 requires-python = ">=3.13,<3.14"
 dependencies = [
+  "alembic>=1.18,<1.19",
   "careerpilot-core",
   "fastapi>=0.135,<0.136",
   "opentelemetry-api>=1.37,<1.38",
+  "psycopg[binary]>=3.3,<3.4",
   "pydantic-settings>=2.10,<3",
+  "sqlalchemy>=2.0.46,<2.1",
   "uvicorn[standard]>=0.35,<1",
 ]
 

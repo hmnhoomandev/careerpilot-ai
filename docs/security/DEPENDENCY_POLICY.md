@@ -36,6 +36,13 @@ MPL-2.0 `axe-core` as a development-only accessibility test engine. Neither is
 part of the browser production dependency graph. The previous `httpx` fallback
 was removed after Starlette reported it as deprecated.
 
+Phase 4 adds MIT-licensed SQLAlchemy Core for mappings/transactions and Alembic
+for migrations. Psycopg 3 uses LGPL-3.0 with exceptions and is the PostgreSQL
+driver; its local binary distribution bundles native `libpq`/TLS components, so
+locked SCA and later container/SBOM scans are required. Direct SQL plus a custom
+migration runner was rejected as higher-maintenance recovery machinery. These
+dependencies make no external service call by themselves and add no paid cost.
+
 Current Semgrep 1.172.0 hard-pins vulnerable `mcp==1.23.3`. Semgrep therefore
 lives in a non-default `sast` dependency group and is invoked only for a local,
 metrics-disabled source scan; its MCP server is never started or exposed. The

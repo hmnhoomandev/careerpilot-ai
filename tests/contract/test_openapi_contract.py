@@ -8,10 +8,10 @@ from careerpilot_api import create_app
 
 
 @pytest.mark.contract
-def test_openapi_contains_phase3_paths_and_error_contract() -> None:
+def test_openapi_contains_phase4_paths_and_error_contract() -> None:
     schema = create_app().openapi()
 
-    assert schema["info"]["version"] == "0.3.0"
+    assert schema["info"]["version"] == "0.4.0"
     assert set(schema["paths"]) == {
         "/api/v1/analyses",
         "/api/v1/audit-events",
@@ -20,6 +20,9 @@ def test_openapi_contains_phase3_paths_and_error_contract() -> None:
         "/api/v1/me",
         "/api/v1/memberships/{actor_id}",
         "/api/v1/profiles",
+        "/api/v1/profiles/{profile_id}",
+        "/api/v1/evidence",
+        "/api/v1/profiles/{profile_id}/evidence",
         "/health/live",
         "/health/ready",
     }

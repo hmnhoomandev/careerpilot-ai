@@ -1,4 +1,4 @@
-.PHONY: setup dev format format-check lint typecheck test audit security docs-check frontend-check check
+.PHONY: setup dev db-up db-down db-migrate db-integration-test format format-check lint typecheck test audit security docs-check frontend-check check
 
 setup:
 	uv sync --all-packages --locked
@@ -7,6 +7,18 @@ setup:
 
 dev:
 	uv run python scripts/dev.py
+
+db-up:
+	docker compose up -d postgres
+
+db-down:
+	docker compose down
+
+db-migrate:
+	uv run alembic upgrade head
+
+db-integration-test:
+	uv run pytest -m postgres
 
 format:
 	uv run ruff check --fix .

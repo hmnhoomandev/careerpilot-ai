@@ -12,6 +12,9 @@
 | Compensation | A deliberate action that semantically reverses a completed workflow effect. It is not database rollback. |
 | Deterministic workflow | Control flow whose next step follows explicit code and durable recorded inputs. |
 | Evidence item | A user-authorized source that can support one or more claims. |
+| Optimistic concurrency | A stale-write guard that updates only when the client's last observed version still matches. |
+| Quarantine | A fail-closed evidence state in which metadata or bytes cannot be treated as trusted before an approved scanner result. |
+| Transaction | A database boundary that commits all related changes together or rolls all of them back. |
 | Fallback | A visible, policy-approved alternative behavior; model-provider fallback is never silent. |
 | Graph state | Typed intermediate values owned by a single agent-graph execution. |
 | Handoff | Transfer of conversational control and responsibility to another agent. |

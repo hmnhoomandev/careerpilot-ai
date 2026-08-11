@@ -17,6 +17,23 @@ jobs:
     name: Python quality and security
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    env:
+      # Ephemeral synthetic credential for the isolated CI service only.
+      CAREERPILOT_TEST_DATABASE_URL: postgresql+psycopg://careerpilot_ci:careerpilot-ci-only@127.0.0.1:5432/careerpilot_test # pragma: allowlist secret
+    services:
+      postgres:
+        image: pgvector/pgvector:pg17-bookworm
+        env:
+          POSTGRES_DB: careerpilot_test
+          POSTGRES_PASSWORD: careerpilot-ci-only # pragma: allowlist secret
+          POSTGRES_USER: careerpilot_ci
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U careerpilot_ci -d careerpilot_test"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
     steps:
       - uses: actions/checkout@v6
         with:
@@ -34,7 +51,7 @@ jobs:
       - name: Ruff lint
         run: uv run ruff check .
       - name: Strict typing
-        run: uv run mypy apps/api/src packages/core/src tests scripts
+        run: uv run mypy apps/api/src packages/core/src tests scripts migrations
       - name: Unit, API, contract, architecture, and end-to-end tests
         run: uv run pytest
       - name: Dependency audit

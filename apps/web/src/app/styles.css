@@ -229,6 +229,26 @@ button:disabled {
   overflow-x: auto;
 }
 
+.evidence-list {
+  display: grid;
+  gap: 0.65rem;
+  padding: 0;
+  list-style: none;
+}
+
+.evidence-list li {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.8rem;
+  border: 1px solid #c8dbd1;
+  border-radius: 0.55rem;
+}
+
+.evidence-list span {
+  color: #557064;
+}
+
 table {
   width: 100%;
   border-collapse: collapse;

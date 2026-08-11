@@ -22,6 +22,8 @@ class Permission(StrEnum):
     PROFILE_CREATE = "profile.create"
     PROFILE_READ = "profile.read"
     PROFILE_UPDATE = "profile.update"
+    EVIDENCE_CREATE = "evidence.create"
+    EVIDENCE_READ = "evidence.read"
     ANALYSIS_RUN = "analysis.run"
     AUDIT_VIEW = "audit.view"
     MEMBERSHIP_MANAGE = "membership.manage"
@@ -36,6 +38,8 @@ ROLE_PERMISSIONS: dict[Role, frozenset[Permission]] = {
             Permission.PROFILE_CREATE,
             Permission.PROFILE_READ,
             Permission.PROFILE_UPDATE,
+            Permission.EVIDENCE_CREATE,
+            Permission.EVIDENCE_READ,
             Permission.ANALYSIS_RUN,
             Permission.DOCUMENT_READ,
             Permission.TOOL_INVOKE,
@@ -44,6 +48,7 @@ ROLE_PERMISSIONS: dict[Role, frozenset[Permission]] = {
     Role.COACH: frozenset(
         {
             Permission.PROFILE_READ,
+            Permission.EVIDENCE_READ,
             Permission.ANALYSIS_RUN,
             Permission.DOCUMENT_READ,
         }
@@ -122,6 +127,8 @@ class AccessPolicy:
         {
             Permission.PROFILE_READ,
             Permission.PROFILE_UPDATE,
+            Permission.EVIDENCE_CREATE,
+            Permission.EVIDENCE_READ,
             Permission.ANALYSIS_RUN,
             Permission.DOCUMENT_READ,
             Permission.TOOL_INVOKE,

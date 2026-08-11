@@ -5,8 +5,8 @@
 | 0 | Product discovery and architecture baseline | Accepted |
 | 1 | Repository foundation and developer experience | Accepted |
 | 2 | Deterministic walking skeleton | Accepted |
-| 3 | Identity, tenancy, authorization, and audit | Awaiting acceptance |
-| 4 | PostgreSQL profile and evidence library | Not started |
+| 3 | Identity, tenancy, authorization, and audit | Accepted |
+| 4 | PostgreSQL profile and evidence library | Awaiting acceptance |
 | 5 | Secure document ingestion and evaluated RAG | Not started |
 | 6 | Typed tools, MCP, contracts, and policy | Not started |
 | 7 | LangGraph core multi-agent analysis flow | Not started |

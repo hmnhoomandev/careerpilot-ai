@@ -104,3 +104,13 @@ Remaining gaps intentionally deferred:
 - Durable tenant/profile/audit persistence and migrations (Phase 4+).
 - Activated organization and explicit coach delegation workflows (later).
 - Audit retention, signing/anchoring, incident access, and legal review (Phase 16+).
+
+## Phase 4 — PostgreSQL profile and evidence foundation
+
+- Learned aggregate transactions: profile and child rows commit or roll back together.
+- Implemented optimistic concurrency and mapped stale writes to a safe HTTP `409`.
+- Distinguished opaque identifiers from tenant authorization predicates.
+- Ran Alembic downgrade/upgrade and repository tests against real PostgreSQL 17.
+- Practiced fail-closed evidence handling: basename normalization, allowlists,
+  metadata minimization, quarantine, and a malware-scanner interface.
+- Kept SQLite out of production-semantics evidence and documented why.

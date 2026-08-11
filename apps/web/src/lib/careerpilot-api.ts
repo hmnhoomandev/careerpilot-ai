@@ -32,8 +32,36 @@ export type AuditEvent = {
   correlation_id: string;
 };
 
-type ProfileResponse = {
+export type Profile = {
   profile_id: string;
+  display_name: string;
+  professional_summary: string;
+  version: number;
+  skills: string[];
+  experiences: Array<{
+    title: string;
+    organization: string;
+    start_date: string;
+    end_date: string | null;
+    description: string;
+  }>;
+  education: Array<{
+    institution: string;
+    qualification: string;
+    start_date: string | null;
+    end_date: string | null;
+  }>;
+};
+
+export type EvidenceItem = {
+  evidence_id: string;
+  profile_id: string;
+  title: string;
+  filename: string;
+  media_type: string;
+  size_bytes: number;
+  state: string;
+  version: number;
 };
 
 type ErrorResponse = {
@@ -76,7 +104,7 @@ export async function runDeterministicJourney(input: {
   displayName: string;
   professionalSummary: string;
   jobDescription: string;
-}): Promise<AnalysisResult> {
+}): Promise<{ analysis: AnalysisResult; profile: Profile }> {
   const profileResponse = await fetch(`${API_BASE_URL}/api/v1/profiles`, {
     method: "POST",
     headers: authenticatedHeaders(input.session, input.tenantId),
@@ -85,7 +113,7 @@ export async function runDeterministicJourney(input: {
       professional_summary: input.professionalSummary,
     }),
   });
-  const profile = await parseResponse<ProfileResponse>(profileResponse);
+  const profile = await parseResponse<Profile>(profileResponse);
 
   const analysisResponse = await fetch(`${API_BASE_URL}/api/v1/analyses`, {
     method: "POST",
@@ -95,7 +123,10 @@ export async function runDeterministicJourney(input: {
       job_description: input.jobDescription,
     }),
   });
-  return parseResponse<AnalysisResult>(analysisResponse);
+  return {
+    analysis: await parseResponse<AnalysisResult>(analysisResponse),
+    profile,
+  };
 }
 
 function authenticatedHeaders(
@@ -140,4 +171,51 @@ export async function changeLocalRole(
     body: JSON.stringify({ role }),
   });
   await parseResponse(response);
+}
+
+export async function updateProfile(input: {
+  session: LocalSession;
+  tenantId: string;
+  profile: Profile;
+  displayName: string;
+  professionalSummary: string;
+  skills: string[];
+}): Promise<Profile> {
+  const response = await fetch(
+    `${API_BASE_URL}/api/v1/profiles/${input.profile.profile_id}`,
+    {
+      method: "PATCH",
+      headers: authenticatedHeaders(input.session, input.tenantId),
+      body: JSON.stringify({
+        display_name: input.displayName,
+        professional_summary: input.professionalSummary,
+        skills: input.skills,
+        experiences: input.profile.experiences,
+        education: input.profile.education,
+        expected_version: input.profile.version,
+      }),
+    },
+  );
+  return parseResponse<Profile>(response);
+}
+
+export async function registerEvidence(input: {
+  session: LocalSession;
+  tenantId: string;
+  profileId: string;
+  title: string;
+  file: File;
+}): Promise<EvidenceItem> {
+  const response = await fetch(`${API_BASE_URL}/api/v1/evidence`, {
+    method: "POST",
+    headers: authenticatedHeaders(input.session, input.tenantId),
+    body: JSON.stringify({
+      profile_id: input.profileId,
+      title: input.title,
+      filename: input.file.name,
+      media_type: input.file.type || "application/octet-stream",
+      size_bytes: input.file.size,
+    }),
+  });
+  return parseResponse<EvidenceItem>(response);
 }

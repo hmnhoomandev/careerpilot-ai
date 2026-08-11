@@ -27,3 +27,5 @@ not named individuals.
 | RSK-018 | Documentation claims compliance without review | Medium | High | Legal-review register and wording review | Product/Legal | Mitigated |
 | RSK-019 | A2UI ambiguity leads to unsafe rendering | Medium | High | Internal allowlisted contract and Phase 14 follow-up ADR | Frontend/Security | Mitigated |
 | RSK-020 | Backup improves durability but conflicts with deletion | Medium | High | Bounded retention, restore-time deletion ledger, legal review | Data/Privacy | Open |
+| RSK-021 | Browser-declared file metadata disguises malicious content | High | High | Allowlist, basename normalization, quarantine, scanner/parser isolation before trust | Security | Partially mitigated; byte scanning deferred |
+| RSK-022 | Concurrent profile edits silently lose user data | Medium | High | Version predicate, safe 409 conflict, transaction test | Data | Mitigated for Phase 4 profile updates |

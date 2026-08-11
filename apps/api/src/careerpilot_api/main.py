@@ -19,8 +19,12 @@ from careerpilot_api.contracts import (
     AnalysisResponse,
     AuditEventResponse,
     CurrentContextResponse,
+    EducationContract,
     ErrorDetail,
     ErrorResponse,
+    EvidenceCreateRequest,
+    EvidenceResponse,
+    ExperienceContract,
     HealthResponse,
     LocalLoginRequest,
     LocalUserResponse,
@@ -28,9 +32,11 @@ from careerpilot_api.contracts import (
     MembershipRoleRequest,
     ProfileCreateRequest,
     ProfileResponse,
+    ProfileUpdateRequest,
     SessionResponse,
     TenantSummary,
 )
+from careerpilot_api.database import PostgresProfileRepository, create_postgres_engine
 from careerpilot_api.observability import configure_logging, get_tracer
 from careerpilot_api.repository import InMemoryProfileRepository
 from careerpilot_api.security import (
@@ -45,8 +51,13 @@ from careerpilot_core import (
     AuditEventDraft,
     AuthorizationContext,
     CareerJourneyService,
+    Education,
+    EvidenceValidationError,
+    Experience,
     Permission,
+    ProfileConflictError,
     ProfileNotFoundError,
+    ProfileValidationError,
     Role,
 )
 
@@ -101,10 +112,14 @@ def create_app(
     service_factory: Callable[[], CareerJourneyService] | None = None,
     environment: str | None = None,
 ) -> FastAPI:
-    """Build one isolated app with process-local identity, data, and audit state."""
+    """Build an app with local identity/audit and configured profile persistence."""
     audit_log = InMemoryAuditLog()
     access_policy = AccessPolicy()
-    repository = InMemoryProfileRepository()
+    database_url = os.environ.get("CAREERPILOT_DATABASE_URL")
+    engine = create_postgres_engine(database_url) if database_url else None
+    repository = (
+        PostgresProfileRepository(engine) if engine else InMemoryProfileRepository()
+    )
     selected_environment = (
         environment
         if environment is not None
@@ -126,12 +141,14 @@ def create_app(
     async def lifespan(_app: FastAPI) -> AsyncIterator[None]:
         logger.info("application_started")
         yield
+        if engine:
+            engine.dispose()
         logger.info("application_stopped")
 
     app = FastAPI(
         title="CareerPilot API",
-        version="0.3.0",
-        description="Local multi-tenant security foundation; no production identity.",
+        version="0.4.0",
+        description="Tenant-safe profile and quarantined evidence metadata foundation.",
         lifespan=lifespan,
         responses={500: {"model": ErrorResponse}},
     )
@@ -289,6 +306,52 @@ def create_app(
             status_code=status.HTTP_409_CONFLICT,
         )
 
+    @app.exception_handler(ProfileConflictError)
+    async def profile_conflict(
+        request: Request, _error: ProfileConflictError
+    ) -> JSONResponse:
+        return _safe_error(
+            request,
+            code="profile_version_conflict",
+            message="This profile changed since you opened it. Refresh and try again.",
+            status_code=status.HTTP_409_CONFLICT,
+        )
+
+    @app.exception_handler(ProfileNotFoundError)
+    async def profile_not_found(
+        request: Request, _error: ProfileNotFoundError
+    ) -> JSONResponse:
+        return _safe_error(
+            request,
+            code="profile_not_found",
+            message="The profile is unavailable.",
+            status_code=status.HTTP_404_NOT_FOUND,
+        )
+
+    @app.exception_handler(EvidenceValidationError)
+    async def evidence_validation(
+        request: Request, error: EvidenceValidationError
+    ) -> JSONResponse:
+        return _safe_error(
+            request,
+            code="evidence_not_accepted",
+            message="The evidence metadata did not meet the upload security policy.",
+            status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
+            fields={error.field: [error.reason]},
+        )
+
+    @app.exception_handler(ProfileValidationError)
+    async def profile_validation(
+        request: Request, error: ProfileValidationError
+    ) -> JSONResponse:
+        return _safe_error(
+            request,
+            code="profile_not_accepted",
+            message="The profile did not meet the data quality policy.",
+            status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
+            fields={error.field: [error.reason]},
+        )
+
     @app.exception_handler(Exception)
     async def unexpected_error(request: Request, _error: Exception) -> JSONResponse:
         logger.error(
@@ -423,7 +486,181 @@ def create_app(
         return ProfileResponse(
             profile_id=profile.profile_id,
             display_name=profile.display_name,
+            professional_summary=profile.professional_summary,
+            version=profile.version,
+            skills=[skill.name for skill in profile.skills],
+            experiences=[],
+            education=[],
         )
+
+    @app.get(
+        "/api/v1/profiles/{profile_id}",
+        response_model=ProfileResponse,
+        responses={
+            401: {"model": ErrorResponse},
+            403: {"model": ErrorResponse},
+            404: {"model": ErrorResponse},
+        },
+        tags=["profiles"],
+    )
+    async def get_profile(profile_id: str, request: Request) -> Response:
+        context = request_context(request)
+        try:
+            profile = service.get_profile(context, profile_id)
+        except ProfileNotFoundError:
+            return _safe_error(
+                request,
+                code="profile_not_found",
+                message="The profile is unavailable.",
+                status_code=status.HTTP_404_NOT_FOUND,
+            )
+        return JSONResponse(
+            content=ProfileResponse(
+                profile_id=profile.profile_id,
+                display_name=profile.display_name,
+                professional_summary=profile.professional_summary,
+                version=profile.version,
+                skills=[skill.name for skill in profile.skills],
+                experiences=[
+                    ExperienceContract.model_validate(item, from_attributes=True)
+                    for item in profile.experiences
+                ],
+                education=[
+                    EducationContract.model_validate(item, from_attributes=True)
+                    for item in profile.education
+                ],
+            ).model_dump()
+        )
+
+    @app.patch(
+        "/api/v1/profiles/{profile_id}",
+        response_model=ProfileResponse,
+        responses={
+            401: {"model": ErrorResponse},
+            403: {"model": ErrorResponse},
+            404: {"model": ErrorResponse},
+            409: {"model": ErrorResponse},
+            422: {"model": ErrorResponse},
+        },
+        tags=["profiles"],
+    )
+    async def update_profile(
+        profile_id: str, body: ProfileUpdateRequest, request: Request
+    ) -> Response:
+        context = request_context(request)
+        try:
+            profile = service.update_profile(
+                context,
+                profile_id,
+                display_name=body.display_name,
+                professional_summary=body.professional_summary,
+                skill_names=tuple(body.skills),
+                expected_version=body.expected_version,
+                experiences=tuple(
+                    Experience(
+                        title=item.title,
+                        organization=item.organization,
+                        start_date=item.start_date,
+                        end_date=item.end_date,
+                        description=item.description,
+                    )
+                    for item in body.experiences
+                ),
+                education=tuple(
+                    Education(
+                        institution=item.institution,
+                        qualification=item.qualification,
+                        start_date=item.start_date,
+                        end_date=item.end_date,
+                    )
+                    for item in body.education
+                ),
+            )
+        except ProfileNotFoundError:
+            return _safe_error(
+                request,
+                code="profile_not_found",
+                message="The profile is unavailable.",
+                status_code=status.HTTP_404_NOT_FOUND,
+            )
+        return JSONResponse(
+            content=ProfileResponse(
+                profile_id=profile.profile_id,
+                display_name=profile.display_name,
+                professional_summary=profile.professional_summary,
+                version=profile.version,
+                skills=[skill.name for skill in profile.skills],
+                experiences=[
+                    ExperienceContract.model_validate(item, from_attributes=True)
+                    for item in profile.experiences
+                ],
+                education=[
+                    EducationContract.model_validate(item, from_attributes=True)
+                    for item in profile.education
+                ],
+            ).model_dump()
+        )
+
+    @app.post(
+        "/api/v1/evidence",
+        response_model=EvidenceResponse,
+        status_code=status.HTTP_201_CREATED,
+        responses={
+            401: {"model": ErrorResponse},
+            403: {"model": ErrorResponse},
+            404: {"model": ErrorResponse},
+            422: {"model": ErrorResponse},
+        },
+        tags=["evidence"],
+    )
+    async def add_evidence(
+        body: EvidenceCreateRequest, request: Request
+    ) -> EvidenceResponse:
+        item = service.add_evidence(
+            request_context(request),
+            body.profile_id,
+            title=body.title,
+            filename=body.filename,
+            media_type=body.media_type,
+            size_bytes=body.size_bytes,
+        )
+        return EvidenceResponse(
+            evidence_id=item.evidence_id,
+            profile_id=item.profile_id,
+            title=item.title,
+            filename=item.filename,
+            media_type=item.media_type,
+            size_bytes=item.size_bytes,
+            state=item.state,
+            version=item.version,
+        )
+
+    @app.get(
+        "/api/v1/profiles/{profile_id}/evidence",
+        response_model=list[EvidenceResponse],
+        responses={
+            401: {"model": ErrorResponse},
+            403: {"model": ErrorResponse},
+            404: {"model": ErrorResponse},
+        },
+        tags=["evidence"],
+    )
+    async def list_evidence(
+        profile_id: str, request: Request
+    ) -> list[EvidenceResponse]:
+        return [
+            EvidenceResponse(
+                evidence_id=item.evidence_id,
+                profile_id=item.profile_id,
+                title=item.title,
+                filename=item.filename,
+                media_type=item.media_type,
+                size_bytes=item.size_bytes,
+                state=item.state,
+                version=item.version,
+            )
+            for item in service.list_evidence(request_context(request), profile_id)
+        ]
 
     @app.post(
         "/api/v1/analyses",
