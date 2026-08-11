@@ -1,9 +1,22 @@
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import axe from "axe-core";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import HomePage from "./page";
 
+const ADA_SESSION = {
+  access_token: "synthetic-opaque-token",
+  token_type: "Bearer",
+  actor_id: "actor-ada",
+  display_name: "Ada Example",
+  tenants: [
+    {
+      tenant_id: "tenant-ada",
+      display_name: "Ada's personal workspace",
+      role: "owner",
+    },
+  ],
+};
 const PROFILE = { profile_id: "profile-001" };
 const ANALYSIS = {
   analysis_id: "analysis-001",
@@ -15,7 +28,7 @@ const ANALYSIS = {
   correlation_id: "00000000-0000-4000-8000-000000000002",
 };
 
-function jsonResponse(body: unknown, status = 201): Response {
+function jsonResponse(body: unknown, status = 200): Response {
   return new Response(JSON.stringify(body), {
     status,
     headers: { "Content-Type": "application/json" },
@@ -27,7 +40,7 @@ afterEach(() => {
 });
 
 describe("HomePage", () => {
-  it("has no automatic accessibility violations in its initial state", async () => {
+  it("has no automatic accessibility violations on the local login view", async () => {
     const { container } = render(<HomePage />);
 
     const results = await axe.run(container, {
@@ -37,55 +50,63 @@ describe("HomePage", () => {
     expect(results.violations).toEqual([]);
   });
 
-  it("crosses the UI client contract and renders the deterministic result", async () => {
+  it("logs in locally and runs the tenant-authorized journey", async () => {
     const fetchMock = vi
       .spyOn(globalThis, "fetch")
-      .mockResolvedValueOnce(jsonResponse(PROFILE))
-      .mockResolvedValueOnce(jsonResponse(ANALYSIS));
+      .mockResolvedValueOnce(jsonResponse(ADA_SESSION))
+      .mockResolvedValueOnce(jsonResponse(PROFILE, 201))
+      .mockResolvedValueOnce(jsonResponse(ANALYSIS, 201));
     render(<HomePage />);
 
-    fireEvent.click(
-      screen.getByRole("button", { name: "Run deterministic comparison" }),
-    );
+    fireEvent.click(screen.getByRole("button", { name: "Start local session" }));
+    expect(await screen.findByText(/Ada's personal workspace/)).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Run authorized comparison" }));
 
     expect(
       await screen.findByRole("heading", {
         name: "Placeholder analysis for Ada Example",
       }),
     ).toBeInTheDocument();
-    expect(screen.getByText("accessible")).toBeInTheDocument();
-    expect(
-      screen.getByText(/00000000-0000-4000-8000-000000000002/),
-    ).toBeInTheDocument();
-    expect(fetchMock).toHaveBeenCalledTimes(2);
-    expect(fetchMock.mock.calls[0]?.[0]).toBe("http://127.0.0.1:8000/api/v1/profiles");
+    const profileHeaders = fetchMock.mock.calls[1]?.[1]?.headers;
+    expect(profileHeaders).toMatchObject({
+      Authorization: "Bearer synthetic-opaque-token",
+      "X-CareerPilot-Tenant-ID": "tenant-ada",
+    });
   });
 
-  it("shows a safe API error and its correlation ID", async () => {
-    vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(
-      jsonResponse(
-        {
-          error: {
-            message: "Please correct the highlighted fields and try again.",
-            correlation_id: "00000000-0000-4000-8000-000000000003",
+  it("shows a safe authorization denial for a member audit request", async () => {
+    const samSession = {
+      ...ADA_SESSION,
+      actor_id: "actor-sam",
+      display_name: "Sam Example",
+      tenants: [{ ...ADA_SESSION.tenants[0], role: "member" }],
+    };
+    vi.spyOn(globalThis, "fetch")
+      .mockResolvedValueOnce(jsonResponse(samSession))
+      .mockResolvedValueOnce(
+        jsonResponse(
+          {
+            error: {
+              message: "You do not have permission to perform this action.",
+              correlation_id: "00000000-0000-4000-8000-000000000003",
+            },
           },
-        },
-        422,
-      ),
-    );
+          403,
+        ),
+      );
     render(<HomePage />);
 
+    fireEvent.change(screen.getByLabelText("Local development identity"), {
+      target: { value: "sam" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Start local session" }));
     fireEvent.click(
-      screen.getByRole("button", { name: "Run deterministic comparison" }),
+      await screen.findByRole("button", { name: "View tenant audit events" }),
     );
 
-    await waitFor(() => {
-      expect(
-        screen.getByRole("heading", {
-          name: "We could not complete the comparison",
-        }),
-      ).toBeInTheDocument();
-    });
+    expect(
+      await screen.findByRole("heading", { name: "The action was not completed" }),
+    ).toBeInTheDocument();
     expect(
       screen.getByText(/00000000-0000-4000-8000-000000000003/),
     ).toBeInTheDocument();

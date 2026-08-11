@@ -47,3 +47,16 @@ be updated as concrete components and data flows are implemented.
 Zero Trust, least privilege, defense in depth, secure defaults, fail closed for
 authorization, visible degradation for optional providers, immutable approved
 versions, and synthetic test data.
+
+## Phase 3 control evidence
+
+- TM-001: a provider-neutral verifier port and local-only synthetic session adapter
+  exist; live OIDC, MFA, and production credential controls remain open.
+- TM-002: tenant/role context derives from server-side active membership; forged
+  tenant tests deny.
+- TM-003/TM-007: API, service, policy, and repository checks cover ownership,
+  foreign tenants, same-tenant IDOR, and non-enumerating responses.
+- TM-006: success and denial events are correlated, tenant-filtered, frozen, and
+  hash-chained. Durable signed/anchored audit remains open.
+- TM-014/TM-015: document/tool/coach permissions require resource context and
+  delegation; those features remain inactive.

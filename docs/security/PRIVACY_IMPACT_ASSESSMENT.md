@@ -73,6 +73,16 @@ subprocessors remain `LEGAL REVIEW`.
 - Third-party personal information contained in evidence.
 - International provider processing not understood by the user.
 
+## Phase 3 identity and audit note
+
+The local adapter uses only fictional identities and pseudonymous stable IDs.
+Tokens and submitted career content are excluded from audit events. Tenant audit
+views require owner permission and show only their derived tenant. Organization
+and coach data processing is not activated. Production identity verification,
+staff access, audit/security retention, lawful basis, data-subject verification,
+and delegation confidentiality remain `LEGAL REVIEW` under LEG-001, LEG-002,
+LEG-004, and LEG-006.
+
 ## Required legal reviews
 
 See `LEG-001` through `LEG-008` in `docs/product/REQUIREMENTS.md`.

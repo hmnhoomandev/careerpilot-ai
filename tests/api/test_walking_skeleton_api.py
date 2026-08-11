@@ -7,7 +7,12 @@ import uuid
 from fastapi.testclient import TestClient
 
 from careerpilot_api import create_app
-from careerpilot_core import CareerJourneyService, ProfessionalProfile
+from careerpilot_core import (
+    AuthorizationContext,
+    CareerJourneyService,
+    ProfessionalProfile,
+)
+from tests.api.helpers import login_headers
 
 
 class FailingJourneyService(CareerJourneyService):
@@ -17,9 +22,12 @@ class FailingJourneyService(CareerJourneyService):
         pass
 
     def create_profile(
-        self, display_name: str, professional_summary: str
+        self,
+        context: AuthorizationContext,
+        display_name: str,
+        professional_summary: str,
     ) -> ProfessionalProfile:
-        del display_name, professional_summary
+        del context, display_name, professional_summary
         raise RuntimeError
 
 
@@ -32,9 +40,11 @@ def test_health_and_readiness_are_separate() -> None:
 def test_invalid_profile_returns_safe_structured_error() -> None:
     correlation_id = str(uuid.uuid4())
     with TestClient(create_app()) as client:
+        headers = login_headers(client)
+        headers["X-Correlation-ID"] = correlation_id
         response = client.post(
             "/api/v1/profiles",
-            headers={"X-Correlation-ID": correlation_id},
+            headers=headers,
             json={"display_name": "A", "professional_summary": "too short"},
         )
 
@@ -55,8 +65,10 @@ def test_invalid_profile_returns_safe_structured_error() -> None:
 
 def test_unknown_profile_returns_safe_not_found() -> None:
     with TestClient(create_app()) as client:
+        headers = login_headers(client)
         response = client.post(
             "/api/v1/analyses",
+            headers=headers,
             json={
                 "profile_id": "missing",
                 "job_description": (
@@ -73,8 +85,10 @@ def test_unknown_profile_returns_safe_not_found() -> None:
 def test_unexpected_error_is_safe_and_correlated() -> None:
     app = create_app(service_factory=FailingJourneyService)
     with TestClient(app, raise_server_exceptions=False) as client:
+        headers = login_headers(client)
         response = client.post(
             "/api/v1/profiles",
+            headers=headers,
             json={
                 "display_name": "Private Example",
                 "professional_summary": (

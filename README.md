@@ -1,9 +1,9 @@
 # CareerPilot AI
 
 CareerPilot AI is an evidence-grounded, human-controlled career intelligence and
-job-application platform. The repository is currently in Phase 2: a deterministic
-local walking skeleton. It contains one synthetic profile-to-job comparison path
-and makes no model or external-provider calls.
+job-application platform. The repository is currently in Phase 3: a local
+multi-tenant security foundation around the deterministic journey. It uses only
+synthetic identities and makes no model or external-provider calls.
 
 Start with:
 
@@ -15,6 +15,7 @@ Start with:
 - [Roadmap](docs/project/ROADMAP.md)
 - [Phase 1 review](docs/reviews/phase-01-review.md)
 - [Phase 2 tutorial](docs/tutorials/phase-02-deterministic-walking-skeleton.md)
+- [Phase 3 tutorial](docs/tutorials/phase-03-local-identity-and-authorization.md)
 
 ## Development quick start
 
@@ -31,8 +32,9 @@ Start the local API and web application together with:
 make dev
 ```
 
-Open `http://127.0.0.1:3000`. The profile repository is process-local: restarting
-the API deletes the temporary profiles created during this phase.
+Open `http://127.0.0.1:3000`. Choose Ada, Grace, or Sam as a synthetic local user.
+Sessions, memberships, profiles, and audit events are process-local and reset when
+the API restarts. This is not a production login.
 
 The complete macOS and VS Code guide is in
 [`docs/tutorials/phase-01-developer-setup.md`](docs/tutorials/phase-01-developer-setup.md).

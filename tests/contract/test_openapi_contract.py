@@ -8,12 +8,17 @@ from careerpilot_api import create_app
 
 
 @pytest.mark.contract
-def test_openapi_contains_phase2_paths_and_error_contract() -> None:
+def test_openapi_contains_phase3_paths_and_error_contract() -> None:
     schema = create_app().openapi()
 
-    assert schema["info"]["version"] == "0.2.0"
+    assert schema["info"]["version"] == "0.3.0"
     assert set(schema["paths"]) == {
         "/api/v1/analyses",
+        "/api/v1/audit-events",
+        "/api/v1/dev/sessions",
+        "/api/v1/dev/users",
+        "/api/v1/me",
+        "/api/v1/memberships/{actor_id}",
         "/api/v1/profiles",
         "/health/live",
         "/health/ready",

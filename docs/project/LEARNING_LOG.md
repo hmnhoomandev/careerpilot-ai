@@ -78,3 +78,29 @@ Remaining gaps intentionally deferred:
 - Durable PostgreSQL storage, migrations, and profile evidence (Phase 4).
 - Evaluated retrieval, agents, models, and workflow durability (Phases 5–12).
 - Production telemetry export, SLO measurement, and cost routing (Phase 15).
+
+## Phase 3
+
+Concepts introduced:
+
+- Authentication versus authorization and external identity versus internal actor.
+- Personal tenant, membership, role, permission, and server-derived context.
+- RBAC candidate permissions followed by contextual ABAC and deny-by-default.
+- Ownership, explicit delegation, sensitivity, purpose, state, and IDOR controls.
+- Layered API, service, repository, document, and tool authorization.
+- Local opaque bearer sessions versus a production OIDC verifier port.
+- Append-only immutable audit values, hash chaining, and tenant-filtered views.
+- Non-enumerating cross-tenant responses and last-owner invariants.
+
+Tutorial: `docs/tutorials/phase-03-local-identity-and-authorization.md`
+
+Exercises: `docs/exercises/phase-03-exercises.md`
+
+Answers: `docs/exercises/phase-03-answers.md`
+
+Remaining gaps intentionally deferred:
+
+- Live OIDC provider validation, MFA, recovery, and production sessions.
+- Durable tenant/profile/audit persistence and migrations (Phase 4+).
+- Activated organization and explicit coach delegation workflows (later).
+- Audit retention, signing/anchoring, incident access, and legal review (Phase 16+).

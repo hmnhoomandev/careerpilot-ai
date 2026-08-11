@@ -14,3 +14,8 @@ sensitivity, action, and resource state. Deny by default.
 
 Provider subjects map to internal actors; domain code never imports provider SDKs.
 Authorization is enforced at every boundary and tested for cross-tenant access.
+
+Phase 3 implements the provider-neutral port, server-derived membership context,
+central RBAC/ABAC policy, and local-only adapter. ADR-0015 records concrete local
+session, tenant, role, resource, and audit decisions. A live production OIDC
+adapter remains unimplemented.

@@ -1,11 +1,11 @@
 # Project State
 
 - **Project:** CareerPilot AI
-- **Current phase:** Phase 2 — deterministic walking skeleton
+- **Current phase:** Phase 3 — identity, tenancy, authorization, and audit
 - **Phase status:** Implementation and verification complete; awaiting owner acceptance
 - **Last updated:** 2026-08-10
-- **Working tree at phase start:** Clean at `5c74107` on `main`, tracking `origin/main`
-- **Production code:** Phase 1 foundation plus the approved Phase 2 slice in progress
+- **Working tree at phase start:** Clean at `5f2386a` on `main`, tracking `origin/main`
+- **Production code:** Accepted deterministic slice plus Phase 3 security foundation in progress
 - **Cloud resources created:** None
 - **Paid calls made:** None
 
@@ -54,6 +54,6 @@
 
 ## Next action
 
-Review `docs/reviews/phase-02-review.md` and stop for:
+Review `docs/reviews/phase-03-review.md` and stop for:
 
-`APPROVE PHASE 2 AND START PHASE 3`
+`APPROVE PHASE 3 AND START PHASE 4`

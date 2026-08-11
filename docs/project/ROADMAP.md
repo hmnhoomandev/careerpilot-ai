@@ -4,8 +4,8 @@
 |---:|---|---|
 | 0 | Product discovery and architecture baseline | Accepted |
 | 1 | Repository foundation and developer experience | Accepted |
-| 2 | Deterministic walking skeleton | Awaiting acceptance |
-| 3 | Identity, tenancy, authorization, and audit | Not started |
+| 2 | Deterministic walking skeleton | Accepted |
+| 3 | Identity, tenancy, authorization, and audit | Awaiting acceptance |
 | 4 | PostgreSQL profile and evidence library | Not started |
 | 5 | Secure document ingestion and evaluated RAG | Not started |
 | 6 | Typed tools, MCP, contracts, and policy | Not started |

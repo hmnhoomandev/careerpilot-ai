@@ -10,6 +10,8 @@ class ProfessionalProfile:
     """A minimal local profile; richer evidence belongs to Phase 4."""
 
     profile_id: str
+    tenant_id: str
+    owner_actor_id: str
     display_name: str
     professional_summary: str
 
@@ -20,6 +22,7 @@ class JobAnalysis:
 
     analysis_id: str
     profile_id: str
+    tenant_id: str
     headline: str
     summary: str
     shared_terms: tuple[str, ...]

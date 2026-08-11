@@ -8,6 +8,30 @@ export type AnalysisResult = {
   correlation_id: string;
 };
 
+export type TenantSummary = {
+  tenant_id: string;
+  display_name: string;
+  role: string;
+};
+
+export type LocalSession = {
+  access_token: string;
+  token_type: "Bearer";
+  actor_id: string;
+  display_name: string;
+  tenants: TenantSummary[];
+};
+
+export type AuditEvent = {
+  event_id: string;
+  occurred_at: string;
+  actor_id: string;
+  action: string;
+  outcome: string;
+  reason: string;
+  correlation_id: string;
+};
+
 type ProfileResponse = {
   profile_id: string;
 };
@@ -47,13 +71,15 @@ async function parseResponse<T>(response: Response): Promise<T> {
 }
 
 export async function runDeterministicJourney(input: {
+  session: LocalSession;
+  tenantId: string;
   displayName: string;
   professionalSummary: string;
   jobDescription: string;
 }): Promise<AnalysisResult> {
   const profileResponse = await fetch(`${API_BASE_URL}/api/v1/profiles`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: authenticatedHeaders(input.session, input.tenantId),
     body: JSON.stringify({
       display_name: input.displayName,
       professional_summary: input.professionalSummary,
@@ -63,11 +89,55 @@ export async function runDeterministicJourney(input: {
 
   const analysisResponse = await fetch(`${API_BASE_URL}/api/v1/analyses`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: authenticatedHeaders(input.session, input.tenantId),
     body: JSON.stringify({
       profile_id: profile.profile_id,
       job_description: input.jobDescription,
     }),
   });
   return parseResponse<AnalysisResult>(analysisResponse);
+}
+
+function authenticatedHeaders(
+  session: LocalSession,
+  tenantId: string,
+): Record<string, string> {
+  return {
+    Authorization: `Bearer ${session.access_token}`,
+    "Content-Type": "application/json",
+    "X-CareerPilot-Tenant-ID": tenantId,
+  };
+}
+
+export async function loginLocalUser(localUserId: string): Promise<LocalSession> {
+  const response = await fetch(`${API_BASE_URL}/api/v1/dev/sessions`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ local_user_id: localUserId }),
+  });
+  return parseResponse<LocalSession>(response);
+}
+
+export async function loadAuditEvents(
+  session: LocalSession,
+  tenantId: string,
+): Promise<AuditEvent[]> {
+  const response = await fetch(`${API_BASE_URL}/api/v1/audit-events`, {
+    headers: authenticatedHeaders(session, tenantId),
+  });
+  return parseResponse<AuditEvent[]>(response);
+}
+
+export async function changeLocalRole(
+  session: LocalSession,
+  tenantId: string,
+  actorId: string,
+  role: "owner" | "member",
+): Promise<void> {
+  const response = await fetch(`${API_BASE_URL}/api/v1/memberships/${actorId}`, {
+    method: "PATCH",
+    headers: authenticatedHeaders(session, tenantId),
+    body: JSON.stringify({ role }),
+  });
+  await parseResponse(response);
 }

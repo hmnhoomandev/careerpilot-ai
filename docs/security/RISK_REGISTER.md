@@ -9,6 +9,8 @@ not named individuals.
 | RSK-002 | Cross-tenant disclosure | Medium | Critical | Deny default, tenant queries, IDOR/retrieval/tool tests | Security | Open |
 | RSK-003 | Sensitive data leaks through telemetry/provider | Medium | Critical | Synthetic data, minimization, redaction, content-off tracing | Privacy/Platform | Open |
 | RSK-004 | Scope across 21 phases becomes unmaintainable | High | High | Phase gates, vertical slices, explicit exclusions, modular core | Product/Architecture | Mitigated |
+| RSK-005 | Development authentication is mistaken for production security | Medium | Critical | Local-only construction gate, synthetic UI warning, no password/provider emulation, production OIDC port | Security | Mitigated locally; production open |
+| RSK-006 | In-memory audit chain is rewritten by a privileged process | Medium | High | Frozen values, hash integrity checks; durable restricted store and signing/anchoring review later | Security/Legal | Open |
 | RSK-005 | CHF 0 blocks managed-service/live-model verification | High | Medium | Fakes/emulators; stop and present cost proposal when unavoidable | Owner/Platform | Accepted constraint |
 | RSK-006 | Zurich lacks a required service/feature | Medium | High | Service-by-service check and documented EU exception | Platform/Privacy | Open |
 | RSK-007 | Framework/API churn breaks planned integration | High | Medium | Pin versions, adapters, phase-time doc verification, contract tests | Architecture | Open |

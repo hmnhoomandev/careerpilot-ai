@@ -204,3 +204,92 @@ application, and temporary persistence boundaries without agents or live models.
 Complete `docs/reviews/phase-02-review.md`, report exact evidence, and wait for:
 
 `APPROVE PHASE 2 AND START PHASE 3`
+
+## Completed implementation plan: Phase 3
+
+**Objective:** establish a multi-tenant, deny-by-default security foundation with
+provider-neutral identity, layered authorization, and auditable access.
+
+### Scope and acceptance mapping
+
+- Model actors, personal/future organization tenants, memberships, roles,
+  permissions, policy inputs/decisions, delegations, and audit events.
+- Define an OIDC-compatible identity-verifier port and a local-only development
+  session adapter using synthetic users and opaque process-local tokens.
+- Derive tenant context from authenticated memberships and reject forged tenant
+  selection.
+- Enforce RBAC plus contextual ABAC at API, application, and repository layers.
+- Add document/tool permission decisions now, with features remaining inactive.
+- Add hash-chained append-only audit evidence and an authorized audit viewer.
+- Cover SEC-001–SEC-005 and relevant NFR/API/audit requirements with source and
+  test evidence while flagging production identity and legal retention review.
+
+### Expected files
+
+- Identity/access/audit domain modules and policy tests under `packages/core/`.
+- Local identity/session, tenant-safe repository, audit adapter, request context,
+  versioned contracts, and routes under `apps/api/`.
+- Local user/tenant controls and audit viewer under `apps/web/`.
+- Permission, cross-tenant, IDOR, deny-default, audit, and error-contract tests.
+- ADR, threat/privacy updates, annotated source, tutorial, exercises, traceability,
+  learning log, and `docs/reviews/phase-03-review.md`.
+
+### Architecture, security, and privacy decisions
+
+- Authentication proves an external subject; internal membership determines
+  tenant context and authority.
+- The client may request an active tenant ID but cannot assert membership, role,
+  actor ID, or permissions.
+- RBAC grants a candidate action; ABAC must also allow tenant, ownership,
+  delegation, purpose, sensitivity, and resource state. Any missing rule denies.
+- Personal tenants are active initially. Organization and coach types exist in
+  the model but their product workflows remain disabled.
+- Local sessions are random, process-local, non-cookie bearer tokens and are
+  refused outside the `local` environment. They are not production credentials.
+- Audit payloads exclude career content and use stable IDs/action/outcome/reason;
+  events are append-only and SHA-256 hash-chained in this temporary adapter.
+- Cross-tenant identifiers return a non-enumerating response while recording a
+  security denial.
+
+### Risks and mitigations
+
+- Header spoofing: resolve every actor/tenant/role server-side from the session.
+- IDOR: scope repositories by authorized context and test foreign identifiers.
+- Role confusion: centralize permission mappings and exhaustively matrix-test.
+- Policy bypass: require context at service/repository methods and retain API
+  guards; architecture tests reject insecure signatures/import directions.
+- Audit PII/tampering: allow-list metadata, pseudonymous IDs, hash chaining, and
+  completeness/integrity tests; final retention needs professional legal review.
+- Development auth misuse: local-only environment gate, loopback services,
+  prominent UI/docs warning, and no password/OIDC-provider imitation.
+
+### Automated verification
+
+- Permission matrix and unrecognized-action deny tests.
+- Authentication, membership, tenant-forgery, role-change, and error-contract tests.
+- Cross-tenant read/write and IDOR tests at API, service, and repository layers.
+- Audit success/denial/completeness/hash-integrity/viewer-authorization tests.
+- Existing deterministic journey, OpenAPI, frontend, accessibility, build,
+  security, dependency, documentation, and architecture gates.
+
+### Manual verification
+
+- Log in as synthetic users belonging to different personal tenants.
+- Create data in each tenant and verify the other user cannot access it.
+- Change a synthetic membership role and observe permission changes.
+- Inspect correlated success and denial events in the audit viewer.
+- Restart and confirm local sessions, data, and audit events are intentionally lost.
+
+### Exclusions
+
+- Google Identity Platform resource creation, live OIDC calls, passwords, MFA,
+  email verification, account recovery, or production key management.
+- Activated organization administration or coach delegation workflows.
+- PostgreSQL schemas/migrations, durable sessions/audit, or production retention.
+- Documents, retrieval, tools, models, agents, cloud resources, or paid services.
+
+### Stop condition
+
+Complete `docs/reviews/phase-03-review.md`, report exact evidence, and wait for:
+
+`APPROVE PHASE 3 AND START PHASE 4`

@@ -20,6 +20,11 @@
 | NFR-011 | Logs, traces, errors, and runbook impact for new behavior | Metadata-only JSON logs, safe errors, health paths, tutorial | Observability unit and API tests | Implemented for Phase 2 behavior |
 | NFR-017 | Accessible English-first UI behavior | Labeled bounded inputs, focus styles, live result/error region | Testing Library and axe-core smoke test | Implemented for Phase 2 page |
 | SEC-009/SEC-014 | PII-safe telemetry and synthetic development data | Allow-listed log fields, no request bodies/spans, synthetic fixtures | Formatter exclusion and journey tests | Implemented Phase 2 foundation |
+| SEC-001 | OIDC/provider abstraction and safe local development adapter | `IdentityVerifier`, `ExternalIdentity`, `InMemoryIdentityAccess` | Local environment gate and context tests | Implemented boundary; live production adapter deferred |
+| SEC-002 | Deny-default RBAC plus contextual ABAC | `Role`, `Permission`, `AccessPolicy`, resource attributes | Exhaustive permission matrix and ABAC tests | Verified Phase 3 foundation |
+| SEC-003/SEC-004 | Tenant isolation at activated API/service/repository boundaries; document/tool policy foundation | Auth middleware, authorized service, tenant repository, fail-closed permissions | Forgery, cross-tenant, same-tenant IDOR, repository, document/tool tests | Verified for active Phase 3 boundaries |
+| SEC-005 | Auditable security success/denial and tamper-evident design | Frozen audit events, SHA-256 chain, authorized tenant viewer | Completeness, filtering, role, denial, last-owner, integrity tests | Implemented temporary foundation; durable/signed audit deferred |
+| NFR-009/NFR-011 | Versioned identity/audit/error contracts and operational evidence | API v0.3, 401/403/404/409 envelopes, correlation/audit actions | OpenAPI and API contract tests | Implemented for Phase 3 APIs |
 
 ## Mapping rules for future phases
 
