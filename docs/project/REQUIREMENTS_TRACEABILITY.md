@@ -43,6 +43,9 @@
 | FR-008/FR-009 | ADR-0020 evidence-linked versioned drafts | Claim/citation graph, immutable resume/letter versions, blocked edits | Draft API, invented-claim, citation tests | Verified deterministic Phase 8 scope |
 | FR-011/FR-012/FR-020 | Exact-version approval state machine | PostgreSQL records, version/hash/revision binding, LangGraph interrupt, A2UI messages | Transition, stale/concurrent, restart/resume, protocol tests | Verified locally with PostgreSQL |
 | SEC-003/SEC-006/SEC-007/SEC-009 | Draft privacy/truth/tenant controls | Tenant repository predicates, PII/bias gates, metadata audit | Cross-tenant, PII/policy, audit, PostgreSQL tests | Phase 8 baseline verified; legal review open |
+| FR-013/FR-014 | ADR-0021 bounded company/job research | Isolated ADK agent, approved-source tool, structured cited result | ADK unit/API contract/citation tests | Verified for supplied-source fake-first scope |
+| SEC-003/SEC-006/SEC-010/SEC-011 | ADK service and model boundary | Service identity, scoped sessions, safety callback, consent/transfer gate, no fallback | Injection, cross-tenant, disabled/live-denial tests | Phase 9 local baseline verified |
+| NFR-003/NFR-009/NFR-010/NFR-012 | Cost-safe specialist reliability | Fake default, stable timeout/quota/outage errors, metadata metrics, opt-in live marker | Failure injection, OpenAPI, live skip tests | Verified locally; production telemetry/deployment deferred |
 
 ## Mapping rules for future phases
 

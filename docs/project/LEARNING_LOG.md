@@ -177,3 +177,17 @@ Tutorial: `docs/tutorials/phase-08-truthful-drafts-and-approval.md`
 Exercises: `docs/exercises/phase-08-exercises.md`
 
 Answers: `docs/exercises/phase-08-answers.md`
+
+## Phase 9 — Google ADK specialist boundary
+
+- Used official prototype scaffolding as a reference without importing deployment/A2A.
+- Built a request-scoped ADK `Agent`/`App`, tool closure, schema, callback, and session.
+- Distinguished framework sessions from authorization, durable business state, and audit.
+- Practiced explicit provider selection, no fallback, cost/consent gates, stable failures,
+  citation post-validation, and metadata-only telemetry.
+
+Tutorial: `docs/tutorials/phase-09-adk-versus-langgraph.md`
+
+Exercises: `docs/exercises/phase-09-exercises.md`
+
+Answers: `docs/exercises/phase-09-answers.md`

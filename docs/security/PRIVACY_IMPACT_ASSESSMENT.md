@@ -121,6 +121,15 @@ authorization, purpose, consent where required, minimization/redaction, provider
 training/retention policy, region, logging, cost authorization, and deletion handling.
 Phase 7 performs no external transfer.
 
+## Phase 9 ADK/Gemini boundary
+
+The specialist accepts minimized source excerpts that may contain career/company data.
+Default fake execution is local. Telemetry stores identifiers, provider, outcome, and
+source count—not questions or excerpts. A live Gemini request is denied unless consent
+and transfer authorization are recorded and cost is separately approved. Provider
+training/retention terms, region, lawful basis, deletion, data-subject rights, workload
+identity, and final retention require professional review before customer-data use.
+
 ## Phase 8 draft and approval boundary
 
 Draft content and citations are high-risk personal data. PostgreSQL stores structured

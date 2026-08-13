@@ -1,11 +1,11 @@
 # Project State
 
 - **Project:** CareerPilot AI
-- **Current phase:** Phase 8 — human approval and truthful document generation
+- **Current phase:** Phase 9 — bounded Google ADK/Gemini specialist
 - **Phase status:** Complete — awaiting owner acceptance
 - **Last updated:** 2026-08-13
-- **Working tree at phase start:** Clean at `b5a3622` on `main`
-- **Production code:** Accepted through Phase 7; Phase 8 implementation complete
+- **Working tree at phase start:** Clean at `5bd9945` on `main`
+- **Production code:** Accepted through Phase 8; Phase 9 implementation complete
 - **Cloud resources created:** None
 - **Paid calls made:** None
 
@@ -133,12 +133,6 @@
   validation passed. Python and npm audits found no known vulnerabilities.
 - No live model, external personal-data transfer, cloud resource, or paid call occurred.
 
-## Next action
-
-Review and accept Phase 8; then, and only then, start Phase 9 with:
-
-`APPROVE PHASE 8 AND START PHASE 9`
-
 ## Phase 8 implementation and verification evidence
 
 - Immutable resume/cover-letter versions contain only cited supported claims; invented
@@ -151,3 +145,22 @@ Review and accept Phase 8; then, and only then, start Phase 9 with:
 - Default Pytest passed 128 with 4 PostgreSQL skips; real PostgreSQL/pgvector passed all
   131 tests. Ruff, strict MyPy (82 files), and dependency audits passed.
 - No model, external data transfer, cloud resource, external action, or paid call occurred.
+
+## Phase 9 implementation and verification evidence
+
+- An isolated Google ADK 2.5 specialist researches only supplied/approved company or job
+  excerpts through a request-local tool and returns strict cited findings.
+- Fake execution is the default. Gemini requires explicit configuration, per-request
+  consent and transfer authorization, and separate cost approval; there is no fallback.
+- ADK sessions, structured output, pre-model safety callback, citation validation,
+  metadata telemetry, internal API identity, and stable provider errors are implemented.
+- Default Pytest passed 136 with four PostgreSQL skips and one intentionally skipped live
+  Gemini evaluation. Ruff and strict MyPy passed 91 source/test/script files.
+- No model call, personal-data transfer, cloud resource, deployment, billing change, or
+  paid operation occurred. ADK emits four upstream deprecation warnings during import.
+
+## Next action
+
+Review and accept Phase 9; then, and only then, start Phase 10 with:
+
+`APPROVE PHASE 9 AND START PHASE 10`

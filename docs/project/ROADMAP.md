@@ -10,8 +10,8 @@
 | 5 | Secure document ingestion and evaluated RAG | Accepted |
 | 6 | Typed tools, MCP, contracts, and policy | Accepted |
 | 7 | LangGraph core multi-agent analysis flow | Accepted |
-| 8 | Approval and truthful document generation | Complete — awaiting acceptance |
-| 9 | Bounded Google ADK/Gemini service | Not started |
+| 8 | Approval and truthful document generation | Accepted |
+| 9 | Bounded Google ADK/Gemini service | Complete — awaiting acceptance |
 | 10 | Bounded OpenAI Agents SDK service and handoff lab | Not started |
 | 11 | A2A interoperability and agent registry | Not started |
 | 12 | Temporal durable application workflow | Not started |

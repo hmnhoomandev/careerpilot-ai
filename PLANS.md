@@ -17,7 +17,93 @@ Every phase plan must state:
 
 Plans are living documents. Update status without erasing decisions or evidence.
 
-## Active implementation plan: Phase 8
+## Active implementation plan: Phase 9
+
+**Objective:** deliver an isolated, bounded Google ADK specialist service for
+company/job research over explicitly supplied sources, with fake-first execution and an
+explicitly authorized Gemini path.
+
+### Scope and acceptance mapping
+
+- Implement one ADK research specialist with structured cited output, per-session state,
+  allowlisted source tools, safety callbacks, and metadata-only telemetry.
+- Expose a narrow authenticated service API plus an in-process fake adapter used by the
+  main application and all default tests; disabling the specialist degrades explicitly.
+- Keep Google ADK/Gemini imports inside the specialist boundary. No unrestricted web
+  scraping, silent provider fallback, profile mutation, or external side effect.
+- Classify timeout, quota, malformed output, and provider outage into stable safe errors.
+- Provide an opt-in live Gemini evaluation that is skipped unless explicit configuration
+  and cost authorization are present.
+
+### Deliverables and expected files
+
+- A prototype-first ADK service workspace under `services/google-adk/`, including an
+  agents-cli manifest/spec, agent, tools, callbacks, session boundary, schemas, API,
+  telemetry, fake/live provider composition, and evaluation fixture.
+- Unit, service-contract, failure-injection, session-isolation, safety, structured-output,
+  citation, disabled-service, and opt-in live-evaluation tests.
+- An ADR, ADK-versus-LangGraph tutorial, annotated source, exercises/answers, threat/privacy
+  updates, requirements traceability, learning/state/roadmap updates, and phase review.
+- Pin official `google-adk>=2.5,<2.6` only after lock, license, compatibility, and audit
+  checks. Use Python 3.13 and no deployment dependencies.
+
+### Architecture, security, privacy, migration, deployment, and cost
+
+- The service receives minimized user-supplied company/job source excerpts with stable
+  source IDs. Its only tool retrieves from that request-local allowlist; citations must
+  bind every factual finding to one supplied source.
+- A deterministic fake provider is the default. Gemini requires an explicit enable flag,
+  consent/authorization metadata, configured model, timeout, and credentials; failures
+  never trigger fallback.
+- Session IDs are tenant/actor scoped and request content is not recorded in telemetry.
+  Structured schemas reject extra fields and safety callbacks reject prompt-injection,
+  unsupported-source, and sensitive-transfer violations before model execution.
+- Phase 9 creates no cloud resources, database migration, paid call, billing, deployment,
+  unrestricted browsing, or real-person data transfer. Live evaluation remains opt-in.
+
+### Risks and mitigations
+
+- Hallucinated research: closed source set, required citations, post-validation, and
+  fail-closed malformed/unsupported citation tests.
+- Cross-session or tenant leakage: scoped session keys, request-local tools, no global
+  source cache, authorization contract, and isolation tests.
+- Prompt injection and PII transfer: untrusted-data framing, deterministic inspection,
+  minimization/consent checks, and synthetic fixtures.
+- Provider instability/cost: bounded timeout, stable quota/outage errors, no retry or
+  fallback by default, fake tests, explicit live/cost gates, and metadata-only telemetry.
+- Framework coupling: service-only ADK imports and a typed HTTP/client contract keep the
+  core and FastAPI application independent.
+
+### Automated verification
+
+- Run focused fake/provider/service tests followed by complete Ruff, strict MyPy, Pytest,
+  web checks, build, dependency/security audits, secrets, docs/links/Mermaid, pre-commit,
+  governance validation, and complete diff review.
+- Keep live Gemini evaluation marked and skipped by default; record the exact opt-in
+  command without executing it in the CHF 0 workflow.
+
+### Manual verification
+
+- Run one synthetic fixture through fake configuration and inspect structured findings,
+  source citations, session metadata, and telemetry.
+- Disable the service and confirm explicit `specialist_unavailable` degradation.
+- With separate explicit cost/data approval, run the same fixture through Gemini and
+  compare its schema/citations; this is not authorized by the phase-start command.
+- Read and exercise the ADK-versus-LangGraph tutorial.
+
+### Explicit exclusions
+
+- Unrestricted web search/scraping, managed Google Search/RAG, real customer data, live or
+  paid model calls, cloud resources, deployment/IaC, durable production sessions, A2A,
+  OpenAI Agents SDK, Temporal, Pub/Sub, and Phase 10 work.
+
+### Stop condition
+
+Complete `docs/reviews/phase-09-review.md`, report exact evidence, and wait for:
+
+`APPROVE PHASE 9 AND START PHASE 10`
+
+## Completed implementation plan: Phase 8
 
 **Objective:** generate versioned resume and cover-letter drafts whose material claims
 are evidence-linked, then pause behind a durable, exact-version human approval gate.

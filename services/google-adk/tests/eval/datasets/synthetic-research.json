@@ -1,0 +1,15 @@
+{
+  "eval_cases": [
+    {
+      "eval_case_id": "supplied_source_grounding",
+      "prompt": {
+        "role": "user",
+        "parts": [
+          {
+            "text": "Using only source synthetic-job, identify an interview topic."
+          }
+        ]
+      }
+    }
+  ]
+}

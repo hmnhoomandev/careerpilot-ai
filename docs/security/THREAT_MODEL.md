@@ -111,3 +111,13 @@ versions, and synthetic test data.
 - Tenant/actor predicates prevent foreign draft and approval enumeration.
 - A2UI components/actions are allowlisted data and never server authority.
 - Draft content is absent from audit/logs; PII and bias flags remain visible for review.
+
+## Phase 9 Google ADK specialist controls
+
+- A request-local tool exposes only supplied source IDs; unknown citations fail closed.
+- Source text is rejected for known instruction patterns before the model and an ADK
+  callback repeats enforcement at the model boundary.
+- Tenant/actor/session keys isolate local results; the HTTP surface requires an internal
+  identity. Workload identity/mTLS remains required before deployment.
+- Gemini requires explicit selection, consent, transfer authorization, and cost approval;
+  timeout, quota, malformed output, and outage never trigger fallback.

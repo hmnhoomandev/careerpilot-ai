@@ -40,3 +40,5 @@ not named individuals.
 | RSK-025 | Gemini data/cost used without approval | Low | Critical | Disabled default, explicit transfer flag, opt-in live marker, no fallback | AI/Owner | Open |
 | RSK-026 | Human approval applies to changed draft | Low | Critical | Version/hash/revision binding and atomic compare-update | Security/Workflow | Mitigated locally |
 | RSK-027 | Draft persistence conflicts with privacy deletion | Medium | Critical | Source linkage, retention design, deletion propagation and legal review later | Privacy/Data | Open |
+| RSK-028 | ADK specialist cites unsupported or cross-session source data | Medium | Critical | Request-local tool, scoped session key, schema/citation validation, hostile tests | Security/AI | Mitigated locally |
+| RSK-029 | Gemini incurs cost or transfers personal data without authority | Low | Critical | Fake default, explicit provider, consent/transfer/cost gates, no fallback | Privacy/Owner | Open until production review |

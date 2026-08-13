@@ -30,3 +30,5 @@
 | DEC-026 | 2026-08-13 | Use fake provider by default and an explicitly authorized, no-fallback Google Gen AI adapter | Accepted | ADR-0019 |
 | DEC-027 | 2026-08-13 | Store immutable evidence-linked draft versions and bind approval to exact version/hash/revision | Accepted | ADR-0020 |
 | DEC-028 | 2026-08-13 | Use LangGraph interrupt for review interaction and PostgreSQL for authoritative restart-safe approval records | Accepted for Phase 8 | ADR-0020 |
+| DEC-029 | 2026-08-13 | Isolate Google ADK as a supplied-source research specialist with fake default and no fallback | Accepted for Phase 9 | ADR-0021 |
+| DEC-030 | 2026-08-13 | Upgrade OpenTelemetry API to 1.42.x for ADK 2.5 compatibility without enabling export | Accepted | ADR-0021 |
