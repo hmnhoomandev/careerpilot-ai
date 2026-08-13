@@ -33,6 +33,10 @@
 | SEC-003/SEC-004 | Retrieval data-boundary invariant | Tenant/owner/active/index predicates inside full-text and vector SQL | Cross-tenant pgvector integration and foreign-profile API tests | Verified for activated retrieval boundary |
 | SEC-008/SEC-010 | Upload, parser, and injection controls | Bounded validation/scanning plus visible `UNTRUSTED` labels | Rejection tests and versioned injection corpus | Baseline verified; production scanner/sandbox deferred |
 | NFR-013/NFR-019 | Evaluated, migrated retrieval | Versioned quality fixture and Alembic `0002` with GIN/HNSW indexes | Metrics gate, offline SQL, real migration/pgvector test | Verified locally |
+| SEC-003/SEC-004/SEC-011 | ADR-0018 tool boundary | Registry/executor authorization, strict schemas, timeout/retry, idempotency, rate limits, sanitization, safe errors, audit | All-tool API tests plus denial, timeout, duplicate, rate, and sanitization tests | Implemented for local Phase 6 scope |
+| SEC-017 | Tool abuse and denial-of-wallet design | Per-tenant/actor/tool local window plus bounded payload/timeout/retries | Rate-limit and exhausted-timeout tests | Local baseline; distributed enforcement deferred |
+| NFR-009 | Versioned capability contracts and MCP allowlist | API v0.6 discovery/invoke schemas and official MCP v1 server | OpenAPI plus in-memory MCP protocol discovery/call tests | Verified Phase 6 contract boundary |
+| FR-020 | Human approval before consequential action | `approval.request` creates pending metadata and executes nothing | Idempotent replay/conflict and catalog tests | Foundation only; durable approval lifecycle is Phase 8 |
 
 ## Mapping rules for future phases
 

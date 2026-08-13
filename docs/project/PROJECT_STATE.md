@@ -1,11 +1,11 @@
 # Project State
 
 - **Project:** CareerPilot AI
-- **Current phase:** Phase 5 — secure document ingestion and evaluated RAG
-- **Phase status:** Complete; awaiting owner acceptance
+- **Current phase:** Phase 6 — tools, MCP, contracts, and policy enforcement
+- **Phase status:** Complete — awaiting owner acceptance
 - **Last updated:** 2026-08-11
-- **Working tree at phase start:** Clean at `669db40` on `main`
-- **Production code:** Accepted Phase 4 foundation plus completed Phase 5 local retrieval candidate
+- **Working tree at phase start:** Clean at `a5dc1df` on `main`
+- **Production code:** Accepted through Phase 5; Phase 6 implementation complete
 - **Cloud resources created:** None
 - **Paid calls made:** None
 
@@ -77,6 +77,36 @@
 - Semgrep local rules completed with exit 0; detect-secrets and all 5 pre-commit
   hooks passed.
 
+## Phase 6 implementation state
+
+- A registry describes nine narrow typed tools for profile lookup, cited retrieval,
+  job ingestion, skill taxonomy, matching, evidence verification, pending approval,
+  audit lookup, and deterministic cost estimation.
+- One executor enforces strict input/output schemas, server-derived authorization,
+  bounded timeout/retry, scoped idempotency, process-local rate limits, output
+  sanitization, safe errors, and metadata-only audit decisions for HTTP and MCP.
+- MCP exposes only four allowlisted read-only capabilities over the local stdio
+  demonstration; high-risk, audit, matching, verification, and ingestion tools are
+  absent from protocol discovery.
+- The approval tool creates a pending request only and never performs the requested
+  action. All tools are deterministic and make no model, cloud, or paid call.
+- The application uses official MCP 1.28.1. Pinned Semgrep resolves separately through
+  `uvx` because its CLI dependency graph contains vulnerable MCP 1.23.3; that isolated
+  transitive package is absent from the application lock and runtime.
+
+## Phase 6 verification evidence
+
+- Python format/lint and strict MyPy passed for 60 source files.
+- Default Pytest passed 105 tests with 3 PostgreSQL-marked skips; a separate full run
+  against the real local PostgreSQL/pgvector container passed all 108 tests.
+- The official in-memory MCP protocol smoke initialized, listed the exact four-tool
+  allowlist, exchanged schemas, and invoked a read-only cost tool successfully.
+- Web Prettier, ESLint, TypeScript, 5 Vitest tests, and production build passed.
+- Markdown lint/link checks, 8 Mermaid renders, governance validation, Semgrep,
+  detect-secrets, and pre-commit passed.
+- Pip audit and both npm audits found no known vulnerabilities; the two unpublished
+  internal Python packages were expected pip-audit skips.
+
 ## Known blockers and constraints
 
 - Docker Desktop and the local PostgreSQL container must be running for marked
@@ -90,6 +120,6 @@
 
 ## Next action
 
-Review and manually accept Phase 5. Phase 6 remains stopped until:
+Review and accept Phase 6; then, and only then, start Phase 7 with:
 
-`APPROVE PHASE 5 AND START PHASE 6`
+`APPROVE PHASE 6 AND START PHASE 7`

@@ -102,3 +102,10 @@ Local confirmed deletion removes source bytes and active chunks/vectors, then ma
 document/evidence provenance deleted. The 30-day recoverable window, backups, legal
 holds, and final schedules remain unimplemented and require professional legal review.
 No certified or guaranteed GDPR/Swiss FADP compliance is claimed.
+
+## Phase 6 tool note
+
+Tool audit records contain tenant/actor IDs, capability name, outcome, reason, and
+correlation only. Arguments, profile/job text, retrieved passages, and outputs are not
+recorded. MCP is local stdio with synthetic identity; production OAuth, staff access,
+retention, and remote transport require later privacy/security and legal review.

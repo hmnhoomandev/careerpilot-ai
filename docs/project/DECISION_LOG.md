@@ -24,3 +24,5 @@
 | DEC-020 | 2026-08-11 | Accept evidence metadata only in Phase 4 and keep every item quarantined behind a scanner port | Accepted | ADR-0016 |
 | DEC-021 | 2026-08-11 | Use a bounded local document pipeline and deterministic hash vectors for the free Phase 5 baseline | Accepted for Phase 5 | ADR-0017 |
 | DEC-022 | 2026-08-11 | Authorize inside lexical/vector SQL and return cited untrusted passages without generated answers | Accepted | ADR-0017 |
+| DEC-023 | 2026-08-11 | Route every tool through one typed registry/executor with policy, idempotency, rate, timeout, output, and audit controls | Accepted | ADR-0018 |
+| DEC-024 | 2026-08-11 | Expose four read-only capabilities through an explicit official-SDK MCP allowlist | Accepted for Phase 6 | ADR-0018 |

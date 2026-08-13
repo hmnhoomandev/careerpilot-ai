@@ -81,3 +81,13 @@ versions, and synthetic test data.
   In-process decompression and parser vulnerabilities remain until production isolation.
 - Indirect instructions receive visible `suspected` labels and assembled context is
   `UNTRUSTED`; this does not prove undetected content is safe.
+
+## Phase 6 control evidence
+
+- TM-012 denial-of-wallet has bounded schemas, timeouts/retries, and per-actor/tenant/
+  tool local limits. Distributed quotas and provider budgets remain future controls.
+- TM-014 privilege escalation is constrained by registry allowlisting, generic and
+  tool-specific permissions, underlying resource checks, safe errors, and audit.
+- TM-016 prompt-triggered tool misuse is reduced by a four-tool read-only MCP allowlist;
+  retrieved outputs stay explicitly untrusted and cannot select new capabilities.
+- Idempotency keys prevent duplicate local mutations but are not durable across restart.

@@ -7,8 +7,8 @@
 | 2 | Deterministic walking skeleton | Accepted |
 | 3 | Identity, tenancy, authorization, and audit | Accepted |
 | 4 | PostgreSQL profile and evidence library | Accepted |
-| 5 | Secure document ingestion and evaluated RAG | Complete; awaiting acceptance |
-| 6 | Typed tools, MCP, contracts, and policy | Not started |
+| 5 | Secure document ingestion and evaluated RAG | Accepted |
+| 6 | Typed tools, MCP, contracts, and policy | Complete — awaiting acceptance |
 | 7 | LangGraph core multi-agent analysis flow | Not started |
 | 8 | Approval and truthful document generation | Not started |
 | 9 | Bounded Google ADK/Gemini service | Not started |

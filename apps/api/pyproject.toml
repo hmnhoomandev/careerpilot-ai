@@ -4,6 +4,7 @@ version = "0.1.0"
 description = "CareerPilot AI HTTP API package shell."
 requires-python = ">=3.13,<3.14"
 dependencies = [
+  "mcp>=1.28.1,<1.29",
   "alembic>=1.18,<1.19",
   "careerpilot-core",
   "fastapi>=0.135,<0.136",

@@ -131,3 +131,20 @@ Tutorial: `docs/tutorials/phase-05-secure-document-retrieval.md`
 Exercises: `docs/exercises/phase-05-exercises.md`
 
 Answers: `docs/exercises/phase-05-answers.md`
+
+## Phase 6 — Typed tools, policy, and MCP
+
+- Distinguished a narrow deterministic tool from an autonomous agent and from A2A.
+- Generated input/output JSON Schema from strict Pydantic contracts.
+- Centralized capability permissions, risk, timeout, retry, idempotency, rate, audit,
+  and MCP exposure metadata in one registry.
+- Practiced server-derived authorization, safe error taxonomies, output sanitization,
+  scoped replay, and bounded timeout retry.
+- Used the official MCP SDK with an explicit read-only allowlist and in-memory protocol
+  test while keeping the default workflow model-free and CHF 0.
+
+Tutorial: `docs/tutorials/phase-06-tools-and-mcp.md`
+
+Exercises: `docs/exercises/phase-06-exercises.md`
+
+Answers: `docs/exercises/phase-06-answers.md`

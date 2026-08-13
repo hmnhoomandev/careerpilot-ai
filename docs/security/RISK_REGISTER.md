@@ -19,6 +19,9 @@ not named individuals.
 | RSK-010 | In-process PDF parsing exhausts resources | Medium | High | Current strict limits; production parser isolation/time limits | Security | Reduced, open |
 | RSK-011 | Local scanner misses malicious content | High | High | No antivirus claim; production scanner required before deployment | Security | Open |
 | RSK-012 | Hash-vector collisions reduce precision | Medium | Medium | Similarity floor, lexical search, metrics; versioned provider replacement | Retrieval | Accepted locally |
+| RSK-013 | Tool registry exposes a privileged capability | Medium | Critical | Deny-default lookup, permissions, MCP equality allowlist, discovery tests | Security | Reduced, open |
+| RSK-014 | Process-local quotas/idempotency diverge across replicas | Certain in scale-out | High | Local-only label; durable/distributed store required before production | Platform | Open |
+| RSK-015 | MCP SDK/Pydantic compatibility warning or protocol drift | Medium | Medium | Exact pin, asserted warning, protocol smoke test, upgrade review trigger | Platform | Accepted temporarily |
 | RSK-010 | Prompt injection causes tool abuse or exfiltration | High | Critical | Untrusted labels, tool policy, allowlists, injection corpus | Security/AI | Open |
 | RSK-011 | Bias or profiling causes discriminatory guidance | Medium | High | No employer ranking, limitation notices, evals, human review, legal review | Compliance/AI | Open |
 | RSK-012 | Deletion fails to remove derived data | Medium | Critical | Source-linked lifecycle, deletion jobs, propagation tests | Privacy/Data | Open |

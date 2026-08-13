@@ -1,4 +1,4 @@
-.PHONY: setup dev db-up db-down db-migrate db-integration-test format format-check lint typecheck test audit security docs-check frontend-check check
+.PHONY: setup dev mcp-local db-up db-down db-migrate db-integration-test format format-check lint typecheck test audit security docs-check frontend-check check
 
 setup:
 	uv sync --all-packages --locked
@@ -7,6 +7,9 @@ setup:
 
 dev:
 	uv run python scripts/dev.py
+
+mcp-local:
+	uv run python scripts/run_local_mcp.py
 
 db-up:
 	docker compose up -d postgres
@@ -45,7 +48,7 @@ audit:
 	uv run pip-audit
 
 security:
-	uv run --isolated --only-group sast semgrep scan --no-git-ignore --config security/semgrep.yml --error --metrics off .
+	uvx --from semgrep==1.172.0 semgrep scan --no-git-ignore --config security/semgrep.yml --error --metrics off .
 	uv run detect-secrets-hook --baseline .secrets.baseline $$(git ls-files -co --exclude-standard)
 
 docs-check:

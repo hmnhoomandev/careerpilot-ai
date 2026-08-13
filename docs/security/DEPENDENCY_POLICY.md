@@ -24,6 +24,7 @@
 | pgvector | SQLAlchemy vector mapping | BSD-3-Clause | Handwritten vector SQL | Keeps pgvector typed; no service/data transfer |
 | pypdf | Local text-based PDF extraction | BSD-3-Clause | PDFium or cloud parser | Untrusted parser requires bounds now and production isolation later |
 | python-multipart | FastAPI multipart upload parsing | Apache-2.0 | Custom multipart parser | Smaller risk than custom parsing; upload limits remain mandatory |
+| mcp >=1.28.1,<1.29 | Official MCP server/client protocol SDK | MIT | Handwritten JSON-RPC | Minimum includes fixes for PYSEC-2026-3481/3482/3483; explicit allowlist in ADR-0018 |
 
 ## Development dependencies
 
@@ -46,11 +47,11 @@ locked SCA and later container/SBOM scans are required. Direct SQL plus a custom
 migration runner was rejected as higher-maintenance recovery machinery. These
 dependencies make no external service call by themselves and add no paid cost.
 
-Current Semgrep 1.172.0 hard-pins vulnerable `mcp==1.23.3`. Semgrep therefore
-lives in a non-default `sast` dependency group and is invoked only for a local,
-metrics-disabled source scan; its MCP server is never started or exposed. The
-normal development/application environment excludes this group and must pass its
-dependency audit. Revisit the exception when Semgrep adopts patched MCP 1.28.1 or
+Current Semgrep 1.172.0 hard-pins vulnerable `mcp==1.23.3`. Semgrep therefore runs
+through pinned `uvx` resolution only for a local, metrics-disabled source scan; its
+environment is absent from the application lock and runtime, and its MCP server is
+never started or exposed. The application uses MCP 1.28.1 or newer and must pass its
+dependency audit. Revisit the isolation when Semgrep adopts patched MCP 1.28.1 or
 newer. Pytest is constrained to 9.0.3 or newer to remediate PYSEC-2026-1845.
 
 ## Residual risk

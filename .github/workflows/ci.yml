@@ -57,7 +57,7 @@ jobs:
       - name: Dependency audit
         run: uv run pip-audit
       - name: Semgrep
-        run: uv run --isolated --only-group sast semgrep scan --config security/semgrep.yml --error --metrics off .
+        run: uvx --from semgrep==1.172.0 semgrep scan --config security/semgrep.yml --error --metrics off .
       - name: Secret scan
         run: uv run detect-secrets-hook --baseline .secrets.baseline $(git ls-files)
       - name: Documentation baseline

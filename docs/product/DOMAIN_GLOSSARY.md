@@ -22,6 +22,9 @@
 | Manager delegation | A coordinator assigns bounded work and combines results without necessarily transferring user interaction. |
 | Memory | Curated information retained across sessions for an explicit purpose and retention policy. |
 | MCP | Protocol boundary exposing narrow tools/resources to compatible clients. |
+| Tool capability | A versioned, schema-validated operation with explicit permission, risk, operational limits, errors, and audit policy. |
+| Idempotency key | A caller-supplied token scoped to one actor/tool/input so successful mutation replay returns the original result. |
+| MCP allowlist | The explicit subset of registered capabilities discoverable through the MCP server. |
 | A2A | Protocol boundary for discovery and task interaction between independently deployed agents. |
 | Profile | Structured candidate facts supplied or confirmed by the user. |
 | Recovery | Continuation or restoration after interruption using persisted state. |

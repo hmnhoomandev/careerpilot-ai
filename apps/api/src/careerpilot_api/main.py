@@ -63,6 +63,13 @@ from careerpilot_api.security import (
     LastOwnerError,
     TenantMembershipError,
 )
+from careerpilot_api.tool_catalog import build_tool_registry
+from careerpilot_api.tool_contracts import (
+    ToolCapabilityResponse,
+    ToolInvokeRequest,
+    ToolInvokeResponse,
+)
+from careerpilot_api.tool_runtime import ToolExecutor
 from careerpilot_core import (
     AccessDeniedError,
     AccessPolicy,
@@ -80,7 +87,10 @@ from careerpilot_core import (
     ProfileNotFoundError,
     ProfileValidationError,
     RagService,
+    ResourceAttributes,
     Role,
+    ToolErrorCode,
+    ToolExecutionError,
 )
 from careerpilot_core.rag_service import MAX_UPLOAD_BYTES
 
@@ -177,6 +187,8 @@ def create_app(
         access_policy,
         audit_log,
     )
+    tool_registry = build_tool_registry(service, rag_service, audit_log)
+    tool_executor = ToolExecutor(tool_registry, access_policy, audit_log)
     logger = configure_logging()
     tracer = get_tracer()
 
@@ -190,8 +202,8 @@ def create_app(
 
     app = FastAPI(
         title="CareerPilot API",
-        version="0.5.0",
-        description="Tenant-safe profiles and cited local document retrieval.",
+        version="0.6.0",
+        description="Tenant-safe profiles, retrieval, and policy-enforced tools.",
         lifespan=lifespan,
         responses={500: {"model": ErrorResponse}},
     )
@@ -200,6 +212,8 @@ def create_app(
     app.state.repository = repository
     app.state.document_repository = document_repository
     app.state.document_storage = document_storage
+    app.state.tool_registry = tool_registry
+    app.state.tool_executor = tool_executor
     app.add_middleware(
         CORSMiddleware,
         allow_origins=["http://127.0.0.1:3000", "http://localhost:3000"],
@@ -417,6 +431,26 @@ def create_app(
             code="confirmation_required",
             message="Explicit human confirmation is required before deletion.",
             status_code=status.HTTP_409_CONFLICT,
+        )
+
+    @app.exception_handler(ToolExecutionError)
+    async def tool_execution_error(
+        request: Request, error: ToolExecutionError
+    ) -> JSONResponse:
+        status_by_code = {
+            ToolErrorCode.INVALID_INPUT: status.HTTP_422_UNPROCESSABLE_CONTENT,
+            ToolErrorCode.UNAUTHORIZED: status.HTTP_403_FORBIDDEN,
+            ToolErrorCode.NOT_FOUND: status.HTTP_404_NOT_FOUND,
+            ToolErrorCode.TIMEOUT: status.HTTP_504_GATEWAY_TIMEOUT,
+            ToolErrorCode.RATE_LIMITED: status.HTTP_429_TOO_MANY_REQUESTS,
+            ToolErrorCode.IDEMPOTENCY_CONFLICT: status.HTTP_409_CONFLICT,
+            ToolErrorCode.INTERNAL: status.HTTP_500_INTERNAL_SERVER_ERROR,
+        }
+        return _safe_error(
+            request,
+            code=error.code,
+            message=error.message,
+            status_code=status_by_code[error.code],
         )
 
     @app.exception_handler(ProfileValidationError)
@@ -820,6 +854,63 @@ def create_app(
             request_context(request), document_id, confirmed=body.confirmed
         )
         return Response(status_code=status.HTTP_204_NO_CONTENT)
+
+    @app.get(
+        "/api/v1/tools",
+        response_model=list[ToolCapabilityResponse],
+        tags=["tools"],
+    )
+    async def list_tools(request: Request) -> list[ToolCapabilityResponse]:
+        context = request_context(request)
+        access_policy.require(
+            context,
+            Permission.TOOL_INVOKE,
+            ResourceAttributes(context.tenant_id, context.actor_id),
+        )
+        return [
+            ToolCapabilityResponse(
+                name=definition.capability.name,
+                version=definition.capability.version,
+                description=definition.capability.description,
+                permission=definition.capability.permission,
+                risk=definition.capability.risk,
+                side_effects=definition.capability.side_effects,
+                approval_required=definition.capability.approval_required,
+                timeout_seconds=definition.capability.timeout_seconds,
+                max_retries=definition.capability.max_retries,
+                idempotency_required=definition.capability.idempotency_required,
+                rate_limit=definition.capability.rate_limit,
+                rate_window_seconds=definition.capability.rate_window_seconds,
+                audit_action=definition.capability.audit_action,
+                mcp_exposed=definition.capability.mcp_exposed,
+                error_codes=[code.value for code in ToolErrorCode],
+                input_schema=definition.input_model.model_json_schema(),
+                output_schema=definition.output_model.model_json_schema(),
+            )
+            for definition in tool_registry.definitions()
+        ]
+
+    @app.post(
+        "/api/v1/tools/{tool_name}/invoke",
+        response_model=ToolInvokeResponse,
+        tags=["tools"],
+    )
+    async def invoke_tool(
+        tool_name: str, body: ToolInvokeRequest, request: Request
+    ) -> ToolInvokeResponse:
+        result = await tool_executor.execute(
+            tool_name,
+            request_context(request),
+            body.arguments,
+            body.idempotency_key,
+        )
+        return ToolInvokeResponse(
+            tool_name=result.capability.name,
+            tool_version=result.capability.version,
+            correlation_id=_correlation_id(request),
+            idempotent_replay=result.idempotent_replay,
+            output=result.output,
+        )
 
     @app.post(
         "/api/v1/analyses",

@@ -54,6 +54,12 @@ from careerpilot_core.services import (
     ProfileNotFoundError,
     ProfileValidationError,
 )
+from careerpilot_core.tooling import (
+    ToolCapability,
+    ToolErrorCode,
+    ToolExecutionError,
+    ToolRisk,
+)
 
 __all__ = [
     "AccessDeniedError",
@@ -100,4 +106,8 @@ __all__ = [
     "Skill",
     "Tenant",
     "TenantKind",
+    "ToolCapability",
+    "ToolErrorCode",
+    "ToolExecutionError",
+    "ToolRisk",
 ]

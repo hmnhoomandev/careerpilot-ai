@@ -17,6 +17,108 @@ Every phase plan must state:
 
 Plans are living documents. Update status without erasing decisions or evidence.
 
+## Active implementation plan: Phase 6
+
+**Objective:** create a secure, typed capability layer for future agents and expose
+only an approved read-only subset through MCP, with no model or cloud dependency.
+
+### Scope and acceptance mapping
+
+- Add nine narrow capabilities: profile lookup, evidence retrieval, job ingestion,
+  skill taxonomy, deterministic matching, evidence verification, approval request,
+  tenant audit lookup, and cost estimation.
+- Give every tool strict Pydantic input/output contracts and generated JSON Schema;
+  reject unknown fields and sanitize bounded outputs.
+- Centralize capability metadata: version, description, risk, permissions, side
+  effects, approval requirement, timeout, retry, idempotency, rate limit, audit
+  policy, and MCP exposure.
+- Enforce authenticated tenant context, deny-by-default tool permissions, per-tool
+  authorization, in-memory local rate limits, bounded timeout/retry, idempotency
+  replay, stable error taxonomy, correlation IDs, and audit outcomes.
+- Add versioned OpenAPI discovery/invocation endpoints and an official MCP Python
+  SDK server exposing only approved read-only capabilities.
+- Keep approval requests as deterministic pending records only; Phase 8 owns the
+  durable approval lifecycle and no consequential action executes here.
+
+### Expected files and dependencies
+
+- Tool domain contracts/metadata under `packages/core/`.
+- Pydantic schemas, registry, executor, adapters, API routes, and MCP server under
+  `apps/api/`.
+- Unit/API/contract/MCP tests covering every capability plus invalid schema,
+  authorization, timeout, retry, duplicate, rate limit, and sanitization cases.
+- ADR, annotated source, tutorial, exercises/answers, security/privacy updates,
+  traceability, learning log, and `docs/reviews/phase-06-review.md`.
+- Add official `mcp>=1.28.1,<1.29` (MIT, Python 3.10+) to include the upstream
+  security fixes. Resolve pinned Semgrep separately with `uvx` because its CLI
+  dependency graph still requires vulnerable `mcp==1.23.3`; that version must not
+  enter the application lock or runtime. A handwritten JSON-RPC implementation is
+  rejected due to protocol/security maintenance risk. No MCP CLI extra is needed.
+
+### Architecture, security, privacy, and cost decisions
+
+- One registry is the authority for both HTTP and MCP discovery; adapters cannot
+  bypass the executor or publish unregistered handlers.
+- Tool identity never implies user authority. Server-derived authorization context
+  enters every invocation, and underlying services/repositories retain their checks.
+- MCP exposure is an explicit allowlist limited initially to read-only profile,
+  retrieval, taxonomy, and cost capabilities. Audit data, job mutation, matching,
+  verification, and approval creation remain HTTP/internal only.
+- Idempotency keys are required for state-changing tools and scoped to tenant,
+  actor, tool, and validated input hash. Reuse with different input fails closed.
+- Rate limits are local deterministic safeguards for Phase 6, not distributed
+  production enforcement. They contain no billing and reset on restart.
+- Tools do not call models or external APIs. Cost estimates are deterministic CHF
+  zero for current local implementations and never authorize spending.
+- Inputs/outputs and retrieved content are not written to logs or audit records.
+  Development fixtures remain synthetic.
+
+### Risks and mitigations
+
+- Tool privilege escalation: deny-default registry, permission metadata, context
+  validation, MCP allowlist, underlying service checks, and hostile-tenant tests.
+- Schema or adapter drift: derive JSON Schema from Pydantic and compare registry,
+  OpenAPI, and MCP discovery in contract tests.
+- Replay/duplicate mutation: scoped idempotency cache and input fingerprint conflict.
+- Denial of service/wallet: payload limits, timeout, bounded retries, and per-actor/
+  tenant/tool rate counters; distributed quotas remain Phase 15/16 work.
+- Sensitive output leakage: response-model validation, recursive control-character
+  removal/size bounds, retrieval `UNTRUSTED` labels, and sanitization tests.
+- MCP ecosystem churn: pin the current stable v1 line below v2 and record a review
+  trigger before migration.
+
+### Automated verification
+
+- Unit and contract tests for all nine tools and every capability schema.
+- Invalid schema, foreign tenant, permission denial, timeout, retry, duplicate,
+  idempotency conflict, rate-limit, sanitization, and audit/correlation tests.
+- Official MCP in-memory protocol smoke test for list and read-only call plus proof
+  that non-approved tools are absent.
+- Existing Python/web/PostgreSQL suites, OpenAPI, format/lint/type/build, dependency,
+  secret/SAST, documentation/link/Mermaid, pre-commit, and complete diff review.
+
+### Manual verification
+
+- Sign in locally, list capabilities and inspect schemas/metadata, successfully call
+  one read-only tool, attempt one unauthorized call, repeat an idempotent mutation,
+  trigger a rate limit, and inspect correlated audit facts.
+- Start the local MCP server, list its allowlisted tools, call one read-only tool with
+  synthetic context, and verify privileged/internal tools are not discoverable.
+
+### Explicit exclusions
+
+- LangGraph, LLM agents, model calls, provider fallback, live taxonomy/API sources,
+  automatic browsing, scraping, email, submission, or external side effects.
+- Durable approvals and restart recovery (Phase 8/12), distributed rate limiting,
+  production OAuth for MCP, remote MCP deployment, and production credentials.
+- Cloud resources, paid calls, billing, or recurring services.
+
+### Stop condition
+
+Complete `docs/reviews/phase-06-review.md`, report exact evidence, and wait for:
+
+`APPROVE PHASE 6 AND START PHASE 7`
+
 ## Completed implementation plan: Phase 5
 
 **Status:** Complete on 2026-08-11; awaiting owner acceptance. Phase 6 has not

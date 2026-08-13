@@ -19,8 +19,6 @@ dev = [
   "ruff>=0.12,<1",
   "types-PyYAML>=6.0,<7",
 ]
-sast = ["semgrep==1.172.0"]
-
 [tool.uv]
 package = false
 default-groups = ["dev"]
@@ -80,6 +78,7 @@ ignore = ["ANN401", "S101"]
 "apps/api/src/careerpilot_api/main.py" = ["PLR0913", "PLR0915"]
 "packages/core/src/careerpilot_core/services.py" = ["PLR0913"]
 "packages/core/src/careerpilot_core/rag_service.py" = ["PLR0913", "PLR0917"]
+"apps/api/src/careerpilot_api/tool_catalog.py" = ["PLR0913"]
 "tests/**/*.py" = ["ANN", "PLR2004"]
 
 [tool.ruff.lint.isort]
