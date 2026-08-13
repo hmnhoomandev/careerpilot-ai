@@ -13,6 +13,13 @@ from careerpilot_core.access import (
     Tenant,
     TenantKind,
 )
+from careerpilot_core.agents import (
+    PHASE_7_ROLES,
+    AgentRoleDossier,
+    AnalysisModelProvider,
+    JobRequirements,
+    RouteDecision,
+)
 from careerpilot_core.audit import AuditEvent, AuditEventDraft, AuditSink
 from careerpilot_core.models import (
     Education,
@@ -62,9 +69,12 @@ from careerpilot_core.tooling import (
 )
 
 __all__ = [
+    "PHASE_7_ROLES",
     "AccessDeniedError",
     "AccessPolicy",
     "Actor",
+    "AgentRoleDossier",
+    "AnalysisModelProvider",
     "AuditEvent",
     "AuditEventDraft",
     "AuditSink",
@@ -86,6 +96,7 @@ __all__ = [
     "IdentityVerifier",
     "InjectionRisk",
     "JobAnalysis",
+    "JobRequirements",
     "MalwareScanner",
     "Membership",
     "ParsedSection",
@@ -102,6 +113,7 @@ __all__ = [
     "RetrievalResult",
     "RetrievedPassage",
     "Role",
+    "RouteDecision",
     "ScanResult",
     "Skill",
     "Tenant",

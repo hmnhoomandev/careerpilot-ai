@@ -37,6 +37,9 @@
 | SEC-017 | Tool abuse and denial-of-wallet design | Per-tenant/actor/tool local window plus bounded payload/timeout/retries | Rate-limit and exhausted-timeout tests | Local baseline; distributed enforcement deferred |
 | NFR-009 | Versioned capability contracts and MCP allowlist | API v0.6 discovery/invoke schemas and official MCP v1 server | OpenAPI plus in-memory MCP protocol discovery/call tests | Verified Phase 6 contract boundary |
 | FR-020 | Human approval before consequential action | `approval.request` creates pending metadata and executes nothing | Idempotent replay/conflict and catalog tests | Foundation only; durable approval lifecycle is Phase 8 |
+| FR-004/FR-006/FR-007/FR-010 | ADR-0019 and Phase 7 graph | Typed analysis graph, structured requirements, cited match/gaps/verification/explanation | Graph API/unit, grounding, path, state, checkpoint tests | Verified for fake-first local scope |
+| SEC-003/SEC-004/SEC-006/SEC-011 | Tenant-safe graph/provider boundary | Server context, scoped run IDs, untrusted source labels, deterministic citations | Cross-tenant API, strict output, injection/grounding tests | Verified Phase 7 local boundary |
+| NFR-003/NFR-010/NFR-012/NFR-013 | Fake-first cost, correlation, opt-in live, retry/resume semantics | Fake default, provider identity, node events/checkpointer, live marker | API progress/correlation, retry/cancel/replay tests | Verified locally; durable recovery deferred |
 
 ## Mapping rules for future phases
 

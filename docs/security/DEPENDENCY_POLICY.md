@@ -25,6 +25,8 @@
 | pypdf | Local text-based PDF extraction | BSD-3-Clause | PDFium or cloud parser | Untrusted parser requires bounds now and production isolation later |
 | python-multipart | FastAPI multipart upload parsing | Apache-2.0 | Custom multipart parser | Smaller risk than custom parsing; upload limits remain mandatory |
 | mcp >=1.28.1,<1.29 | Official MCP server/client protocol SDK | MIT | Handwritten JSON-RPC | Minimum includes fixes for PYSEC-2026-3481/3482/3483; explicit allowlist in ADR-0018 |
+| langgraph >=1.2.9,<1.3 | Typed graph, retry, and checkpoint runtime | MIT | Custom state machine | Bounded in-process ownership in ADR-0019; no LangSmith service configured |
+| google-genai >=2.13,<2.14 | Official future Gemini adapter SDK | Apache-2.0 | Handwritten HTTP | No client/default call; explicit transfer authorization and no fallback |
 
 ## Development dependencies
 

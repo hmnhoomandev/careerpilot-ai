@@ -14,6 +14,15 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, Response
 
+from careerpilot_api.analysis_contracts import (
+    AnalysisGraphRequest,
+    AnalysisGraphResponse,
+)
+from careerpilot_api.analysis_graph import build_analysis_graph
+from careerpilot_api.analysis_service import (
+    AnalysisGraphService,
+    AnalysisRunNotFoundError,
+)
 from careerpilot_api.audit import InMemoryAuditLog
 from careerpilot_api.contracts import (
     AnalysisCreateRequest,
@@ -51,6 +60,7 @@ from careerpilot_api.document_processing import (
     LocalDocumentScanner,
     LocalFilesystemDocumentStorage,
 )
+from careerpilot_api.model_providers import FakeAnalysisModelProvider
 from careerpilot_api.observability import configure_logging, get_tracer
 from careerpilot_api.repository import InMemoryProfileRepository
 from careerpilot_api.retrieval_repository import (
@@ -189,6 +199,9 @@ def create_app(
     )
     tool_registry = build_tool_registry(service, rag_service, audit_log)
     tool_executor = ToolExecutor(tool_registry, access_policy, audit_log)
+    analysis_provider = FakeAnalysisModelProvider()
+    analysis_graph = build_analysis_graph(tool_executor, analysis_provider)
+    analysis_graph_service = AnalysisGraphService(analysis_graph, access_policy)
     logger = configure_logging()
     tracer = get_tracer()
 
@@ -202,8 +215,8 @@ def create_app(
 
     app = FastAPI(
         title="CareerPilot API",
-        version="0.6.0",
-        description="Tenant-safe profiles, retrieval, and policy-enforced tools.",
+        version="0.7.0",
+        description="Tenant-safe evidence and checkpointed job-analysis graphs.",
         lifespan=lifespan,
         responses={500: {"model": ErrorResponse}},
     )
@@ -214,6 +227,8 @@ def create_app(
     app.state.document_storage = document_storage
     app.state.tool_registry = tool_registry
     app.state.tool_executor = tool_executor
+    app.state.analysis_graph = analysis_graph
+    app.state.analysis_graph_service = analysis_graph_service
     app.add_middleware(
         CORSMiddleware,
         allow_origins=["http://127.0.0.1:3000", "http://localhost:3000"],
@@ -451,6 +466,17 @@ def create_app(
             code=error.code,
             message=error.message,
             status_code=status_by_code[error.code],
+        )
+
+    @app.exception_handler(AnalysisRunNotFoundError)
+    async def analysis_run_not_found(
+        request: Request, _error: AnalysisRunNotFoundError
+    ) -> JSONResponse:
+        return _safe_error(
+            request,
+            code="analysis_run_not_found",
+            message="The analysis run is unavailable.",
+            status_code=status.HTTP_404_NOT_FOUND,
         )
 
     @app.exception_handler(ProfileValidationError)
@@ -910,6 +936,57 @@ def create_app(
             correlation_id=_correlation_id(request),
             idempotent_replay=result.idempotent_replay,
             output=result.output,
+        )
+
+    def graph_response(state: dict[str, object]) -> AnalysisGraphResponse:
+        return AnalysisGraphResponse(
+            run_id=str(state["run_id"]),
+            profile_id=str(state["profile_id"]),
+            status=str(state.get("status", "unknown")),
+            provider=analysis_provider.name,
+            correlation_id=str(state["correlation_id"]),
+            requirements=state.get("requirements"),  # type: ignore[arg-type]
+            passages=state.get("passages", []),  # type: ignore[arg-type]
+            match=state.get("match"),  # type: ignore[arg-type]
+            gaps=state.get("gaps"),  # type: ignore[arg-type]
+            verified=state.get("verified", []),  # type: ignore[arg-type]
+            explanation=state.get("explanation"),  # type: ignore[arg-type]
+            events=state.get("events", []),  # type: ignore[arg-type]
+            error=state.get("error"),  # type: ignore[arg-type]
+        )
+
+    @app.post(
+        "/api/v1/agent-runs",
+        response_model=AnalysisGraphResponse,
+        status_code=status.HTTP_201_CREATED,
+        tags=["agents"],
+    )
+    async def start_agent_run(
+        body: AnalysisGraphRequest, request: Request
+    ) -> AnalysisGraphResponse:
+        state = await analysis_graph_service.start(
+            request_context(request), body.profile_id, body.job_description
+        )
+        return graph_response(dict(state))
+
+    @app.get(
+        "/api/v1/agent-runs/{run_id}",
+        response_model=AnalysisGraphResponse,
+        tags=["agents"],
+    )
+    async def get_agent_run(run_id: str, request: Request) -> AnalysisGraphResponse:
+        return graph_response(
+            dict(analysis_graph_service.get(request_context(request), run_id))
+        )
+
+    @app.post(
+        "/api/v1/agent-runs/{run_id}/cancel",
+        response_model=AnalysisGraphResponse,
+        tags=["agents"],
+    )
+    async def cancel_agent_run(run_id: str, request: Request) -> AnalysisGraphResponse:
+        return graph_response(
+            dict(analysis_graph_service.cancel(request_context(request), run_id))
         )
 
     @app.post(

@@ -148,3 +148,18 @@ Tutorial: `docs/tutorials/phase-06-tools-and-mcp.md`
 Exercises: `docs/exercises/phase-06-exercises.md`
 
 Answers: `docs/exercises/phase-06-answers.md`
+
+## Phase 7 — LangGraph state and bounded agent coordination
+
+- Distinguished node updates, graph state, checkpoints, application state, workflow
+  state, session state, memory, and audit history.
+- Implemented deterministic-first routing, structured provider output, manager
+  delegation, disjoint role ownership, bounded retry, cancellation, and replay.
+- Kept model authority separate from authorization, truth, tools, and provider choice.
+- Practiced cited match/gap explanations and explicit insufficient evidence.
+
+Tutorial: `docs/tutorials/phase-07-langgraph-analysis.md`
+
+Exercises: `docs/exercises/phase-07-exercises.md`
+
+Answers: `docs/exercises/phase-07-answers.md`

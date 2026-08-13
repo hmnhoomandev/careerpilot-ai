@@ -79,6 +79,7 @@ ignore = ["ANN401", "S101"]
 "packages/core/src/careerpilot_core/services.py" = ["PLR0913"]
 "packages/core/src/careerpilot_core/rag_service.py" = ["PLR0913", "PLR0917"]
 "apps/api/src/careerpilot_api/tool_catalog.py" = ["PLR0913"]
+"apps/api/src/careerpilot_api/analysis_graph.py" = ["PLR0915"]
 "tests/**/*.py" = ["ANN", "PLR2004"]
 
 [tool.ruff.lint.isort]

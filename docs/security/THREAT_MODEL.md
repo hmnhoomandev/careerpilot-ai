@@ -91,3 +91,15 @@ versions, and synthetic test data.
 - TM-016 prompt-triggered tool misuse is reduced by a four-tool read-only MCP allowlist;
   retrieved outputs stay explicitly untrusted and cannot select new capabilities.
 - Idempotency keys prevent duplicate local mutations but are not durable across restart.
+
+## Phase 7 graph controls
+
+- Spoofing/IDOR: server-derived context and tenant/actor/run-scoped status access.
+- Tampering: typed state, disjoint ownership dossiers, validated provider/tool output.
+- Repudiation: ordered node events plus tool audit and correlation identifiers.
+- Information disclosure: concise outputs, no hidden reasoning/prompt logs, cited
+  evidence only, and non-enumerating foreign-run responses.
+- Denial of service: bounded inputs, node timeouts, narrow retry, and existing tool
+  rates. Distributed quotas remain later work.
+- Elevation/injection: source text is untrusted data; models cannot authorize, mutate,
+  approve, select providers, or execute arbitrary tools.

@@ -43,3 +43,7 @@
   such as tenant, ownership, delegation, purpose, sensitivity, and action.
 - **SAST** examines source; **SCA** examines dependencies; **DAST** probes a
   running system; **runtime protection** detects or blocks behavior in operation.
+- **Graph state** is the typed, checkpointed value for one bounded in-process
+  analysis run; it is not application, workflow, session, memory, or audit state.
+- **Delegation** means a manager retains run ownership while invoking a bounded
+  specialist node or tool.

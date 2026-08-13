@@ -17,7 +17,105 @@ Every phase plan must state:
 
 Plans are living documents. Update status without erasing decisions or evidence.
 
-## Active implementation plan: Phase 6
+## Active implementation plan: Phase 7
+
+**Objective:** build a typed, checkpointed LangGraph job-analysis workflow that
+coordinates bounded specialist roles and returns cited match, gap, evidence, and
+explanation results using fake providers by default and no paid calls.
+
+### Scope and acceptance mapping
+
+- Define explicit graph, node, model, retrieval, and audit state with ownership rules.
+- Implement Manager, Intake, Job Analysis, Retrieval, Match, Skill Gap, Evidence
+  Verification, and Explanation nodes; use deterministic routing for known paths and
+  expose an evaluated model router only for ambiguous fixture cases.
+- Produce validated structured job requirements, cited supported matches, missing and
+  uncertain gaps, explicit insufficient-evidence state, and concise explanations.
+- Add bounded node timeouts/retries, a terminal error node, cooperative cancellation,
+  in-memory checkpoints/resume for local/test, and metadata-only trace events.
+- Add a fake provider as the default and a fail-closed Gemini adapter requiring
+  explicit live configuration, authorization/consent metadata, and no fallback.
+- Add authenticated API start/status/resume/cancel routes and workflow progress that
+  remains tenant-scoped and does not expose hidden reasoning.
+
+### Deliverables and expected files
+
+- Graph state, contracts, provider port, role dossiers, and orchestration service in
+  `packages/core/` and `apps/api/` without provider imports in the domain package.
+- LangGraph graph builder/checkpointer and Google Gen AI adapter in the API adapter
+  layer; HTTP schemas/routes and versioned OpenAPI updates.
+- Unit, API, contract, end-to-end, failure-injection, transition, routing, checkpoint,
+  cancellation, grounding, and hallucination evaluation tests with synthetic fixtures.
+- ADR, agent-role dossiers, annotated source, tutorial, exercises/answers, security,
+  privacy, traceability, learning log, and `docs/reviews/phase-07-review.md`.
+- Add `langgraph>=1.2.9,<1.3` (MIT, Python 3.10+) and
+  `google-genai>=2.13,<2.14` (Apache-2.0, Python 3.10+) after lock/audit review.
+
+### Architecture, security, privacy, migration, deployment, and cost
+
+- LangGraph owns only the bounded in-process analysis run. Temporal remains the owner
+  of durable business waits, schedules, compensation, and cross-service recovery.
+- Nodes return partial state updates and cannot mutate fields owned by other roles.
+  Deterministic routes are the default; no model decides authorization or truth.
+- Retrieved text stays labeled untrusted. Evidence verification is deterministic and
+  every supported result carries source/chunk citations; missing evidence stays
+  uncertain or unsupported rather than being fabricated.
+- The provider port accepts minimized, redacted structured prompts. The Gemini adapter
+  has no credentials by default, never silently falls back, and live tests remain
+  opt-in behind explicit cost and data-policy confirmation.
+- Local/test checkpoints are process-local and synthetic. No migration, cloud
+  deployment, paid resource, billing, or recurring service is authorized in Phase 7.
+
+### Risks and mitigations
+
+- State corruption or accidental overwrite: typed state, narrow node-update models,
+  ownership tests, and checkpoint transition assertions.
+- Hallucinated requirements or qualifications: structured validation, citations,
+  deterministic verification, insufficient-evidence branches, and evaluation corpus.
+- Prompt injection: source/job text is data, never instructions; fixed system policy,
+  minimized prompts, injection labels, and adversarial fixtures.
+- Retry duplication: only retry side-effect-free nodes; make trace identifiers stable
+  and distinguish attempt, replay, resume, and fallback explicitly.
+- Provider/API churn and cost: pin supported minor lines, fake-first tests, lazy/live
+  client configuration, explicit provider identity, no fallback, and zero default cost.
+- Checkpoint tenant leakage: thread identity is scoped by tenant/actor/run and every
+  status/resume/cancel operation reauthorizes server-derived context.
+
+### Automated verification
+
+- Graph path/state ownership, deterministic/model router fixtures, structured output,
+  delegation/handoff, timeout/retry/error, cancellation, checkpoint/resume tests.
+- Grounding/hallucination evaluation for citations, supported/missing/uncertain gaps,
+  prompt injection, and insufficient evidence; live Gemini marker remains skipped.
+- Authenticated cross-tenant API and OpenAPI contract tests plus all existing suites.
+- Python/web/PostgreSQL format, lint, type, test, build, SAST/SCA, secret, docs/link,
+  Mermaid, pre-commit, governance validation, and complete diff review.
+
+### Manual verification
+
+- Submit a synthetic job-analysis run and inspect ordered node progress, cited evidence,
+  match, gaps, concise explanation, provider name, and correlation ID.
+- Submit a role with no supporting evidence and confirm explicit uncertainty.
+- Inject a transient node failure, observe bounded retry/error state, then resume from
+  the checkpoint; cancel a separate run and confirm no later node executes.
+- Compare deterministic and fake model routing on documented fixtures without a live
+  provider or paid call.
+
+### Explicit exclusions
+
+- Resume/cover-letter generation, human approval lifecycle, editable drafts, and
+  LangGraph human interrupts (Phase 8).
+- Temporal workflows, durable database checkpointing, schedules, email, application
+  submission/tracking, company scraping/research, remote agents, ADK, OpenAI Agents
+  SDK, A2A, cloud deployment, and production Gemini calls.
+
+### Stop condition
+
+Complete `docs/reviews/phase-07-review.md`, report exact evidence, and wait for:
+
+`APPROVE PHASE 7 AND START PHASE 8`
+
+## Completed implementation plan: Phase 6
 
 **Objective:** create a secure, typed capability layer for future agents and expose
 only an approved read-only subset through MCP, with no model or cloud dependency.

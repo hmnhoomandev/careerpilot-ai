@@ -26,3 +26,5 @@
 | DEC-022 | 2026-08-11 | Authorize inside lexical/vector SQL and return cited untrusted passages without generated answers | Accepted | ADR-0017 |
 | DEC-023 | 2026-08-11 | Route every tool through one typed registry/executor with policy, idempotency, rate, timeout, output, and audit controls | Accepted | ADR-0018 |
 | DEC-024 | 2026-08-11 | Expose four read-only capabilities through an explicit official-SDK MCP allowlist | Accepted for Phase 6 | ADR-0018 |
+| DEC-025 | 2026-08-13 | Use LangGraph 1.2.x for the bounded typed analysis graph and keep Temporal ownership separate | Accepted | ADR-0019 |
+| DEC-026 | 2026-08-13 | Use fake provider by default and an explicitly authorized, no-fallback Google Gen AI adapter | Accepted | ADR-0019 |

@@ -35,3 +35,6 @@ not named individuals.
 | RSK-020 | Backup improves durability but conflicts with deletion | Medium | High | Bounded retention, restore-time deletion ledger, legal review | Data/Privacy | Open |
 | RSK-021 | Browser-declared file metadata disguises malicious content | High | High | Allowlist, basename normalization, quarantine, scanner/parser isolation before trust | Security | Partially mitigated; byte scanning deferred |
 | RSK-022 | Concurrent profile edits silently lose user data | Medium | High | Version predicate, safe 409 conflict, transaction test | Data | Mitigated for Phase 4 profile updates |
+| RSK-023 | Graph checkpoint/run state leaks across tenants | Medium | Critical | Scope IDs/stores by tenant/actor/run; hostile-tenant tests; durable store later | Security/AI | Open |
+| RSK-024 | Model extraction invents job/candidate facts | Medium | Critical | Structured schema, fake evaluations, verification/citations, uncertainty | AI/Product | Open |
+| RSK-025 | Gemini data/cost used without approval | Low | Critical | Disabled default, explicit transfer flag, opt-in live marker, no fallback | AI/Owner | Open |

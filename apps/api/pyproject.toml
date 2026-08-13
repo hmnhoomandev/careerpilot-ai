@@ -4,6 +4,8 @@ version = "0.1.0"
 description = "CareerPilot AI HTTP API package shell."
 requires-python = ">=3.13,<3.14"
 dependencies = [
+  "google-genai>=2.13,<2.14",
+  "langgraph>=1.2.9,<1.3",
   "mcp>=1.28.1,<1.29",
   "alembic>=1.18,<1.19",
   "careerpilot-core",

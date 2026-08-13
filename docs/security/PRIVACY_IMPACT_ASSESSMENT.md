@@ -109,3 +109,14 @@ Tool audit records contain tenant/actor IDs, capability name, outcome, reason, a
 correlation only. Arguments, profile/job text, retrieved passages, and outputs are not
 recorded. MCP is local stdio with synthetic identity; production OAuth, staff access,
 retention, and remote transport require later privacy/security and legal review.
+
+## Phase 7 graph and model boundary
+
+Graph state may contain a user-supplied job description, derived requirements, and
+cited career evidence. Local/test checkpoints are process-local and tenant/actor/run
+scoped; production encryption, retention, deletion propagation, and durable checkpoint
+access require later design and legal review. Default execution uses synthetic data and
+the fake provider. Before any Gemini call, the application must additionally establish
+authorization, purpose, consent where required, minimization/redaction, provider terms,
+training/retention policy, region, logging, cost authorization, and deletion handling.
+Phase 7 performs no external transfer.

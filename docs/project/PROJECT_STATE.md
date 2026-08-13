@@ -1,11 +1,11 @@
 # Project State
 
 - **Project:** CareerPilot AI
-- **Current phase:** Phase 6 — tools, MCP, contracts, and policy enforcement
+- **Current phase:** Phase 7 — LangGraph manager, state, and core multi-agent flow
 - **Phase status:** Complete — awaiting owner acceptance
-- **Last updated:** 2026-08-11
-- **Working tree at phase start:** Clean at `a5dc1df` on `main`
-- **Production code:** Accepted through Phase 5; Phase 6 implementation complete
+- **Last updated:** 2026-08-13
+- **Working tree at phase start:** Clean at `fe0759a` on `main`
+- **Production code:** Accepted through Phase 6; Phase 7 implementation complete
 - **Cloud resources created:** None
 - **Paid calls made:** None
 
@@ -118,8 +118,23 @@
   professional legal review.
 - No paid service may be used under the current CHF 0 budget.
 
+## Phase 7 implementation and verification evidence
+
+- A typed LangGraph coordinates Manager/Intake, Job Analysis, Retrieval, Match, Gap,
+  Evidence, and Explanation roles with disjoint state ownership and ordered events.
+- Deterministic-first routing, structured fake extraction, policy-enforced tools,
+  citations, uncertainty, cancellation, retry, failure routing, and in-memory
+  checkpoints are implemented. Gemini is disabled by default behind a fail-closed
+  Google Gen AI adapter with no fallback.
+- Default Pytest passed 113 tests with 3 PostgreSQL-marked skips; the complete suite
+  against local PostgreSQL/pgvector passed all 116 tests.
+- Ruff, strict MyPy (68 files), web format/lint/type, 5 Vitest tests, production build,
+  docs/link/Mermaid, Semgrep (0 findings), detect-secrets, pre-commit, and governance
+  validation passed. Python and npm audits found no known vulnerabilities.
+- No live model, external personal-data transfer, cloud resource, or paid call occurred.
+
 ## Next action
 
-Review and accept Phase 6; then, and only then, start Phase 7 with:
+Review and accept Phase 7; then, and only then, start Phase 8 with:
 
-`APPROVE PHASE 6 AND START PHASE 7`
+`APPROVE PHASE 7 AND START PHASE 8`
