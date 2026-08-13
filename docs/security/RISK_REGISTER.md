@@ -38,3 +38,5 @@ not named individuals.
 | RSK-023 | Graph checkpoint/run state leaks across tenants | Medium | Critical | Scope IDs/stores by tenant/actor/run; hostile-tenant tests; durable store later | Security/AI | Open |
 | RSK-024 | Model extraction invents job/candidate facts | Medium | Critical | Structured schema, fake evaluations, verification/citations, uncertainty | AI/Product | Open |
 | RSK-025 | Gemini data/cost used without approval | Low | Critical | Disabled default, explicit transfer flag, opt-in live marker, no fallback | AI/Owner | Open |
+| RSK-026 | Human approval applies to changed draft | Low | Critical | Version/hash/revision binding and atomic compare-update | Security/Workflow | Mitigated locally |
+| RSK-027 | Draft persistence conflicts with privacy deletion | Medium | Critical | Source linkage, retention design, deletion propagation and legal review later | Privacy/Data | Open |

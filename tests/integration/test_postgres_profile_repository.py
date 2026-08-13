@@ -18,8 +18,16 @@ from careerpilot_api.database import (
     create_postgres_engine,
     document_chunks,
 )
+from careerpilot_api.draft_repository import PostgresDraftRepository
 from careerpilot_api.main import create_app
-from careerpilot_core import AuthorizationContext, ProfessionalProfile, Role, Skill
+from careerpilot_core import (
+    ApprovalConflictError,
+    ApprovalStatus,
+    AuthorizationContext,
+    ProfessionalProfile,
+    Role,
+    Skill,
+)
 from careerpilot_core.ports import StaleProfileVersionError
 from tests.api.helpers import login_headers
 
@@ -178,7 +186,6 @@ def test_pgvector_retrieval_tenant_filter_reindex_and_deletion(
             ).status_code
             == 204
         )
-
     engine = create_postgres_engine(DATABASE_URL)
     with engine.connect() as connection:
         remaining = connection.scalar(
@@ -188,3 +195,73 @@ def test_pgvector_retrieval_tenant_filter_reindex_and_deletion(
         )
     engine.dispose()
     assert remaining == 0
+
+
+def test_pending_approval_survives_restart_and_concurrent_decision_is_rejected(
+    repository: PostgresProfileRepository,
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    del repository
+    assert DATABASE_URL is not None
+    monkeypatch.setenv("CAREERPILOT_DATABASE_URL", DATABASE_URL)
+    monkeypatch.setenv("CAREERPILOT_DOCUMENT_ROOT", str(tmp_path / "documents"))
+    with TestClient(create_app()) as first:
+        headers = login_headers(first, "ada", "tenant-ada")
+        profile_id = first.post(
+            "/api/v1/profiles",
+            headers=headers,
+            json={
+                "display_name": "Persistent Draft Candidate",
+                "professional_summary": "Synthetic restart-safe approval profile.",
+            },
+        ).json()["profile_id"]
+        uploaded = first.post(
+            "/api/v1/documents",
+            headers=headers,
+            data={"profile_id": profile_id, "title": "Persistent evidence"},
+            files={
+                "file": (
+                    "persistent.txt",
+                    b"Built accessible Python services using PostgreSQL.",
+                    "text/plain",
+                )
+            },
+        )
+        assert uploaded.status_code == 201
+        created = first.post(
+            "/api/v1/drafts",
+            headers=headers,
+            json={
+                "profile_id": profile_id,
+                "kind": "resume",
+                "job_description": (
+                    "We need a Python PostgreSQL engineer building accessible "
+                    "services with verified synthetic evidence."
+                ),
+            },
+        ).json()
+
+    with TestClient(create_app()) as restarted:
+        headers = login_headers(restarted, "ada", "tenant-ada")
+        approved = restarted.post(
+            f"/api/v1/approvals/{created['approval_id']}/decisions",
+            headers=headers,
+            json={
+                "decision": "approve",
+                "expected_revision": 1,
+                "expected_draft_version": 1,
+                "expected_draft_hash": created["content_hash"],
+            },
+        )
+        assert approved.status_code == 200
+        assert approved.json()["status"] == "approved"
+
+    engine = create_postgres_engine(DATABASE_URL)
+    drafts = PostgresDraftRepository(engine)
+    current = drafts.get_approval("tenant-ada", "actor-ada", created["approval_id"])
+    assert current is not None
+    loser = replace(current, status=ApprovalStatus.CANCELLED)
+    with pytest.raises(ApprovalConflictError):
+        drafts.save_approval(loser, expected_revision=1)
+    engine.dispose()

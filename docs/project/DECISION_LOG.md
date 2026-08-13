@@ -28,3 +28,5 @@
 | DEC-024 | 2026-08-11 | Expose four read-only capabilities through an explicit official-SDK MCP allowlist | Accepted for Phase 6 | ADR-0018 |
 | DEC-025 | 2026-08-13 | Use LangGraph 1.2.x for the bounded typed analysis graph and keep Temporal ownership separate | Accepted | ADR-0019 |
 | DEC-026 | 2026-08-13 | Use fake provider by default and an explicitly authorized, no-fallback Google Gen AI adapter | Accepted | ADR-0019 |
+| DEC-027 | 2026-08-13 | Store immutable evidence-linked draft versions and bind approval to exact version/hash/revision | Accepted | ADR-0020 |
+| DEC-028 | 2026-08-13 | Use LangGraph interrupt for review interaction and PostgreSQL for authoritative restart-safe approval records | Accepted for Phase 8 | ADR-0020 |

@@ -103,3 +103,11 @@ versions, and synthetic test data.
   rates. Distributed quotas remain later work.
 - Elevation/injection: source text is untrusted data; models cannot authorize, mutate,
   approve, select providers, or execute arbitrary tools.
+
+## Phase 8 draft and approval controls
+
+- Unsupported claims/dates/metrics are blocked by evidence containment and citations.
+- Stale/racing approvals fail exact version/hash/revision checks; terminal states close.
+- Tenant/actor predicates prevent foreign draft and approval enumeration.
+- A2UI components/actions are allowlisted data and never server authority.
+- Draft content is absent from audit/logs; PII and bias flags remain visible for review.

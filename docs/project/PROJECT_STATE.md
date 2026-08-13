@@ -1,11 +1,11 @@
 # Project State
 
 - **Project:** CareerPilot AI
-- **Current phase:** Phase 7 — LangGraph manager, state, and core multi-agent flow
+- **Current phase:** Phase 8 — human approval and truthful document generation
 - **Phase status:** Complete — awaiting owner acceptance
 - **Last updated:** 2026-08-13
-- **Working tree at phase start:** Clean at `fe0759a` on `main`
-- **Production code:** Accepted through Phase 6; Phase 7 implementation complete
+- **Working tree at phase start:** Clean at `b5a3622` on `main`
+- **Production code:** Accepted through Phase 7; Phase 8 implementation complete
 - **Cloud resources created:** None
 - **Paid calls made:** None
 
@@ -135,6 +135,19 @@
 
 ## Next action
 
-Review and accept Phase 7; then, and only then, start Phase 8 with:
+Review and accept Phase 8; then, and only then, start Phase 9 with:
 
-`APPROVE PHASE 7 AND START PHASE 8`
+`APPROVE PHASE 8 AND START PHASE 9`
+
+## Phase 8 implementation and verification evidence
+
+- Immutable resume/cover-letter versions contain only cited supported claims; invented
+  edits are blocked. Deterministic PII/bias gates and A2UI-compatible review messages
+  are active.
+- Approval supports pending, approved, edited-and-approved, rejected, more-information,
+  expired, and cancelled states with exact version/hash/revision binding.
+- Alembic `0003` and tenant-safe PostgreSQL persistence make draft/approval business
+  records restart-safe; LangGraph interrupt proves pause/resume interaction semantics.
+- Default Pytest passed 128 with 4 PostgreSQL skips; real PostgreSQL/pgvector passed all
+  131 tests. Ruff, strict MyPy (82 files), and dependency audits passed.
+- No model, external data transfer, cloud resource, external action, or paid call occurred.

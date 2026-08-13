@@ -60,6 +60,25 @@ from careerpilot_api.document_processing import (
     LocalDocumentScanner,
     LocalFilesystemDocumentStorage,
 )
+from careerpilot_api.draft_contracts import (
+    A2UIMessage,
+    ApprovalDecisionRequest,
+    ApprovalResponse,
+    CitationContract,
+    ClaimContract,
+    DraftCreateRequest,
+    DraftEditRequest,
+    DraftResponse,
+)
+from careerpilot_api.draft_repository import (
+    InMemoryDraftRepository,
+    PostgresDraftRepository,
+)
+from careerpilot_api.draft_service import (
+    DraftNotFoundError,
+    DraftPolicyError,
+    DraftService,
+)
 from careerpilot_api.model_providers import FakeAnalysisModelProvider
 from careerpilot_api.observability import configure_logging, get_tracer
 from careerpilot_api.repository import InMemoryProfileRepository
@@ -83,12 +102,18 @@ from careerpilot_api.tool_runtime import ToolExecutor
 from careerpilot_core import (
     AccessDeniedError,
     AccessPolicy,
+    ApprovalConflictError,
+    ApprovalDecision,
+    ApprovalRecord,
+    ApprovalTransitionError,
     AuditEventDraft,
     AuthorizationContext,
+    CareerDraft,
     CareerJourneyService,
     DeletionConfirmationError,
     DocumentNotFoundError,
     DocumentValidationError,
+    DraftKind,
     Education,
     EvidenceValidationError,
     Experience,
@@ -199,6 +224,12 @@ def create_app(
     )
     tool_registry = build_tool_registry(service, rag_service, audit_log)
     tool_executor = ToolExecutor(tool_registry, access_policy, audit_log)
+    draft_repository = (
+        PostgresDraftRepository(engine) if engine else InMemoryDraftRepository()
+    )
+    draft_service = DraftService(
+        service, rag_service, draft_repository, access_policy, audit_log
+    )
     analysis_provider = FakeAnalysisModelProvider()
     analysis_graph = build_analysis_graph(tool_executor, analysis_provider)
     analysis_graph_service = AnalysisGraphService(analysis_graph, access_policy)
@@ -215,8 +246,8 @@ def create_app(
 
     app = FastAPI(
         title="CareerPilot API",
-        version="0.7.0",
-        description="Tenant-safe evidence and checkpointed job-analysis graphs.",
+        version="0.8.0",
+        description="Evidence-grounded drafts with exact-version human approval.",
         lifespan=lifespan,
         responses={500: {"model": ErrorResponse}},
     )
@@ -229,6 +260,8 @@ def create_app(
     app.state.tool_executor = tool_executor
     app.state.analysis_graph = analysis_graph
     app.state.analysis_graph_service = analysis_graph_service
+    app.state.draft_repository = draft_repository
+    app.state.draft_service = draft_service
     app.add_middleware(
         CORSMiddleware,
         allow_origins=["http://127.0.0.1:3000", "http://localhost:3000"],
@@ -477,6 +510,40 @@ def create_app(
             code="analysis_run_not_found",
             message="The analysis run is unavailable.",
             status_code=status.HTTP_404_NOT_FOUND,
+        )
+
+    @app.exception_handler(DraftNotFoundError)
+    async def draft_not_found(
+        request: Request, _error: DraftNotFoundError
+    ) -> JSONResponse:
+        return _safe_error(
+            request,
+            code="draft_not_found",
+            message="The draft or approval is unavailable.",
+            status_code=status.HTTP_404_NOT_FOUND,
+        )
+
+    @app.exception_handler(ApprovalConflictError)
+    async def approval_conflict(
+        request: Request, error: ApprovalConflictError
+    ) -> JSONResponse:
+        return _safe_error(
+            request,
+            code="approval_conflict",
+            message=str(error),
+            status_code=status.HTTP_409_CONFLICT,
+        )
+
+    @app.exception_handler(ApprovalTransitionError)
+    @app.exception_handler(DraftPolicyError)
+    async def draft_policy_error(
+        request: Request, error: ApprovalTransitionError | DraftPolicyError
+    ) -> JSONResponse:
+        return _safe_error(
+            request,
+            code="draft_policy_rejected",
+            message=str(error),
+            status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
         )
 
     @app.exception_handler(ProfileValidationError)
@@ -987,6 +1054,128 @@ def create_app(
     async def cancel_agent_run(run_id: str, request: Request) -> AnalysisGraphResponse:
         return graph_response(
             dict(analysis_graph_service.cancel(request_context(request), run_id))
+        )
+
+    def draft_response(
+        draft: CareerDraft,
+        approval: ApprovalRecord,
+        request: Request,
+    ) -> DraftResponse:
+        claims = [
+            ClaimContract(
+                claim_id=claim.claim_id,
+                text=claim.text,
+                status=claim.status.value,
+                citations=[
+                    CitationContract.model_validate(item, from_attributes=True)
+                    for item in claim.citations
+                ],
+            )
+            for claim in draft.claims
+        ]
+        messages = [
+            A2UIMessage(
+                component="editable_career_draft",
+                actions=["edit"],
+                data={
+                    "draft_id": draft.draft_id,
+                    "version": draft.version,
+                    "title": draft.title,
+                    "sections": list(draft.sections),
+                    "claims": [item.model_dump(mode="json") for item in claims],
+                },
+            ),
+            A2UIMessage(
+                component="approval_review",
+                actions=[
+                    "approve",
+                    "reject",
+                    "request_more_information",
+                    "cancel",
+                ],
+                data={
+                    "approval_id": approval.approval_id,
+                    "draft_version": approval.draft_version,
+                    "draft_hash": approval.draft_hash,
+                    "status": approval.status.value,
+                },
+            ),
+        ]
+        return DraftResponse(
+            draft_id=draft.draft_id,
+            version=draft.version,
+            kind=draft.kind.value,
+            title=draft.title,
+            sections=list(draft.sections),
+            claims=claims,
+            content_hash=draft.content_hash,
+            pii_flags=list(draft.pii_flags),
+            policy_flags=list(draft.policy_flags),
+            approval_id=approval.approval_id,
+            approval_status=approval.status.value,
+            approval_revision=approval.revision,
+            correlation_id=_correlation_id(request),
+            messages=messages,
+        )
+
+    @app.post(
+        "/api/v1/drafts",
+        response_model=DraftResponse,
+        status_code=status.HTTP_201_CREATED,
+        tags=["drafts"],
+    )
+    async def create_draft(body: DraftCreateRequest, request: Request) -> DraftResponse:
+        draft, approval = draft_service.generate(
+            request_context(request),
+            body.profile_id,
+            DraftKind(body.kind),
+            body.job_description,
+        )
+        return draft_response(draft, approval, request)
+
+    @app.post(
+        "/api/v1/drafts/{draft_id}/versions",
+        response_model=DraftResponse,
+        status_code=status.HTTP_201_CREATED,
+        tags=["drafts"],
+    )
+    async def edit_draft(
+        draft_id: str, body: DraftEditRequest, request: Request
+    ) -> DraftResponse:
+        draft, approval = draft_service.edit(
+            request_context(request),
+            draft_id,
+            body.expected_version,
+            tuple(body.sections),
+        )
+        return draft_response(draft, approval, request)
+
+    @app.post(
+        "/api/v1/approvals/{approval_id}/decisions",
+        response_model=ApprovalResponse,
+        tags=["approvals"],
+    )
+    async def decide_approval(
+        approval_id: str, body: ApprovalDecisionRequest, request: Request
+    ) -> ApprovalResponse:
+        result = draft_service.decide(
+            request_context(request),
+            approval_id,
+            ApprovalDecision(body.decision),
+            body.expected_revision,
+            body.expected_draft_version,
+            body.expected_draft_hash,
+            body.feedback,
+        )
+        return ApprovalResponse(
+            approval_id=result.approval_id,
+            draft_id=result.draft_id,
+            draft_version=result.draft_version,
+            draft_hash=result.draft_hash,
+            status=result.status.value,
+            revision=result.revision,
+            feedback=result.feedback,
+            correlation_id=_correlation_id(request),
         )
 
     @app.post(

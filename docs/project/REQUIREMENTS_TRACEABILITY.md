@@ -40,6 +40,9 @@
 | FR-004/FR-006/FR-007/FR-010 | ADR-0019 and Phase 7 graph | Typed analysis graph, structured requirements, cited match/gaps/verification/explanation | Graph API/unit, grounding, path, state, checkpoint tests | Verified for fake-first local scope |
 | SEC-003/SEC-004/SEC-006/SEC-011 | Tenant-safe graph/provider boundary | Server context, scoped run IDs, untrusted source labels, deterministic citations | Cross-tenant API, strict output, injection/grounding tests | Verified Phase 7 local boundary |
 | NFR-003/NFR-010/NFR-012/NFR-013 | Fake-first cost, correlation, opt-in live, retry/resume semantics | Fake default, provider identity, node events/checkpointer, live marker | API progress/correlation, retry/cancel/replay tests | Verified locally; durable recovery deferred |
+| FR-008/FR-009 | ADR-0020 evidence-linked versioned drafts | Claim/citation graph, immutable resume/letter versions, blocked edits | Draft API, invented-claim, citation tests | Verified deterministic Phase 8 scope |
+| FR-011/FR-012/FR-020 | Exact-version approval state machine | PostgreSQL records, version/hash/revision binding, LangGraph interrupt, A2UI messages | Transition, stale/concurrent, restart/resume, protocol tests | Verified locally with PostgreSQL |
+| SEC-003/SEC-006/SEC-007/SEC-009 | Draft privacy/truth/tenant controls | Tenant repository predicates, PII/bias gates, metadata audit | Cross-tenant, PII/policy, audit, PostgreSQL tests | Phase 8 baseline verified; legal review open |
 
 ## Mapping rules for future phases
 

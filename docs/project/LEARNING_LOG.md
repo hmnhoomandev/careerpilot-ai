@@ -163,3 +163,17 @@ Tutorial: `docs/tutorials/phase-07-langgraph-analysis.md`
 Exercises: `docs/exercises/phase-07-exercises.md`
 
 Answers: `docs/exercises/phase-07-answers.md`
+
+## Phase 8 — Truthful drafts and human approval
+
+- Modeled claims separately from prose and required citations for factual output.
+- Practiced immutable versions, content hashes, optimistic revisions, stale decision
+  rejection, terminal states, and restart-safe approval persistence.
+- Distinguished LangGraph interrupt/checkpoint state from authoritative business state.
+- Created allowlisted A2UI-compatible presentation messages without granting authority.
+
+Tutorial: `docs/tutorials/phase-08-truthful-drafts-and-approval.md`
+
+Exercises: `docs/exercises/phase-08-exercises.md`
+
+Answers: `docs/exercises/phase-08-answers.md`

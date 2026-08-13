@@ -216,6 +216,53 @@ document_chunks = Table(
     CheckConstraint("start_offset >= 0 AND end_offset > start_offset", name="offsets"),
 )
 
+draft_versions = Table(
+    "career_draft_versions",
+    metadata,
+    Column("draft_id", String(100), primary_key=True),
+    Column("version", Integer, primary_key=True),
+    Column("tenant_id", String(100), nullable=False),
+    Column("owner_actor_id", String(100), nullable=False),
+    Column("profile_id", String(100), nullable=False),
+    Column("kind", String(30), nullable=False),
+    Column("title", Text, nullable=False),
+    Column("sections_json", Text, nullable=False),
+    Column("claims_json", Text, nullable=False),
+    Column("content_hash", String(64), nullable=False),
+    Column("pii_flags_json", Text, nullable=False),
+    Column("policy_flags_json", Text, nullable=False),
+    Column("created_at", DateTime(timezone=True), nullable=False),
+    ForeignKeyConstraint(
+        ["tenant_id", "profile_id"],
+        ["professional_profiles.tenant_id", "professional_profiles.profile_id"],
+        ondelete="CASCADE",
+    ),
+    UniqueConstraint("tenant_id", "draft_id", "version"),
+    CheckConstraint("version > 0", name="positive_version"),
+)
+
+approvals = Table(
+    "draft_approvals",
+    metadata,
+    Column("approval_id", String(100), primary_key=True),
+    Column("tenant_id", String(100), nullable=False),
+    Column("owner_actor_id", String(100), nullable=False),
+    Column("draft_id", String(100), nullable=False),
+    Column("draft_version", Integer, nullable=False),
+    Column("draft_hash", String(64), nullable=False),
+    Column("status", String(40), nullable=False),
+    Column("revision", Integer, nullable=False),
+    Column("feedback", Text),
+    Column("updated_at", DateTime(timezone=True), nullable=False),
+    ForeignKeyConstraint(
+        ["draft_id", "draft_version"],
+        ["career_draft_versions.draft_id", "career_draft_versions.version"],
+        ondelete="CASCADE",
+    ),
+    UniqueConstraint("tenant_id", "approval_id"),
+    CheckConstraint("revision > 0", name="positive_revision"),
+)
+
 Index(
     "ix_document_chunks_search_vector",
     document_chunks.c.search_vector,

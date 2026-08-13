@@ -11,7 +11,7 @@ from careerpilot_api import create_app
 def test_openapi_contains_phase6_paths_and_error_contract() -> None:
     schema = create_app().openapi()
 
-    assert schema["info"]["version"] == "0.7.0"
+    assert schema["info"]["version"] == "0.8.0"
     assert set(schema["paths"]) == {
         "/api/v1/analyses",
         "/api/v1/audit-events",
@@ -31,6 +31,9 @@ def test_openapi_contains_phase6_paths_and_error_contract() -> None:
         "/api/v1/agent-runs",
         "/api/v1/agent-runs/{run_id}",
         "/api/v1/agent-runs/{run_id}/cancel",
+        "/api/v1/drafts",
+        "/api/v1/drafts/{draft_id}/versions",
+        "/api/v1/approvals/{approval_id}/decisions",
         "/api/v1/profiles/{profile_id}/evidence",
         "/health/live",
         "/health/ready",

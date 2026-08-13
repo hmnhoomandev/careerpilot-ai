@@ -120,3 +120,12 @@ the fake provider. Before any Gemini call, the application must additionally est
 authorization, purpose, consent where required, minimization/redaction, provider terms,
 training/retention policy, region, logging, cost authorization, and deletion handling.
 Phase 7 performs no external transfer.
+
+## Phase 8 draft and approval boundary
+
+Draft content and citations are high-risk personal data. PostgreSQL stores structured
+draft versions and decision records; audit stores only IDs, transition, reason, and
+correlation. PII patterns produce visible flags and protected-trait wording blocks.
+Production encryption/KMS, staff access, 30-day recovery, backups, legal holds, final
+retention, consent/lawful basis, and data-subject verification remain `LEGAL REVIEW`.
+No external transfer or legal-compliance certification is claimed.

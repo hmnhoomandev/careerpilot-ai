@@ -17,7 +17,100 @@ Every phase plan must state:
 
 Plans are living documents. Update status without erasing decisions or evidence.
 
-## Active implementation plan: Phase 7
+## Active implementation plan: Phase 8
+
+**Objective:** generate versioned resume and cover-letter drafts whose material claims
+are evidence-linked, then pause behind a durable, exact-version human approval gate.
+
+### Scope and acceptance mapping
+
+- Implement Resume Tailoring, Cover Letter, Privacy/PII, Bias/Compliance, and Approval
+  Coordinator roles with explicit non-responsibilities and state ownership.
+- Build a claim-to-evidence graph; unsupported skills, dates, employers, qualifications,
+  and metrics are blocked or returned only as suggestions requiring confirmation.
+- Store immutable draft versions and editable structured sections; every material claim
+  carries citations and validation status.
+- Implement pending, approved, edited-and-approved, rejected, more-information,
+  expired, and cancelled approval states with exact draft-version/hash binding.
+- Pause and resume human review using LangGraph interrupt/Command semantics and a
+  checkpointer; use PostgreSQL for restart-safe production records and local fakes in
+  default tests.
+- Emit allowlisted A2UI-compatible draft/approval messages that contain presentation
+  data only and never authorize an action.
+
+### Deliverables and expected files
+
+- Draft, claim, citation, approval, transition, and repository protocols in core.
+- PostgreSQL tables/Alembic `0003`, tenant-safe repository, generation/policy service,
+  approval graph, strict API contracts/routes, and application composition.
+- Unit/API/contract/e2e/PostgreSQL tests for state machine, restart/resume, stale and
+  concurrent approval, edit/versioning, PII, bias, invented claims/dates, and A2UI.
+- ADR, role dossiers, annotated source, tutorial, exercises/answers, security/privacy,
+  traceability, learning log, and `docs/reviews/phase-08-review.md`.
+- Add official `langgraph-checkpoint-postgres>=3.1,<3.2` (MIT, Python 3.10+) if its
+  lock/audit remains compatible; no live model dependency or call is needed.
+
+### Architecture, security, privacy, migration, deployment, and cost
+
+- Generation is deterministic/fake-first and may only transform authorized profile and
+  cited evidence. Verification, privacy, and bias policy are deterministic gates after
+  generation; no reviewer can convert unsupported content into fact.
+- Approval is a deterministic state machine. Every decision includes expected draft
+  version and content hash under optimistic concurrency and tenant authorization.
+- LangGraph interrupt is the interaction checkpoint; PostgreSQL draft/approval records
+  are authoritative durable business evidence. Temporal remains future owner of timers,
+  schedules, and cross-service recovery.
+- Drafts contain high-risk personal data. Store minimized structured content, exclude
+  it from logs/audit, and document encryption/retention/deletion/legal review gaps.
+- Migration is forward versioned and tested on disposable PostgreSQL. No cloud resource,
+  deployment, billing, external transfer, or paid/model call is authorized.
+
+### Risks and mitigations
+
+- Fabricated career claims: claim graph, citation requirements, invented-value corpus,
+  fail-closed verification, and confirmation-only suggestions.
+- Stale/raced approval: exact version/hash binding, atomic compare-and-update, terminal
+  state rules, and concurrency tests.
+- Approval bypass: separate generate/review/use permissions, pending by default, no
+  external side effect, server-derived context, and audit transitions.
+- PII leakage: deterministic detection, user-visible flags, minimized response/A2UI,
+  metadata-only telemetry, tenant-filtered persistence, and synthetic fixtures.
+- Checkpoint mismatch: scoped thread IDs, interrupt payload version/hash, durable record
+  reconciliation, restart/resume tests, and explicit recovery failure.
+- UI/schema injection: A2UI message types/components/actions are allowlisted and content
+  is data, not executable markup or authority.
+
+### Automated verification
+
+- State-transition matrix, terminal/expiry/cancel, edit/version/hash, stale/concurrent
+  decisions, restart/resume, graph interrupt, and repository transaction tests.
+- Unsupported/invented claim/date/metric corpus, citation integrity, PII/bias policy,
+  A2UI allowlist, cross-tenant/IDOR, OpenAPI, and audit/correlation tests.
+- Existing Python/web/PostgreSQL suites plus format, lint, type, build, migration drift,
+  SAST/SCA, secrets, docs/links/Mermaid, pre-commit, and complete diff review.
+
+### Manual verification
+
+- Generate synthetic resume/letter drafts; open every claim citation and inspect blocked
+  suggestions. Edit one draft and observe a new version/hash.
+- Approve exact version, reject another with feedback, request more information, cancel,
+  and verify stale approval is refused.
+- Restart while pending using PostgreSQL, reload the record/checkpoint, resume safely,
+  and inspect correlated audit plus A2UI-compatible review payload.
+
+### Explicit exclusions
+
+- Automatic email/submission/sharing, profile mutation, real resume export/PDF styling,
+  provider/model calls, company research, ADK, OpenAI Agents SDK, A2A, Temporal timers,
+  Pub/Sub, cloud deployment, production key management, and final legal certification.
+
+### Stop condition
+
+Complete `docs/reviews/phase-08-review.md`, report exact evidence, and wait for:
+
+`APPROVE PHASE 8 AND START PHASE 9`
+
+## Completed implementation plan: Phase 7
 
 **Objective:** build a typed, checkpointed LangGraph job-analysis workflow that
 coordinates bounded specialist roles and returns cited match, gap, evidence, and
