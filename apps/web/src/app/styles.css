@@ -623,6 +623,29 @@ fieldset {
   margin-top: 1rem;
   overflow-x: auto;
 }
+.platform-metrics {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid #e1e7e4;
+}
+.platform-metrics dl {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.5rem;
+}
+.platform-metrics dl div {
+  padding: 0.6rem;
+  border-radius: 0.5rem;
+  background: #f4f8f6;
+}
+.platform-metrics dt {
+  color: #60736a;
+  font-size: 0.72rem;
+}
+.platform-metrics dd {
+  margin: 0;
+  font-weight: 800;
+}
 table {
   width: 100%;
   border-collapse: collapse;

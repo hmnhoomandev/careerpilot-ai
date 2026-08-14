@@ -1,0 +1,18 @@
+[
+  {"name":"schema_version","type":"STRING","mode":"REQUIRED","description":"careerpilot.telemetry.v1"},
+  {"name":"occurred_at","type":"TIMESTAMP","mode":"REQUIRED","description":"UTC event time"},
+  {"name":"tenant_id","type":"STRING","mode":"REQUIRED","description":"Pseudonymous tenant reference"},
+  {"name":"actor_id","type":"STRING","mode":"REQUIRED","description":"Pseudonymous actor reference"},
+  {"name":"correlation_id","type":"STRING","mode":"REQUIRED","description":"Cross-boundary correlation"},
+  {"name":"operation_id","type":"STRING","mode":"REQUIRED","description":"Workflow graph agent or request reference"},
+  {"name":"kind","type":"STRING","mode":"REQUIRED","description":"HTTP workflow graph agent tool approval retrieval prompt or model"},
+  {"name":"operation","type":"STRING","mode":"REQUIRED","description":"Bounded operation name"},
+  {"name":"outcome","type":"STRING","mode":"REQUIRED","description":"Stable outcome"},
+  {"name":"duration_ms","type":"FLOAT","mode":"REQUIRED","description":"Observed duration"},
+  {"name":"provider","type":"STRING","mode":"REQUIRED","description":"Explicit provider or none"},
+  {"name":"model","type":"STRING","mode":"REQUIRED","description":"Versioned model or none"},
+  {"name":"prompt_version","type":"STRING","mode":"REQUIRED","description":"Prompt registry version or none"},
+  {"name":"input_tokens","type":"INTEGER","mode":"REQUIRED","description":"Count only"},
+  {"name":"output_tokens","type":"INTEGER","mode":"REQUIRED","description":"Count only"},
+  {"name":"estimated_cost_chf","type":"FLOAT","mode":"REQUIRED","description":"Estimate not invoice"}
+]

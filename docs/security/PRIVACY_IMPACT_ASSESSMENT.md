@@ -184,3 +184,12 @@ Career content remains tab-local and is not written to localStorage, sessionStor
 frontend telemetry. The UI shows minimized correlation metadata and synthetic fixtures.
 Production session storage, cache headers, browser/device threat assumptions, accessibility
 data, translation governance and user-facing retention/export/deletion copy require review.
+
+## Phase 15 telemetry and analytics addendum
+
+Telemetry accepts only bounded pseudonymous identifiers, versions, counts, durations, outcomes and
+cost estimates. Prompts, responses and career content are prohibited. ADK span capture is
+`NO_CONTENT`; its independent prompt-response upload and BigQuery analytics remain disabled, as do
+LangSmith/OpenAI exports. Production purpose/lawful basis, processor terms, regional availability,
+retention, access, data-subject rights, pseudonym rotation and reidentification risk require a DPIA
+update and professional legal review.

@@ -170,3 +170,12 @@ execution, client-side authorization assumptions, stale approval, sensitive brow
 and misleading capability states. Closed A2UI validation, React text escaping, no dynamic HTML
 or links, server reauthorization, exact draft binding, no browser persistence, confirmations,
 safe errors and labelled local-only states mitigate the activated surface.
+
+## Phase 15 telemetry, routing, and cost addendum
+
+New threats include prompt/PII leakage in traces, high-cardinality denial-of-wallet, tenant metrics
+leakage, forged cost data, budget races, cache cross-talk, routing downgrade and silent provider
+fallback. Closed metadata, bounded local retention, owner-only tenant queries, explicit versions,
+pre-execution estimates/reservations, tenant-scoped cache keys, deterministic route reasons and no
+fallback mitigate the local design. Export IAM, durable ledgers, signed price data, sampling,
+alerts and analytics retention remain production controls.

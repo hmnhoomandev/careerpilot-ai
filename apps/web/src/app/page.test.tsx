@@ -114,6 +114,42 @@ describe("HomePage", () => {
     expect(screen.getByText(/entered data remains in this tab/i)).toBeInTheDocument();
   });
 
+  it("shows owner-authorized local metrics without prompt content", async () => {
+    vi.spyOn(globalThis, "fetch")
+      .mockResolvedValueOnce(jsonResponse(ADA_SESSION))
+      .mockResolvedValueOnce(
+        jsonResponse({
+          schema_version: "careerpilot.metrics.v1",
+          event_count: 4,
+          success_count: 4,
+          error_count: 0,
+          provider_failures: 0,
+          p50_duration_ms: 12,
+          p95_duration_ms: 24,
+          input_tokens: 0,
+          output_tokens: 0,
+          estimated_cost_chf: 0,
+          budget_limit_chf: 0,
+          budget_remaining_chf: 0,
+          export_status: "disabled_local_only",
+          content_capture: "NO_CONTENT",
+        }),
+      );
+    render(<HomePage />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Start local session" }));
+    fireEvent.click(
+      await screen.findByRole("button", { name: "Load platform metrics" }),
+    );
+
+    expect(
+      await screen.findByRole("heading", { name: "Local platform metrics" }),
+    ).toBeInTheDocument();
+    expect(screen.getByText("24 ms")).toBeInTheDocument();
+    expect(screen.getByText(/content capture NO_CONTENT/)).toBeInTheDocument();
+    expect(screen.queryByText(/prompt text/i)).toBeNull();
+  });
+
   it("shows a safe authorization denial for a member audit request", async () => {
     const samSession = {
       ...ADA_SESSION,

@@ -16,8 +16,8 @@
 | 11 | A2A interoperability and agent registry | Complete |
 | 12 | Temporal durable application workflow | Complete |
 | 13 | Pub/Sub, optional Dapr boundary, notifications | Accepted |
-| 14 | Complete accessible UI and A2UI-compatible messages | Complete — awaiting acceptance |
-| 15 | Observability, evaluation, routing, and cost control | Not started |
+| 14 | Complete accessible UI and A2UI-compatible messages | Accepted |
+| 15 | Observability, evaluation, routing, and cost control | Complete — awaiting acceptance |
 | 16 | Security hardening and adversarial verification | Not started |
 | 17 | Containers, supply chain, IaC, Cloud Run | Not started |
 | 18 | Optional GKE reference architecture | Not started |

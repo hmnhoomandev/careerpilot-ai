@@ -12,6 +12,7 @@ import {
   deleteDocument,
   loadAuditEvents,
   loadNotifications,
+  loadPlatformMetrics,
   loginLocalUser,
   registerEvidence,
   runDeterministicJourney,
@@ -28,6 +29,7 @@ import type {
   EvidenceItem,
   LocalSession,
   NotificationItem,
+  PlatformMetrics,
   Profile,
   RetrievalResult,
 } from "../lib/careerpilot-api";
@@ -53,6 +55,7 @@ export default function HomePage() {
   const [retrieval, setRetrieval] = useState<RetrievalResult | null>(null);
   const [draft, setDraft] = useState<CareerDraft | null>(null);
   const [notifications, setNotifications] = useState<NotificationItem[]>([]);
+  const [platformMetrics, setPlatformMetrics] = useState<PlatformMetrics | null>(null);
   const [auditEvents, setAuditEvents] = useState<AuditEvent[]>([]);
   const [notice, setNotice] = useState("");
   const [error, setError] = useState<CareerPilotApiError | null>(null);
@@ -256,6 +259,7 @@ export default function HomePage() {
     setRetrieval(null);
     setDraft(null);
     setNotifications([]);
+    setPlatformMetrics(null);
     setAuditEvents([]);
   }
 
@@ -584,6 +588,17 @@ export default function HomePage() {
                     Promote Sam to owner
                   </button>
                 ) : null}
+                <button
+                  type="button"
+                  className="secondary"
+                  onClick={() =>
+                    run("metrics", async () =>
+                      setPlatformMetrics(await loadPlatformMetrics(session, tenantId)),
+                    )
+                  }
+                >
+                  Load platform metrics
+                </button>
               </div>
               {auditEvents.length ? (
                 <AuditPanel events={auditEvents} />
@@ -592,6 +607,9 @@ export default function HomePage() {
                   Audit events are loaded only when requested.
                 </p>
               )}
+              {platformMetrics ? (
+                <PlatformMetricsPanel metrics={platformMetrics} />
+              ) : null}
             </article>
           </section>
         </main>
@@ -1035,6 +1053,36 @@ function NotificationList({ items }: { items: NotificationItem[] }) {
         </li>
       ))}
     </ul>
+  );
+}
+
+function PlatformMetricsPanel({ metrics }: { metrics: PlatformMetrics }) {
+  return (
+    <section className="platform-metrics" aria-labelledby="platform-metrics-heading">
+      <h3 id="platform-metrics-heading">Local platform metrics</h3>
+      <dl>
+        <div>
+          <dt>Events</dt>
+          <dd>{metrics.event_count}</dd>
+        </div>
+        <div>
+          <dt>p95 latency</dt>
+          <dd>{metrics.p95_duration_ms} ms</dd>
+        </div>
+        <div>
+          <dt>Errors</dt>
+          <dd>{metrics.error_count}</dd>
+        </div>
+        <div>
+          <dt>Estimated cost</dt>
+          <dd>CHF {metrics.estimated_cost_chf.toFixed(4)}</dd>
+        </div>
+      </dl>
+      <p className="help">
+        Export {metrics.export_status.replaceAll("_", " ")} · content capture{" "}
+        {metrics.content_capture}
+      </p>
+    </section>
   );
 }
 function AuditPanel({ events }: { events: AuditEvent[] }) {

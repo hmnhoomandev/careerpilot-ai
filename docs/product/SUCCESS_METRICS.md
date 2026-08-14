@@ -26,3 +26,7 @@ phase. They are not current service claims.
 
 Thresholds must be reassessed with real, consented production telemetry and may
 change only through a recorded decision.
+
+Phase 15 implements local measurement contracts for MET-002–004, MET-014–017. The synthetic
+offline fixture meets its versioned thresholds, but this is not production traffic evidence and
+does not establish the production availability, latency or error-rate claims.

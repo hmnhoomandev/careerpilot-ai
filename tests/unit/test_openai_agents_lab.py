@@ -7,6 +7,7 @@ from careerpilot_openai_agents.config import (
     Settings,
     build_service,
     validate_live_budget,
+    validate_trace_export,
 )
 from careerpilot_openai_agents.errors import (
     ApprovalConflictError,
@@ -148,6 +149,12 @@ def test_live_provider_requires_positive_approved_budget() -> None:
     validate_live_budget(
         Settings(provider="openai", live_cost_approved=True, max_cost_chf=0.01)
     )
+
+
+def test_openai_trace_export_requires_separate_approval() -> None:
+    validate_trace_export(Settings())
+    with pytest.raises(PermissionError, match="trace_export"):
+        validate_trace_export(Settings(trace_export=True))
 
 
 @pytest.mark.asyncio

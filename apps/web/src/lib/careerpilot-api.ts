@@ -146,6 +146,23 @@ export type NotificationItem = {
   read_at: string | null;
 };
 
+export type PlatformMetrics = {
+  schema_version: "careerpilot.metrics.v1";
+  event_count: number;
+  success_count: number;
+  error_count: number;
+  provider_failures: number;
+  p50_duration_ms: number;
+  p95_duration_ms: number;
+  input_tokens: number;
+  output_tokens: number;
+  estimated_cost_chf: number;
+  budget_limit_chf: number;
+  budget_remaining_chf: number;
+  export_status: string;
+  content_capture: "NO_CONTENT";
+};
+
 type ErrorResponse = {
   error?: {
     message?: string;
@@ -416,4 +433,14 @@ export async function saveNotificationPreferences(
     body: JSON.stringify({ enabled_categories: enabledCategories }),
   });
   await parseResponse(response);
+}
+
+export async function loadPlatformMetrics(
+  session: LocalSession,
+  tenantId: string,
+): Promise<PlatformMetrics> {
+  const response = await fetch(`${API_BASE_URL}/api/v1/platform/metrics`, {
+    headers: authenticatedHeaders(session, tenantId),
+  });
+  return parseResponse<PlatformMetrics>(response);
 }

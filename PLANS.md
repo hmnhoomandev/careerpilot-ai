@@ -17,6 +17,107 @@ Every phase plan must state:
 
 Plans are living documents. Update status without erasing decisions or evidence.
 
+## Completed implementation plan: Phase 15
+
+**Objective:** make CareerPilot measurable and cost-controlled through privacy-safe local
+telemetry, deterministic evaluation, explicit model/prompt registries and a fail-closed routing/
+budget policy, while keeping all cloud/export/live-provider integrations disabled by default.
+
+### Scope and acceptance mapping
+
+- Define a versioned metadata-only telemetry event spanning HTTP, workflow, graph, agent, tool,
+  approval, retrieval, prompt and model operations with correlation/run identifiers, duration,
+  outcome, provider/model/prompt versions, tokens and estimated CHF cost where applicable.
+- Add local metrics aggregation for latency percentiles, completion/error/provider failure,
+  retrieval/grounding/tool/handoff/safety quality and cost per workflow; expose an authenticated,
+  tenant-safe local dashboard contract.
+- Define Cloud Logging/Trace, BigQuery Agent Analytics, LangSmith and OpenAI/ADK trace adapter
+  boundaries. Export is opt-in and disabled; prompt/response content capture is `NO_CONTENT`.
+- Implement versioned prompt/model registry entries and explicit routing by capability, privacy,
+  quality, latency, cost, availability and approval. A route failure is visible; no provider/model
+  fallback occurs implicitly.
+- Implement per-tenant/workflow CHF budgets, quotas, deterministic estimates and cache policy.
+  CHF 0 permits only zero-cost fake/local routes; any positive cost requires explicit approval.
+- Build a versioned offline evaluation harness/dashboard for retrieval, routing, tools, handoffs,
+  grounding, safety, latency and cost with threshold failures and machine-readable reports.
+
+### Deliverables and expected files
+
+- Framework-neutral telemetry, registry, routing, budget and evaluation values/services in core;
+  local collector/export adapter/API composition in FastAPI; local dashboard presentation in web.
+- BigQuery analytics schema and exporter/privacy configuration documentation; adapters perform no
+  network calls or resource creation in Phase 15.
+- Decision-table, budget/quota/cache/no-fallback, telemetry redaction/propagation, aggregation,
+  adapter, API authorization and evaluation threshold tests using synthetic fixtures.
+- ADR-0027, observability/evaluation architecture, annotated source, tutorial/exercises,
+  security/privacy/cost/traceability/state/roadmap/learning and mandatory Phase 15 review.
+- No new dependency is planned: existing OpenTelemetry API/SDK and transitive LangSmith types are
+  sufficient; direct vendor SDK imports are avoided in the core.
+
+### Architecture, security, privacy, migration, deployment, and cost
+
+- Business services emit typed metadata to a port. Local memory is the default sink; exporters
+  receive already-redacted events and never prompts, resumes, job text, drafts or hidden reasoning.
+- ADK prompt-response GCS/BigQuery upload stays disabled independently from trace content capture;
+  `NO_CONTENT` is the required trace/event mode. OpenAI SDK export remains disabled.
+- Tenant and actor IDs are pseudonymous operational references and dashboard queries reauthorize
+  tenant ownership. Retention, lawful basis and production analytics access need legal review.
+- Routing is deterministic policy, not an LLM decision. Provider/model names are explicit outputs;
+  unavailable or over-budget selections fail rather than switch silently.
+- Cache keys use tenant, capability, prompt/model version and minimized input digest; sensitive
+  payloads are never cached by default. Cache hits cannot bypass authorization or evidence policy.
+- No migration, exporter endpoint, credentials, BigQuery dataset, Cloud Trace/Logging resource,
+  LangSmith project, live call, deployment, billing or paid service is authorized.
+
+### Risks and mitigations
+
+- PII/secret leakage: closed telemetry schema, unsafe-key/value rejection, content-free adapters,
+  adversarial redaction tests and disabled content capture/export.
+- High-cardinality/cost explosion: bounded identifiers/labels, local aggregation, quotas, retention
+  design, no histogram exporter yet and explicit production sampling/cardinality review.
+- Misrouting/silent fallback: versioned decision table, one selected route, reason codes, explicit
+  unavailable/quality/privacy/cost failures and exhaustive tests.
+- Budget race/estimate drift: atomic local ledger semantics, reservations, reconciliation records,
+  conservative estimates and production durable transaction requirement.
+- Evaluation gaming/drift: versioned fixtures/thresholds, multiple metric families, explicit skips,
+  deterministic fake baseline and separately authorized live evaluations.
+- Vendor lock-in: OpenTelemetry/core ports own semantics; Cloud, LangSmith, ADK and OpenAI are
+  bounded adapters whose configuration cannot change domain policy.
+
+### Automated verification
+
+- Telemetry schema/redaction/cardinality tests and end-to-end correlation propagation.
+- Routing decision matrix across capability/privacy/quality/latency/cost/availability; no-fallback,
+  budget/quota/reservation/cache and provider-failure tests.
+- Evaluation report thresholds for retrieval, route, tool, handoff, grounding, safety, latency and
+  cost; default fake execution only. ADK live behavioral evaluation remains opt-in and unauthorized.
+- Complete Ruff/MyPy/Pytest, frontend format/lint/type/test/build, SAST/SCA/secrets,
+  docs/link/Mermaid, governance, pre-commit and complete diff review with warnings disclosed.
+
+### Manual verification
+
+- Run one synthetic journey and follow correlation/run IDs across HTTP and local component events.
+- Inspect the metrics dashboard for latency, outcome, provider/model/prompt, token and CHF estimate
+  without career text, prompts, secrets or hidden reasoning.
+- Route a zero-cost fake workflow; request a paid/unavailable route and observe explicit blocking
+  with no fallback. Exceed a synthetic budget/quota and inspect the visible reason.
+- Run the offline evaluation harness, deliberately lower one result and observe threshold failure.
+- Inspect disabled Cloud/BigQuery/LangSmith/ADK/OpenAI export configuration and `NO_CONTENT` policy.
+
+### Explicit exclusions
+
+- Provisioning/configuring Cloud Logging, Cloud Trace, GCS, BigQuery, LangSmith or third-party SaaS;
+  real exporter traffic, credentials, customer data, paid/live model evaluation, production alerting,
+  final sampling/retention, autoscaling/capacity, Phase 16 security hardening and deployment.
+- Dynamic model discovery, automatic provider fallback, semantic prompt cache, production billing
+  reconciliation, hidden chain-of-thought capture and claims of production SLO achievement.
+
+### Stop condition
+
+Complete `docs/reviews/phase-15-review.md`, report exact evidence, and wait for:
+
+`APPROVE PHASE 15 AND START PHASE 16`
+
 ## Completed implementation plan: Phase 14
 
 **Objective:** replace the development-preview page with a coherent, responsive,

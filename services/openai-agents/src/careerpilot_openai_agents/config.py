@@ -32,9 +32,16 @@ def validate_live_budget(settings: Settings) -> None:
         raise BudgetDeniedError
 
 
+def validate_trace_export(settings: Settings) -> None:
+    """Keep provider trace export disabled until privacy and cost approval exists."""
+    if settings.trace_export:
+        raise PermissionError("openai_trace_export_not_approved")
+
+
 def build_service(settings: Settings | None = None) -> InterviewService:
     selected = settings or Settings()
     validate_live_budget(selected)
+    validate_trace_export(selected)
     provider = (
         FakeInterviewProvider()
         if selected.provider == "fake"

@@ -40,3 +40,11 @@ Zurich Tier 2 Cloud Run pricing, Cloud SQL, storage/backups, networking/egress,
 Pub/Sub, secrets/KMS, telemetry, security tooling, model tokens, support, and tax.
 No numeric estimate is recorded in Phase 0 because no deployment shape or usage
 volume is approved and prices are time-sensitive.
+
+## Phase 15 cost-control addendum
+
+The local tenant budget is CHF 0. Model routes include a conservative CHF-per-1,000-token estimate;
+positive estimates require explicit approval and remaining budget before reservation. Local/fake
+routes cost zero. Estimates are not invoices. Production requires provider price-version records,
+currency conversion policy, atomic durable reservations, usage reconciliation, alerts and owner-
+approved budgets. No cloud analytics/export resource or model call was created in Phase 15.

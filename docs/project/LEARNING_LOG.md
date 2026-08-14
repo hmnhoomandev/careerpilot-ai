@@ -264,3 +264,17 @@ Tutorial: `docs/tutorials/phase-14-accessible-product-ui.md`
 Exercises: `docs/exercises/phase-14-exercises.md`
 
 Answers: `docs/exercises/phase-14-answers.md`
+
+## Phase 15 — observability, evaluation, routing, and cost control
+
+- Separated telemetry, evaluation, routing and budget authority with versioned contracts.
+- Practiced content-free events, tenant-scoped aggregation, percentiles and correlation.
+- Implemented explicit route decisions, no fallback, budget reservation, quota and safe cache keys.
+- Distinguished deterministic offline gates from opt-in ADK generation/LLM-as-judge evaluation.
+- Kept ADK prompt-response upload, BigQuery, Cloud, LangSmith and OpenAI trace export disabled.
+
+Tutorial: `docs/tutorials/phase-15-observability-routing-and-evaluation.md`
+
+Exercises: `docs/exercises/phase-15-exercises.md`
+
+Answers: `docs/exercises/phase-15-answers.md`

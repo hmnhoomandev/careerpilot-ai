@@ -1,11 +1,11 @@
 # Project State
 
 - **Project:** CareerPilot AI
-- **Current phase:** Phase 14 — Complete production UI and A2UI experience
+- **Current phase:** Phase 15 — Observability, evaluation, routing, and cost control
 - **Phase status:** Complete — awaiting owner acceptance
 - **Last updated:** 2026-08-14
-- **Working tree at phase start:** Clean at `0517066` on `main`
-- **Production code:** Accepted through Phase 13; Phase 14 complete and awaiting acceptance
+- **Working tree at phase start:** Clean at `2fc849e` on `main`
+- **Production code:** Accepted through Phase 14; Phase 15 complete and awaiting acceptance
 - **Cloud resources created:** None
 - **Paid calls made:** None
 
@@ -239,8 +239,28 @@
 - No live model, real personal data, cloud resource, deployment, billing, paid operation,
   external communication or automatic submission occurred.
 
+## Phase 15 implementation and verification evidence
+
+- `careerpilot.telemetry.v1` rejects content-like metadata and supports HTTP/workflow/graph/
+  agent/tool/approval/retrieval/prompt/model kinds, version identifiers, durations, tokens and
+  estimated CHF cost. A bounded collector provides tenant-scoped p50/p95/outcome/provider/cost.
+- Authenticated owners can inspect a content-free local metrics API/UI. Request paths are hashed
+  before telemetry. Cloud/BigQuery/LangSmith exporters, ADK prompt-response/analytics tiers and
+  OpenAI trace export are fail-closed; ADK capture remains `NO_CONTENT`.
+- Versioned prompt/model registries, explicit no-fallback route policy, CHF budget reservation,
+  workflow quotas, privacy-aware tenant cache keys and a nine-metric offline evaluation gate exist.
+- Full Pytest passed 202 with six expected skips and four ADK deprecation warnings. Focused Phase
+  15 tests passed 97 before the final hostile-path test; frontend passed ten Vitest tests plus
+  Prettier/ESLint/TypeScript/build; Ruff and strict MyPy passed 128 files.
+- Markdown lint passed 148 files; governance passed 156 Markdown files/74 requirement IDs;
+  13 Mermaid diagrams rendered; secrets passed. Semgrep found zero issues across 134 tracked
+  Python targets and five new Phase 15 files. Pip/npm audits found no known vulnerabilities;
+  pip-audit skipped five unpublished internal packages.
+- No live/managed ADK evaluation, LLM judge, exporter, cloud analytics resource, personal-data
+  transfer, model call, deployment, billing or paid operation occurred.
+
 ## Next action
 
-Review and accept Phase 14; then, and only then, start Phase 15 with:
+Review and accept Phase 15; then, and only then, start Phase 16 with:
 
-`APPROVE PHASE 14 AND START PHASE 15`
+`APPROVE PHASE 15 AND START PHASE 16`

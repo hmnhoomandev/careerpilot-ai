@@ -82,3 +82,12 @@ not named individuals.
   active external automation is mitigated by disabled actions and explicit copy.
 - Automated semantic/axe checks do not replace assistive-technology and browser/device testing;
   manual keyboard, zoom, screen-reader and mobile review remains required before release.
+
+## Phase 15 open risks
+
+- Local telemetry and budget/quota state is process-local; it cannot prove distributed limits,
+  durable reconciliation, alerting or production SLOs.
+- Cloud/BigQuery/LangSmith/provider adapters are intentionally disabled and their region, IAM,
+  retention, cost and operational behavior remain unverified.
+- Offline synthetic evaluation can regress differently from consented production traffic; live
+  and LLM-judge evaluation needs separate data-transfer, region and budget approval.

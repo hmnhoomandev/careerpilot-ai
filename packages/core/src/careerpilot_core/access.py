@@ -34,6 +34,7 @@ class Permission(StrEnum):
     TOOL_INVOKE = "tool.invoke"
     NOTIFICATION_READ = "notification.read"
     NOTIFICATION_MANAGE = "notification.manage"
+    PLATFORM_METRICS_READ = "platform_metrics.read"
 
 
 ROLE_PERMISSIONS: dict[Role, frozenset[Permission]] = {

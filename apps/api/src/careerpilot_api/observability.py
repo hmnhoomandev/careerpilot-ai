@@ -4,12 +4,59 @@ from __future__ import annotations
 
 import json
 import logging
+from dataclasses import asdict, dataclass
 from datetime import UTC, datetime
-from typing import Any
+from enum import StrEnum
+from typing import TYPE_CHECKING, Any, Protocol
 
 from opentelemetry import trace
 
+if TYPE_CHECKING:
+    from careerpilot_core import TelemetryEvent
+
 LOGGER_NAME = "careerpilot.api"
+
+
+class ContentCaptureMode(StrEnum):
+    NO_CONTENT = "NO_CONTENT"
+
+
+@dataclass(frozen=True, slots=True)
+class ExporterConfiguration:
+    """Describe an exporter without credentials, clients, or network side effects."""
+
+    destination: str
+    enabled: bool = False
+    content_capture: ContentCaptureMode = ContentCaptureMode.NO_CONTENT
+
+    def __post_init__(self) -> None:
+        if self.enabled:
+            raise ValueError("telemetry_export_requires_separate_approval")
+
+
+class TelemetryExporter(Protocol):
+    def export(self, event: TelemetryEvent) -> None: ...
+
+
+class DisabledTelemetryExporter:
+    """Make disabled export attempts visible instead of silently dropping them."""
+
+    def __init__(self, configuration: ExporterConfiguration) -> None:
+        self.configuration = configuration
+
+    def export(self, event: TelemetryEvent) -> None:
+        del event
+        raise RuntimeError(
+            f"telemetry_export_disabled:{self.configuration.destination}"
+        )
+
+
+def telemetry_json(event: TelemetryEvent) -> str:
+    """Serialize only the already validated content-free telemetry schema."""
+    payload = asdict(event)
+    payload["kind"] = event.kind.value
+    payload["attributes"] = dict(event.attributes)
+    return json.dumps(payload, separators=(",", ":"), sort_keys=True)
 
 
 class JsonFormatter(logging.Formatter):

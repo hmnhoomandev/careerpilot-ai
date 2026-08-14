@@ -40,3 +40,5 @@
 | DEC-036 | 2026-08-14 | Keep Dapr deferred until a measured cross-runtime benefit exceeds its operational cost | Accepted | ADR-0025 |
 | DEC-037 | 2026-08-14 | Use a semantic responsive dashboard with FastAPI retaining all authorization and business authority | Accepted for Phase 14 | ADR-0026 |
 | DEC-038 | 2026-08-14 | Render A2UI-compatible messages through a closed schema/component/action allowlist with text escaping | Accepted | ADR-0026 |
+| DEC-039 | 2026-08-14 | Use one bounded metadata-only telemetry schema and keep all external exporters/content capture disabled by default | Accepted for Phase 15 | ADR-0027 |
+| DEC-040 | 2026-08-14 | Route only an explicitly requested versioned model and fail visibly on privacy, quality, latency, availability or budget constraints without fallback | Accepted | ADR-0027 |

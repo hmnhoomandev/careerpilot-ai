@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import hashlib
 import os
 import time
 import uuid
@@ -105,7 +106,13 @@ from careerpilot_api.notification_contracts import (
     NotificationPreferenceResponse,
     NotificationResponse,
 )
-from careerpilot_api.observability import configure_logging, get_tracer
+from careerpilot_api.observability import (
+    ContentCaptureMode,
+    ExporterConfiguration,
+    configure_logging,
+    get_tracer,
+)
+from careerpilot_api.platform_contracts import PlatformMetricsResponse
 from careerpilot_api.repository import InMemoryProfileRepository
 from careerpilot_api.retrieval_repository import (
     InMemoryDocumentRepository,
@@ -133,6 +140,7 @@ from careerpilot_core import (
     ApprovalTransitionError,
     AuditEventDraft,
     AuthorizationContext,
+    BudgetLedger,
     CareerDraft,
     CareerJourneyService,
     DeletionConfirmationError,
@@ -142,6 +150,8 @@ from careerpilot_core import (
     Education,
     EvidenceValidationError,
     Experience,
+    LocalTelemetryCollector,
+    OperationKind,
     Permission,
     ProfileConflictError,
     ProfileNotFoundError,
@@ -149,6 +159,7 @@ from careerpilot_core import (
     RagService,
     ResourceAttributes,
     Role,
+    TelemetryEvent,
     ToolErrorCode,
     ToolExecutionError,
 )
@@ -161,6 +172,7 @@ if TYPE_CHECKING:
 
 CORRELATION_HEADER = "X-Correlation-ID"
 TENANT_HEADER = "X-CareerPilot-Tenant-ID"
+HTTP_ERROR_STATUS = 400
 
 
 def _correlation_id(request: Request) -> str:
@@ -261,6 +273,12 @@ def create_app(
     a2a_registry = build_default_registry()
     logger = configure_logging()
     tracer = get_tracer()
+    telemetry = LocalTelemetryCollector()
+    budget_ledger = BudgetLedger({"tenant-ada": 0, "tenant-grace": 0})
+    exporter_configuration = ExporterConfiguration(
+        destination="local-only",
+        content_capture=ContentCaptureMode.NO_CONTENT,
+    )
     event_store = InMemoryEventStore()
     local_event_transport = LocalEventTransport()
     event_consumer = EventConsumer(event_store)
@@ -277,8 +295,8 @@ def create_app(
 
     app = FastAPI(
         title="CareerPilot API",
-        version="0.13.0",
-        description="Policy-controlled career workflows and in-app notifications.",
+        version="0.15.0",
+        description="Policy-controlled career workflows with local platform metrics.",
         lifespan=lifespan,
         responses={500: {"model": ErrorResponse}},
     )
@@ -298,6 +316,9 @@ def create_app(
     app.state.event_consumer = event_consumer
     app.state.notification_service = notification_service
     app.state.outbox_dispatcher = outbox_dispatcher
+    app.state.telemetry = telemetry
+    app.state.budget_ledger = budget_ledger
+    app.state.exporter_configuration = exporter_configuration
     app.add_middleware(
         CORSMiddleware,
         allow_origins=["http://127.0.0.1:3000", "http://localhost:3000"],
@@ -391,6 +412,30 @@ def create_app(
             span.set_attribute("http.request.method", request.method)
             response = await call_next(request)
             span.set_attribute("http.response.status_code", response.status_code)
+        context = getattr(request.state, "authorization_context", None)
+        if isinstance(context, AuthorizationContext):
+            telemetry.record(
+                TelemetryEvent(
+                    event_id=f"http:{correlation_id}",
+                    occurred_at=datetime.now(UTC).isoformat(),
+                    tenant_id=context.tenant_id,
+                    actor_id=context.actor_id,
+                    correlation_id=correlation_id,
+                    operation_id=f"request:{correlation_id}",
+                    kind=OperationKind.HTTP,
+                    operation=(
+                        f"http.{request.method.lower()}."
+                        f"{hashlib.sha256(request.url.path.encode()).hexdigest()[:16]}"
+                    ),
+                    outcome=(
+                        "success"
+                        if response.status_code < HTTP_ERROR_STATUS
+                        else "error"
+                    ),
+                    duration_ms=round((time.perf_counter() - started) * 1_000, 3),
+                    attributes=(("status_code", str(response.status_code)),),
+                )
+            )
         response.headers[CORRELATION_HEADER] = correlation_id
         logger.info(
             "request_completed",
@@ -671,6 +716,36 @@ def create_app(
     @app.get("/health/ready", response_model=HealthResponse, tags=["health"])
     async def ready() -> HealthResponse:
         return HealthResponse(status="ready")
+
+    @app.get(
+        "/api/v1/platform/metrics",
+        response_model=PlatformMetricsResponse,
+        tags=["platform"],
+    )
+    async def platform_metrics(request: Request) -> PlatformMetricsResponse:
+        context = request_context(request)
+        audit_policy(
+            context,
+            Permission.PLATFORM_METRICS_READ,
+            allowed_reason="platform_metrics_read_allowed",
+        )
+        summary = telemetry.summary(context.tenant_id)
+        return PlatformMetricsResponse(
+            schema_version="careerpilot.metrics.v1",
+            event_count=summary.event_count,
+            success_count=summary.success_count,
+            error_count=summary.error_count,
+            provider_failures=summary.provider_failures,
+            p50_duration_ms=summary.p50_duration_ms,
+            p95_duration_ms=summary.p95_duration_ms,
+            input_tokens=summary.input_tokens,
+            output_tokens=summary.output_tokens,
+            estimated_cost_chf=summary.estimated_cost_chf,
+            budget_limit_chf=0,
+            budget_remaining_chf=budget_ledger.remaining(context.tenant_id),
+            export_status="disabled_local_only",
+            content_capture=exporter_configuration.content_capture,
+        )
 
     @app.get(
         "/api/v1/dev/users",

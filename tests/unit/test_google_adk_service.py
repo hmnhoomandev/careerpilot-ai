@@ -4,6 +4,7 @@ import asyncio
 
 import pytest
 from careerpilot_google_adk.agent import build_agent
+from careerpilot_google_adk.config import Settings, validate_telemetry
 from careerpilot_google_adk.errors import (
     MalformedProviderOutputError,
     ProviderOutageError,
@@ -22,6 +23,14 @@ from careerpilot_google_adk.provider import FakeResearchProvider
 from careerpilot_google_adk.service import ResearchService
 from careerpilot_google_adk.telemetry import MetricSink
 from careerpilot_google_adk.tools import build_source_tool
+
+
+def test_adk_content_capture_is_off_and_export_tiers_require_approval() -> None:
+    settings = Settings()
+    assert settings.capture_message_content == "NO_CONTENT"
+    validate_telemetry(settings)
+    with pytest.raises(PermissionError, match="telemetry_export"):
+        validate_telemetry(Settings(prompt_response_logging=True))
 
 
 def _request(
