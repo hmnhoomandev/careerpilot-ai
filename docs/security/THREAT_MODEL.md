@@ -154,3 +154,11 @@ deterministic sandbox/replay tests, reverse idempotent compensation, and no prov
 Production requires authenticated gateway and workload identity, namespace/task-queue IAM,
 TLS, per-activity authorization, visibility/search-attribute policy, rate/budget controls,
 retention/deletion, encryption, audit integration, and operational recovery exercises.
+
+## Phase 13 asynchronous-delivery addendum
+
+New threats include forged events, cross-tenant references, duplicate or reordered delivery,
+poison-message retry storms, dead-letter disclosure, replay abuse, and publisher/subscriber
+identity compromise. Strict envelopes, tenant-bound handlers, inbox uniqueness, sequence
+cursors, bounded attempts, digest-only poison records, explicit replay, and least-privilege
+future IAM mitigate the local design. Production broker and database controls remain open.

@@ -14,8 +14,8 @@
 | 9 | Bounded Google ADK/Gemini service | Accepted |
 | 10 | Bounded OpenAI Agents SDK service and handoff lab | Complete — awaiting acceptance |
 | 11 | A2A interoperability and agent registry | Complete |
-| 12 | Temporal durable application workflow | In review |
-| 13 | Pub/Sub, optional Dapr boundary, notifications | Not started |
+| 12 | Temporal durable application workflow | Complete |
+| 13 | Pub/Sub, optional Dapr boundary, notifications | Complete — awaiting acceptance |
 | 14 | Complete accessible UI and A2UI-compatible messages | Not started |
 | 15 | Observability, evaluation, routing, and cost control | Not started |
 | 16 | Security hardening and adversarial verification | Not started |

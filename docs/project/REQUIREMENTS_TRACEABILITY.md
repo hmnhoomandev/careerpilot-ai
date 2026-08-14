@@ -53,6 +53,8 @@
 | SEC-001/SEC-003/SEC-006/NFR-010/NFR-012 | Tenant-safe delegated task control | Authenticated resource policy, scoped IDs, correlation, timeout/cancel/error mapping, no fallback | Unauthorized, foreign tenant, duplicate, timeout, outage tests | Verified locally; production transport deferred |
 | FR-012/FR-013/FR-020/NFR-013 | ADR-0024 durable application preparation | Temporal workflow, exact approval signal, tracking/follow-up activities, cancellation and reverse compensation | Time-skipping, restart, signal/query, cancellation, compensation and replay tests | Verified with local Temporal test server; production adapters deferred |
 | NFR-002/NFR-003/NFR-009/NFR-010/NFR-011/NFR-016/NFR-020 | Versioned cost-free durable execution boundary | Opaque history contracts, versioned task queue/patch, activity timeout/retry/heartbeat/idempotency, fake ledger | Contract, heartbeat, retry-after-commit, MyPy and complete regression gates | Phase 12 local baseline verified |
+| FR-018/NFR-009/NFR-012/NFR-013 | ADR-0025 asynchronous integration and notification foundation | Versioned envelope, transactional outbox model, inbox, aggregate cursor, retry/dead letter/replay, authenticated preferences and in-app notification API | Eventing unit, Pub/Sub contract, notification API isolation, and OpenAPI tests | Phase 13 local baseline verified; durable PostgreSQL and cloud transport deferred |
+| SEC-003/SEC-006/SEC-009/SEC-014 | Tenant-safe minimal event boundary | Opaque metadata validation, server-derived notification scope, preference policy, digest-only poison quarantine | Malformed payload, duplicate, handler failure, cross-tenant and preference tests | Verified for local Phase 13 scope |
 
 ## Mapping rules for future phases
 

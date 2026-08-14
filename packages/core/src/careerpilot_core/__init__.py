@@ -33,6 +33,14 @@ from careerpilot_core.drafting import (
     DraftKind,
     DraftRepository,
 )
+from careerpilot_core.events import (
+    EVENT_CATEGORIES,
+    EVENT_SCHEMA_VERSION,
+    InAppNotification,
+    IntegrationEvent,
+    NotificationCategory,
+    NotificationPreference,
+)
 from careerpilot_core.models import (
     Education,
     EvidenceItem,
@@ -81,6 +89,8 @@ from careerpilot_core.tooling import (
 )
 
 __all__ = [
+    "EVENT_CATEGORIES",
+    "EVENT_SCHEMA_VERSION",
     "PHASE_7_ROLES",
     "AccessDeniedError",
     "AccessPolicy",
@@ -116,11 +126,15 @@ __all__ = [
     "Experience",
     "ExternalIdentity",
     "IdentityVerifier",
+    "InAppNotification",
     "InjectionRisk",
+    "IntegrationEvent",
     "JobAnalysis",
     "JobRequirements",
     "MalwareScanner",
     "Membership",
+    "NotificationCategory",
+    "NotificationPreference",
     "ParsedSection",
     "Permission",
     "PolicyDecision",

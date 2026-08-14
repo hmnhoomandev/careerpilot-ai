@@ -64,3 +64,12 @@ not named individuals.
 | Unauthorized/stale approval signal | Exact draft/version/actor check; authoritative gateway verification required | Open for production |
 | Cancelled process leaves partial effects | Reverse idempotent compensation and Temporal cancellation tests | Medium; not every real effect is reversible |
 | Temporal history/visibility residency or retention conflicts | No cloud use; production region/retention/legal review required | Open |
+
+## Phase 13 open risks
+
+- Process-local event state is not durable; production activation requires transactional
+  PostgreSQL tables, concurrency controls, migrations, backup/restore and load tests.
+- Pub/Sub residency, IAM, retention, quotas, costs, dead-letter access and Zurich service
+  availability are unverified because no cloud resource was authorized.
+- Replay is an operator capability and requires production authorization, audit, rate limits,
+  runbooks, and retention controls before activation.

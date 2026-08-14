@@ -236,3 +236,17 @@ Tutorial: `docs/tutorials/phase-12-temporal-durable-workflows.md`
 Exercises: `docs/exercises/phase-12-exercises.md`
 
 Answers: `docs/exercises/phase-12-answers.md`
+
+## Phase 13 — asynchronous events and notifications
+
+- Separated source-of-truth transactions, transport acknowledgement, and consumer effects.
+- Practiced outbox dispatch, inbox deduplication, aggregate ordering, bounded retry,
+  dead-letter quarantine, and explicit replay under at-least-once delivery.
+- Kept event payloads metadata-only and notification access tenant/actor scoped.
+- Evaluated Dapr against an actual need and deferred it rather than adding an unused runtime.
+
+Tutorial: `docs/tutorials/phase-13-events-and-notifications.md`
+
+Exercises: `docs/exercises/phase-13-exercises.md`
+
+Answers: `docs/exercises/phase-13-answers.md`

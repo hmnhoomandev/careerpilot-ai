@@ -1,11 +1,11 @@
 # Project State
 
 - **Project:** CareerPilot AI
-- **Current phase:** Phase 12 — Temporal durable application workflow
+- **Current phase:** Phase 13 — Pub/Sub, Dapr boundary, and notifications
 - **Phase status:** Complete — awaiting owner acceptance
 - **Last updated:** 2026-08-14
-- **Working tree at phase start:** Clean at `410fdc3` on `main`
-- **Production code:** Accepted through Phase 11; Phase 12 implementation complete
+- **Working tree at phase start:** Clean at `8bc45ec` on `main`
+- **Production code:** Accepted through Phase 12; Phase 13 complete and awaiting acceptance
 - **Cloud resources created:** None
 - **Paid calls made:** None
 
@@ -205,8 +205,22 @@
 - No live model, customer data, Temporal Cloud, cloud resource, deployment, billing, paid
   call, external communication, or submission occurred.
 
+## Phase 13 implementation state
+
+- A strict metadata-only version 1 event envelope, transaction-shaped outbox/inbox store,
+  acknowledged dispatcher, aggregate ordering, bounded retry, digest-only poison quarantine,
+  dead-letter and explicit replay behavior are implemented with local fakes.
+- The injected Google Pub/Sub publisher/subscriber boundary creates no resources and assumes
+  at-least-once delivery. Dapr is deferred by ADR-0025 for lack of demonstrated value.
+- Authenticated tenant/actor-scoped in-app notification preferences, listing, and read
+  receipts are available. No email, external send, live broker, or database migration exists.
+- Lock/Ruff/strict MyPy passed; full Pytest passed 182 with six expected skips and four ADK
+  deprecation warnings. Frontend checks/build, Markdown lint, governance, Mermaid rendering,
+  and secret detection passed. Registry-dependent advisory/link checks were inconclusive
+  because DNS was unavailable; Semgrep was blocked by its sandboxed uv tool cache.
+
 ## Next action
 
-Review and accept Phase 12; then, and only then, start Phase 13 with:
+Review and accept Phase 13; then, and only then, start Phase 14 with:
 
-`APPROVE PHASE 12 AND START PHASE 13`
+`APPROVE PHASE 13 AND START PHASE 14`

@@ -32,6 +32,8 @@ class Permission(StrEnum):
     DOCUMENT_REINDEX = "document.reindex"
     DOCUMENT_DELETE = "document.delete"
     TOOL_INVOKE = "tool.invoke"
+    NOTIFICATION_READ = "notification.read"
+    NOTIFICATION_MANAGE = "notification.manage"
 
 
 ROLE_PERMISSIONS: dict[Role, frozenset[Permission]] = {
@@ -49,6 +51,8 @@ ROLE_PERMISSIONS: dict[Role, frozenset[Permission]] = {
             Permission.DOCUMENT_REINDEX,
             Permission.DOCUMENT_DELETE,
             Permission.TOOL_INVOKE,
+            Permission.NOTIFICATION_READ,
+            Permission.NOTIFICATION_MANAGE,
         }
     ),
     Role.COACH: frozenset(
@@ -57,6 +61,7 @@ ROLE_PERMISSIONS: dict[Role, frozenset[Permission]] = {
             Permission.EVIDENCE_READ,
             Permission.ANALYSIS_RUN,
             Permission.DOCUMENT_READ,
+            Permission.NOTIFICATION_READ,
         }
     ),
     Role.ORGANIZATION_ADMIN: frozenset(
@@ -141,6 +146,8 @@ class AccessPolicy:
             Permission.DOCUMENT_REINDEX,
             Permission.DOCUMENT_DELETE,
             Permission.TOOL_INVOKE,
+            Permission.NOTIFICATION_READ,
+            Permission.NOTIFICATION_MANAGE,
         }
     )
 

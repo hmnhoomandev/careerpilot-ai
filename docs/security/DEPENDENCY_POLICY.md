@@ -81,3 +81,10 @@ tests use the SDK's downloaded local time-skipping server; Temporal Cloud and pr
 server images are not dependencies or authorized services. Upgrade review must run history
 replay, security/license audit, Python compatibility, and test-server checksum/provenance
 checks before changing the bound.
+
+## Phase 13 dependency note
+
+`google-cloud-pubsub` 2.39.x is Apache-2.0 licensed and supports the selected Python
+runtime. It is used only behind an injected adapter; default execution does not instantiate
+a client or use credentials/network. Review advisories, transitive gRPC changes, release
+notes, and the lock diff before upgrades.

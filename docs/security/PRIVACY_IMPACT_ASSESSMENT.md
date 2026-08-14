@@ -169,3 +169,11 @@ PostgreSQL records, an approved retention period, encryption/key policy, backup 
 regional placement, subprocessor/transfer assessment, lawful basis, and professional legal
 review. Erasing immutable history may require namespace retention and crypto/deletion
 design rather than ad hoc mutation; no compliance guarantee is claimed.
+
+## Phase 13 event and notification addendum
+
+Integration events permit only opaque metadata references. They prohibit resumes, job text,
+drafts, prompts, email addresses, secrets, and hidden reasoning. Invalid raw messages retain
+only a digest. Production retention, deletion propagation across outbox/inbox/dead letters,
+Pub/Sub regional placement, lawful basis, data-subject export/deletion, and processor terms
+require privacy and professional legal review. No compliance certification is claimed.

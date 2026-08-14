@@ -17,7 +17,103 @@ Every phase plan must state:
 
 Plans are living documents. Update status without erasing decisions or evidence.
 
-## Active implementation plan: Phase 12
+## Completed implementation plan: Phase 13
+
+**Objective:** add reliable, tenant-safe asynchronous integration events and in-app
+notification foundations through a transactional outbox/inbox design, a local deterministic
+transport, and a bounded Google Pub/Sub adapter without creating cloud resources.
+
+### Scope and acceptance mapping
+
+- Define a strict versioned event envelope with opaque identifiers, event type/schema
+  version, aggregate ordering key/sequence, occurrence time, correlation, and bounded data.
+- Implement atomic application-change plus outbox recording, dispatch acknowledgement,
+  inbox deduplication, per-aggregate ordering, retry/backoff, poison-message quarantine,
+  dead-letter replay, and stable failure taxonomy.
+- Add notification preferences and a tenant/actor-authorized in-app notification inbox;
+  event handlers may create local notifications but never send email or mutate profiles.
+- Provide an official Google Pub/Sub publisher adapter and subscriber message boundary;
+  default tests use a deterministic local transport with duplicate/reorder/failure controls.
+- Decide Dapr through ADR evidence. Do not add it when direct ports/adapters remain simpler.
+
+### Deliverables and expected files
+
+- Framework-neutral event/notification contracts and ports in `packages/core`, with local
+  repositories/transport, dispatcher/consumer, and Pub/Sub adapter in `apps/api`.
+- Authenticated notification preference/list/read routes and event/outbox contract tests.
+- Tests for schema compatibility, atomicity, duplicate delivery, ordering, retry, poison
+  messages, dead-letter/replay, tenant isolation, notification authorization, and redaction.
+- `google-cloud-pubsub>=2.39,<2.40` (Apache-2.0; Python 3.13 supported), locked and audited.
+- ADR-0025, event architecture/annotated source/tutorial/exercises, security/privacy,
+  traceability/state/roadmap/learning updates, and mandatory Phase 13 review.
+
+### Architecture, security, privacy, migration, deployment, and cost
+
+- PostgreSQL is the future authoritative outbox/inbox/notification store. Phase 13 uses
+  transaction-shaped in-memory adapters for default tests and documents the later migration.
+- Producers never publish inside a business transaction. They atomically persist state and
+  outbox; a dispatcher publishes, then marks acknowledged. Consumers record inbox receipt
+  and notification in one transaction-shaped operation before acknowledging transport.
+- Pub/Sub is treated as at-least-once. Application event IDs provide deduplication;
+  aggregate ID is the ordering key and sequence gaps are retried then dead-lettered visibly.
+- Envelopes contain allowlisted metadata and opaque references, not resumes, job text,
+  drafts, prompts, secrets, email addresses, or hidden reasoning. Payloads are untrusted.
+- Every read/write and handler is tenant-scoped. Notifications do not grant authority and
+  deep links remain opaque internal references.
+- Local transport is default. The Pub/Sub adapter requires explicit project/topic/config
+  and does not create resources. No emulator, cloud connection, deployment, billing,
+  external message, email, paid call, or database migration occurs.
+- Dapr is rejected for now: it would add runtime/configuration/sidecar surface without
+  demonstrating value beyond the narrow event ports. Revisit only with measurable benefit.
+
+### Risks and mitigations
+
+- State committed but event lost: transactional outbox and atomicity failure tests.
+- Duplicate/redelivered event: durable-design inbox uniqueness and idempotent handler tests.
+- Out-of-order delivery: per-aggregate sequence cursor, bounded retry, explicit dead letter,
+  and tests that unrelated ordering keys continue.
+- Poison or malicious payload: strict envelope/schema allowlist, size/control-character
+  bounds, safe errors, attempt ceiling, quarantine/dead-letter, and manual replay policy.
+- Cross-tenant notification leak: tenant/actor predicates at service and repository layers,
+  non-enumerating reads, and hostile tests.
+- PII in broker/history: opaque references, payload allowlist/redaction tests, minimized
+  retention, message-storage policy documentation, and legal/security review.
+- Publish acknowledgment ambiguity: stable event ID, outbox retry, subscriber deduplication,
+  no exactly-once assumption, and metrics deferred to Phase 15.
+
+### Automated verification
+
+- Envelope JSON/schema backward-compatibility and invalid/oversized payload tests.
+- Atomic mutation/outbox rollback; dispatch ack ambiguity; duplicate, reorder, retry,
+  poison, dead-letter and replay tests; notification preference/auth/tenant tests.
+- Official Pub/Sub adapter contract test with a fake publisher client; no network call.
+- Complete Ruff, MyPy, Pytest, frontend/build, audits, Semgrep, secrets, docs/link/Mermaid,
+  pre-commit, governance and diff review, disclosing all warnings/skips.
+
+### Manual verification
+
+- Record a synthetic application event and inspect its pending/published outbox lifecycle.
+- Deliver it twice and confirm one notification; deliver sequence two before one and inspect
+  bounded retry/order recovery; send poison data and inspect dead letter.
+- Replay a corrected dead letter and confirm exactly one authorized notification.
+- Sign in as two tenants and confirm neither can enumerate the other's notifications.
+- Inspect the Pub/Sub adapter configuration and Dapr ADR without connecting to cloud.
+
+### Explicit exclusions
+
+- Cloud Pub/Sub topics/subscriptions/IAM, emulator installation, staging/production,
+  PostgreSQL event migrations, email/SMS/push delivery, automatic submission/sharing,
+  Dapr runtime/sidecar, Phase 14 UI, analytics/metrics dashboards, and paid services.
+- Exactly-once business-effect claims, global total ordering, cross-region ordering claims,
+  final retention/legal certification, and unbounded replay.
+
+### Stop condition
+
+Complete `docs/reviews/phase-13-review.md`, report exact evidence, and wait for:
+
+`APPROVE PHASE 13 AND START PHASE 14`
+
+## Completed implementation plan: Phase 12
 
 **Objective:** implement a crash-resilient Temporal job-application preparation workflow
 that durably coordinates analysis, research, truthful drafts, exact human approval,

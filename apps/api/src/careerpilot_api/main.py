@@ -6,6 +6,7 @@ import os
 import time
 import uuid
 from contextlib import asynccontextmanager
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import TYPE_CHECKING, Annotated
 
@@ -90,7 +91,20 @@ from careerpilot_api.draft_service import (
     DraftPolicyError,
     DraftService,
 )
+from careerpilot_api.eventing import (
+    EventConsumer,
+    InMemoryEventStore,
+    LocalEventTransport,
+    NotificationNotFoundError,
+    NotificationService,
+    OutboxDispatcher,
+)
 from careerpilot_api.model_providers import FakeAnalysisModelProvider
+from careerpilot_api.notification_contracts import (
+    NotificationPreferenceRequest,
+    NotificationPreferenceResponse,
+    NotificationResponse,
+)
 from careerpilot_api.observability import configure_logging, get_tracer
 from careerpilot_api.repository import InMemoryProfileRepository
 from careerpilot_api.retrieval_repository import (
@@ -247,6 +261,11 @@ def create_app(
     a2a_registry = build_default_registry()
     logger = configure_logging()
     tracer = get_tracer()
+    event_store = InMemoryEventStore()
+    local_event_transport = LocalEventTransport()
+    event_consumer = EventConsumer(event_store)
+    notification_service = NotificationService(event_store, access_policy)
+    outbox_dispatcher = OutboxDispatcher(event_store, local_event_transport)
 
     @asynccontextmanager
     async def lifespan(_app: FastAPI) -> AsyncIterator[None]:
@@ -258,8 +277,8 @@ def create_app(
 
     app = FastAPI(
         title="CareerPilot API",
-        version="0.11.0",
-        description="Policy-controlled local A2A discovery and task delegation.",
+        version="0.13.0",
+        description="Policy-controlled career workflows and in-app notifications.",
         lifespan=lifespan,
         responses={500: {"model": ErrorResponse}},
     )
@@ -275,11 +294,15 @@ def create_app(
     app.state.draft_repository = draft_repository
     app.state.draft_service = draft_service
     app.state.a2a_registry = a2a_registry
+    app.state.event_store = event_store
+    app.state.event_consumer = event_consumer
+    app.state.notification_service = notification_service
+    app.state.outbox_dispatcher = outbox_dispatcher
     app.add_middleware(
         CORSMiddleware,
         allow_origins=["http://127.0.0.1:3000", "http://localhost:3000"],
         allow_credentials=False,
-        allow_methods=["GET", "POST", "PATCH"],
+        allow_methods=["GET", "POST", "PUT", "PATCH"],
         allow_headers=[
             "Authorization",
             "Content-Type",
@@ -445,6 +468,17 @@ def create_app(
             request,
             code="profile_not_found",
             message="The profile is unavailable.",
+            status_code=status.HTTP_404_NOT_FOUND,
+        )
+
+    @app.exception_handler(NotificationNotFoundError)
+    async def notification_not_found(
+        request: Request, _error: NotificationNotFoundError
+    ) -> JSONResponse:
+        return _safe_error(
+            request,
+            code="notification_not_found",
+            message="The notification is unavailable.",
             status_code=status.HTTP_404_NOT_FOUND,
         )
 
@@ -769,6 +803,78 @@ def create_app(
                     for item in profile.education
                 ],
             ).model_dump()
+        )
+
+    @app.get(
+        "/api/v1/notification-preferences",
+        response_model=NotificationPreferenceResponse,
+        tags=["notifications"],
+    )
+    async def get_notification_preferences(
+        request: Request,
+    ) -> NotificationPreferenceResponse:
+        preference = notification_service.preference(request_context(request))
+        return NotificationPreferenceResponse(
+            enabled_categories=sorted(preference.enabled_categories)
+        )
+
+    @app.put(
+        "/api/v1/notification-preferences",
+        response_model=NotificationPreferenceResponse,
+        tags=["notifications"],
+    )
+    async def set_notification_preferences(
+        body: NotificationPreferenceRequest, request: Request
+    ) -> NotificationPreferenceResponse:
+        preference = notification_service.set_preference(
+            request_context(request), frozenset(body.enabled_categories)
+        )
+        return NotificationPreferenceResponse(
+            enabled_categories=sorted(preference.enabled_categories)
+        )
+
+    @app.get(
+        "/api/v1/notifications",
+        response_model=list[NotificationResponse],
+        tags=["notifications"],
+    )
+    async def list_notifications(request: Request) -> list[NotificationResponse]:
+        return [
+            NotificationResponse(
+                notification_id=item.notification_id,
+                event_id=item.event_id,
+                category=item.category,
+                subject_ref=item.subject_ref,
+                message_key=item.message_key,
+                created_at=item.created_at,
+                read_at=item.read_at,
+            )
+            for item in notification_service.list_notifications(
+                request_context(request)
+            )
+        ]
+
+    @app.post(
+        "/api/v1/notifications/{notification_id}/read",
+        response_model=NotificationResponse,
+        tags=["notifications"],
+    )
+    async def mark_notification_read(
+        notification_id: str, request: Request
+    ) -> NotificationResponse:
+        item = notification_service.mark_read(
+            request_context(request),
+            notification_id,
+            read_at=datetime.now(UTC).isoformat(),
+        )
+        return NotificationResponse(
+            notification_id=item.notification_id,
+            event_id=item.event_id,
+            category=item.category,
+            subject_ref=item.subject_ref,
+            message_key=item.message_key,
+            created_at=item.created_at,
+            read_at=item.read_at,
         )
 
     @app.patch(
