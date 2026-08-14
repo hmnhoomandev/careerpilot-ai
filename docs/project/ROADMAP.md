@@ -13,7 +13,7 @@
 | 8 | Approval and truthful document generation | Accepted |
 | 9 | Bounded Google ADK/Gemini service | Accepted |
 | 10 | Bounded OpenAI Agents SDK service and handoff lab | Complete — awaiting acceptance |
-| 11 | A2A interoperability and agent registry | Not started |
+| 11 | A2A interoperability and agent registry | In review |
 | 12 | Temporal durable application workflow | Not started |
 | 13 | Pub/Sub, optional Dapr boundary, notifications | Not started |
 | 14 | Complete accessible UI and A2UI-compatible messages | Not started |

@@ -14,6 +14,17 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, Response
 
+from careerpilot_api.a2a_contracts import A2ADelegateRequest  # noqa: TC001
+from careerpilot_api.a2a_registry import (
+    A2AAccessDeniedError,
+    A2ACompatibilityError,
+    A2AConflictError,
+    A2ANotFoundError,
+    A2ARegistryError,
+    A2ATimeoutError,
+    A2AUnavailableError,
+    build_default_registry,
+)
 from careerpilot_api.analysis_contracts import (
     AnalysisGraphRequest,
     AnalysisGraphResponse,
@@ -233,6 +244,7 @@ def create_app(
     analysis_provider = FakeAnalysisModelProvider()
     analysis_graph = build_analysis_graph(tool_executor, analysis_provider)
     analysis_graph_service = AnalysisGraphService(analysis_graph, access_policy)
+    a2a_registry = build_default_registry()
     logger = configure_logging()
     tracer = get_tracer()
 
@@ -246,8 +258,8 @@ def create_app(
 
     app = FastAPI(
         title="CareerPilot API",
-        version="0.8.0",
-        description="Evidence-grounded drafts with exact-version human approval.",
+        version="0.11.0",
+        description="Policy-controlled local A2A discovery and task delegation.",
         lifespan=lifespan,
         responses={500: {"model": ErrorResponse}},
     )
@@ -262,6 +274,7 @@ def create_app(
     app.state.analysis_graph_service = analysis_graph_service
     app.state.draft_repository = draft_repository
     app.state.draft_service = draft_service
+    app.state.a2a_registry = a2a_registry
     app.add_middleware(
         CORSMiddleware,
         allow_origins=["http://127.0.0.1:3000", "http://localhost:3000"],
@@ -558,6 +571,25 @@ def create_app(
             fields={error.field: [error.reason]},
         )
 
+    @app.exception_handler(A2ARegistryError)
+    async def a2a_error(request: Request, error: A2ARegistryError) -> JSONResponse:
+        status_by_type = {
+            A2ANotFoundError: status.HTTP_404_NOT_FOUND,
+            A2AAccessDeniedError: status.HTTP_403_FORBIDDEN,
+            A2ACompatibilityError: status.HTTP_409_CONFLICT,
+            A2AConflictError: status.HTTP_409_CONFLICT,
+            A2ATimeoutError: status.HTTP_504_GATEWAY_TIMEOUT,
+            A2AUnavailableError: status.HTTP_503_SERVICE_UNAVAILABLE,
+        }
+        return _safe_error(
+            request,
+            code=error.code,
+            message="The remote agent task could not be completed.",
+            status_code=status_by_type.get(
+                type(error), status.HTTP_500_INTERNAL_SERVER_ERROR
+            ),
+        )
+
     @app.exception_handler(Exception)
     async def unexpected_error(request: Request, _error: Exception) -> JSONResponse:
         logger.error(
@@ -582,8 +614,9 @@ def create_app(
         permission: Permission,
         *,
         allowed_reason: str,
+        resource: ResourceAttributes | None = None,
     ) -> None:
-        decision = access_policy.decide(context, permission)
+        decision = access_policy.decide(context, permission, resource)
         audit_log.append(
             AuditEventDraft(
                 tenant_id=context.tenant_id,
@@ -1232,6 +1265,88 @@ def create_app(
             AuditEventResponse.model_validate(event, from_attributes=True)
             for event in audit_log.list_for_tenant(context.tenant_id)
         ]
+
+    @app.get("/api/v1/a2a/agents", tags=["a2a"])
+    async def discover_agents(request: Request) -> list[dict[str, object]]:
+        context = request_context(request)
+        audit_policy(
+            context,
+            Permission.ANALYSIS_RUN,
+            allowed_reason="a2a_discovery_allowed",
+            resource=ResourceAttributes(context.tenant_id, context.actor_id),
+        )
+        return [
+            card.model_dump(by_alias=True, exclude_none=True)
+            for card in a2a_registry.cards()
+        ]
+
+    @app.get("/api/v1/a2a/agents/{agent_id}", tags=["a2a"])
+    async def discover_agent(agent_id: str, request: Request) -> dict[str, object]:
+        context = request_context(request)
+        audit_policy(
+            context,
+            Permission.ANALYSIS_RUN,
+            allowed_reason="a2a_discovery_allowed",
+            resource=ResourceAttributes(context.tenant_id, context.actor_id),
+        )
+        return a2a_registry.discover(agent_id).model_dump(
+            by_alias=True, exclude_none=True
+        )
+
+    @app.post("/api/v1/a2a/tasks", tags=["a2a"])
+    async def delegate_task(
+        body: A2ADelegateRequest, request: Request
+    ) -> dict[str, object]:
+        context = request_context(request)
+        audit_policy(
+            context,
+            Permission.ANALYSIS_RUN,
+            allowed_reason="a2a_delegate_allowed",
+            resource=ResourceAttributes(context.tenant_id, context.actor_id),
+        )
+        a2a_registry.submit(
+            context,
+            agent_id=body.agent_id,
+            skill_id=body.skill_id,
+            task_id=body.task_id,
+            payload=body.payload,
+        )
+        if body.defer_execution:
+            return a2a_registry.get(context, body.task_id).model_dump(
+                by_alias=True, exclude_none=True
+            )
+        task = await a2a_registry.execute(
+            context,
+            task_id=body.task_id,
+            payload=body.payload,
+            timeout_seconds=body.timeout_seconds,
+        )
+        return task.model_dump(by_alias=True, exclude_none=True)
+
+    @app.get("/api/v1/a2a/tasks/{task_id}", tags=["a2a"])
+    async def get_a2a_task(task_id: str, request: Request) -> dict[str, object]:
+        context = request_context(request)
+        audit_policy(
+            context,
+            Permission.ANALYSIS_RUN,
+            allowed_reason="a2a_task_read_allowed",
+            resource=ResourceAttributes(context.tenant_id, context.actor_id),
+        )
+        return a2a_registry.get(context, task_id).model_dump(
+            by_alias=True, exclude_none=True
+        )
+
+    @app.post("/api/v1/a2a/tasks/{task_id}/cancel", tags=["a2a"])
+    async def cancel_a2a_task(task_id: str, request: Request) -> dict[str, object]:
+        context = request_context(request)
+        audit_policy(
+            context,
+            Permission.ANALYSIS_RUN,
+            allowed_reason="a2a_cancel_allowed",
+            resource=ResourceAttributes(context.tenant_id, context.actor_id),
+        )
+        task = await a2a_registry.cancel(context, task_id)
+        return task.model_dump(by_alias=True, exclude_none=True)
 
     @app.patch(
         "/api/v1/memberships/{actor_id}",

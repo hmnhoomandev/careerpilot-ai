@@ -148,3 +148,12 @@ correlation. PII patterns produce visible flags and protected-trait wording bloc
 Production encryption/KMS, staff access, 30-day recovery, backups, legal holds, final
 retention, consent/lawful basis, and data-subject verification remain `LEGAL REVIEW`.
 No external transfer or legal-compliance certification is claimed.
+
+## Phase 11 A2A assessment
+
+Default tasks contain synthetic fixture references only and remain process-local. Cards
+contain no personal data; correlation metadata excludes payloads and hidden reasoning.
+Before remote execution, CareerPilot must minimize/redact data, verify consent and
+authorization, record provider and purpose, and apply retention/deletion to tasks and
+derived artifacts. Provider region, subprocessors, transfer mechanism, lawful basis, and
+final retention periods require professional legal review; no compliance claim is made.

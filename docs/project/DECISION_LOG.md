@@ -34,3 +34,4 @@
 | DEC-030 | 2026-08-13 | Upgrade OpenTelemetry API to 1.42.x for ADK 2.5 compatibility without enabling export | Accepted | ADR-0021 |
 | DEC-031 | 2026-08-14 | Isolate OpenAI Agents SDK as a fake-first interview orchestration laboratory | Accepted for Phase 10 | ADR-0022 |
 | DEC-032 | 2026-08-14 | Use direct handoff only when the specialist should own the conversation; otherwise retain manager ownership | Accepted | ADR-0022 |
+| DEC-033 | 2026-08-14 | Use official A2A card/task models behind a trusted tenant-safe registry and explicit no-fallback lifecycle | Accepted for Phase 11 | ADR-0023 |

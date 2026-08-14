@@ -63,3 +63,11 @@ newer. Pytest is constrained to 9.0.3 or newer to remediate PYSEC-2026-1845.
 Locking improves reproducibility but does not prove safety. Dependency confusion,
 malicious releases, compromised actions, transitive vulnerabilities, and license
 changes require SCA, SBOM, provenance, and later supply-chain controls.
+
+## Phase 11 A2A dependency
+
+`a2a-sdk` is locked to the compatible `>=0.3.22,<0.4` line and supplies official Agent
+Card/Task validation. It is Apache-2.0 licensed. Phase 11 does not activate its network
+server/client or cloud integrations. Lock changes and transitive protobuf/Google API
+packages are dependency-audited; a minor `uv` normalization warning for an upstream
+`>=3.6.*` specifier is recorded as non-blocking.

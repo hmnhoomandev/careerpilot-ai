@@ -44,3 +44,12 @@ not named individuals.
 | RSK-029 | Gemini incurs cost or transfers personal data without authority | Low | Critical | Fake default, explicit provider, consent/transfer/cost gates, no fallback | Privacy/Owner | Open until production review |
 | RSK-030 | Agent handoff transfers control or context to the wrong specialist | Medium | High | Explicit routes, bounded agents, equivalent ownership tests, redacted trace metadata | Security/AI | Mitigated locally |
 | RSK-031 | OpenAI tracing or live execution leaks interview data or incurs cost | Low | Critical | Export/sensitive trace off, fake default, consent/transfer/budget gates, no fallback | Privacy/Owner | Open until production review |
+
+## Phase 11 additions
+
+| Risk | Treatment | Residual status |
+|---|---|---|
+| Untrusted/stale Agent Card redirects or expands capability | Static allowlist and exact compatibility checks; add provenance/revocation before remote discovery | Open for production |
+| Delegated task leaks across tenants | Server-derived context, resource policy, composite key, non-enumerating lookup, hostile tests | Low locally |
+| Runtime outage silently changes provider | Stable failed/unavailable result and prohibition on fallback | Low locally |
+| Process restart loses tasks/cancellation | Explicit prototype limitation; durable store required before production | Open |

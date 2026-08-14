@@ -205,3 +205,19 @@ Tutorial: `docs/tutorials/phase-10-openai-agent-orchestration.md`
 Exercises: `docs/exercises/phase-10-exercises.md`
 
 Answers: `docs/exercises/phase-10-answers.md`
+
+## Phase 11 — A2A interoperability and registry
+
+- Separated capability advertisement, registry trust, caller authorization, and task
+  lifecycle instead of treating discovery as authority.
+- Used official A2A Agent Card and Task models with explicit protocol/skill versions.
+- Practiced tenant-scoped idempotency, cancellation, timeout, outage, version mismatch,
+  metadata-only correlation, and explicit no-fallback behavior.
+- Kept JSON-RPC deployment, workload identity, durable tasks, and real runtimes outside the
+  fake-first local boundary.
+
+Tutorial: `docs/tutorials/phase-11-a2a-interoperability.md`
+
+Exercises: `docs/exercises/phase-11-exercises.md`
+
+Answers: `docs/exercises/phase-11-answers.md`

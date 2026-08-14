@@ -1,10 +1,10 @@
 # Project State
 
 - **Project:** CareerPilot AI
-- **Current phase:** Phase 10 — OpenAI Agents SDK interview laboratory
+- **Current phase:** Phase 11 — A2A interoperability and agent registry
 - **Phase status:** Complete — awaiting owner acceptance
 - **Last updated:** 2026-08-14
-- **Working tree at phase start:** Clean at `1ab789f` on `main`
+- **Working tree at phase start:** Clean at `5e964d3` on `main`
 - **Production code:** Accepted through Phase 9; Phase 10 implementation complete
 - **Cloud resources created:** None
 - **Paid calls made:** None
@@ -172,8 +172,23 @@
   MyPy passed 105 files; dependency, SAST, frontend, docs, hooks, and governance passed.
 - No live model, data transfer, cloud resource, deployment, billing, or paid call occurred.
 
+## Phase 11 implementation and verification evidence
+
+- Official A2A SDK cards and tasks describe three versioned runtime capabilities behind a
+  trusted registry and bounded fake adapter; no JSON-RPC service is exposed yet.
+- Authenticated resource policy, tenant/actor task scoping, idempotency, cancellation,
+  timeout/outage mapping, exact compatibility checks, and explicit no-fallback behavior
+  are implemented.
+- Python verification passed 156 tests with four PostgreSQL and two live-model skips;
+  Ruff and strict MyPy passed 109 files. Frontend checks/build, Markdown lint, governance,
+  pre-commit, secrets, and Semgrep (zero findings) passed.
+- External link, npm advisory, and pip advisory checks were inconclusive because network
+  access/review timed out. Mermaid rendering was blocked by a closed local browser process.
+- No live model, external transfer, cloud resource, deployment, billing, or paid operation
+  occurred.
+
 ## Next action
 
-Review and accept Phase 10; then, and only then, start Phase 11 with:
+Review and accept Phase 11; then, and only then, start Phase 12 with:
 
-`APPROVE PHASE 10 AND START PHASE 11`
+`APPROVE PHASE 11 AND START PHASE 12`

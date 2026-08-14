@@ -17,7 +17,88 @@ Every phase plan must state:
 
 Plans are living documents. Update status without erasing decisions or evidence.
 
-## Active implementation plan: Phase 10
+## Active implementation plan: Phase 11
+
+**Objective:** connect the LangGraph application, Google ADK specialist, and OpenAI
+Agents specialist through versioned, discoverable, policy-controlled A2A capabilities and
+a complete local task lifecycle using the official Python SDK.
+
+### Scope and acceptance mapping
+
+- Publish official A2A Agent Cards for all three runtimes with versioned skills, security
+  declarations, input/output modes, capabilities, and local URLs.
+- Implement a tenant-safe capability registry, discovery/compatibility checks, bounded
+  remote-agent port, authentication/authorization, correlation, idempotent task creation,
+  status, cancellation, timeout, and stable remote error mapping.
+- Exercise cross-service delegation through deterministic in-process transports; no model
+  call, provider fallback, or network service is required by default tests.
+- Use official `a2a-sdk` card/task types at the application boundary; do not recreate
+  protocol schemas manually. The production HTTP JSON-RPC server surface remains deferred
+  with independently deployed services.
+
+### Deliverables and expected files
+
+- An SDK-backed interoperability adapter and application routes in the API layer, with
+  cards identifying the existing bounded LangGraph, ADK, and OpenAI services.
+- Unit/contract/e2e tests for cards, discovery, version compatibility, capability policy,
+  task lifecycle, duplicate IDs, timeout, cancellation, unavailable agents, and tenancy.
+- ADR, agent registry/capability documentation, annotated source, tutorial, exercises,
+  security/privacy/traceability/state/roadmap updates, and mandatory phase review.
+- Add official `a2a-sdk>=0.3.22,<0.4` after lock, license, compatibility, and audit review.
+
+### Architecture, security, privacy, migration, deployment, and cost
+
+- Agent Cards advertise capabilities and authentication requirements; they confer no
+  authorization. Every operation rechecks server-derived caller identity and capability.
+- The registry stores descriptors/adapters, not secrets or customer content. Task IDs are
+  scoped by tenant/caller; duplicate payload conflicts fail closed and foreign tasks are
+  non-enumerating.
+- Correlation metadata excludes payload content. Remote inputs/outputs are strict,
+  minimized, bounded, and treated as untrusted at both ends.
+- Default transport is in-process fake; production HTTP/OAuth/workload identity, remote
+  discovery trust/signatures, durable task storage, deployment, and retention are deferred.
+- No migration, cloud resource, deployment, billing, live model, or external transfer.
+
+### Risks and mitigations
+
+- Malicious/stale cards: trusted registry allowlist, protocol/skill version checks, strict
+  official SDK validation, and incompatible-card tests.
+- Cross-tenant/privilege delegation: caller context, deny-default capability grants,
+  tenant/task binding, non-enumerating access, and hostile tests.
+- Duplicate/cancelled tasks: idempotency fingerprint, deterministic state machine,
+  terminal-state rules, cooperative cancellation, and lifecycle tests.
+- Remote outage/timeout/error leakage: bounded timeout, stable taxonomy, no fallback, and
+  explicit degraded/unavailable results.
+- Data leakage: minimized typed payloads, no hidden reasoning, metadata-only correlation,
+  synthetic fixtures, and documented retention/legal gaps.
+
+### Automated verification
+
+- Agent Card schema/contract and capability compatibility tests; cross-runtime lifecycle,
+  auth, duplicate, timeout, cancellation, unavailable-agent, and tenant-isolation tests.
+- Complete Ruff, MyPy, Pytest, frontend/build, dependency audits, SAST, secrets,
+  docs/links/Mermaid, pre-commit, governance, and diff review.
+
+### Manual verification
+
+- Discover all three cards and inspect skills/security/protocol versions.
+- Delegate synthetic analysis to LangGraph, research to ADK, and interview to OpenAI.
+- Observe correlated task transitions; cancel a submitted task and deny an unauthorized one.
+- Disable a remote adapter and confirm explicit degradation without provider fallback.
+
+### Explicit exclusions
+
+- Public internet registry, dynamic untrusted card enrollment, real OAuth/mTLS, signed
+  cards, remote deployment, streaming/push notification, durable tasks, customer data,
+  model calls, Temporal, Pub/Sub, and Phase 12 work.
+
+### Stop condition
+
+Complete `docs/reviews/phase-11-review.md`, report exact evidence, and wait for:
+
+`APPROVE PHASE 11 AND START PHASE 12`
+
+## Completed implementation plan: Phase 10
 
 **Objective:** deliver an isolated OpenAI Agents SDK interview-simulation service and
 learning laboratory that compares manager delegation, agent-as-tool, and direct handoff

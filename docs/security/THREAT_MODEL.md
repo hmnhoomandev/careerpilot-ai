@@ -132,3 +132,13 @@ versions, and synthetic test data.
   prompts, answers, payloads, secrets, and hidden reasoning.
 - Live OpenAI execution requires explicit selection, consent/transfer/cost approval and a
   positive CHF ceiling; no fallback is permitted.
+
+## Phase 11 A2A boundary
+
+Threats include malicious or stale cards, capability escalation, task-ID enumeration,
+cross-tenant replay, duplicate ambiguity, oversized payloads, remote timeout/outage, and
+fallback to a differently governed provider. Controls are a trusted static registry,
+exact version/skill checks, authenticated resource authorization, tenant/actor task keys,
+bounded strict input, fingerprints, explicit terminal states, safe errors, and no fallback.
+Production JSON-RPC, workload credentials, card signing/provenance, revocation, SSRF, rate
+limits, and durable cancellation remain open threat-model work before exposure.

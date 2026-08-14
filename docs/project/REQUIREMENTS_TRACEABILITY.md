@@ -49,6 +49,8 @@
 | FR-015/FR-016 | ADR-0022 interview simulation and feedback | SDK manager/interviewer/feedback agents and equivalent orchestration modes | Handoff/agent-tool/manager comparison tests | Verified for synthetic fake-first scope |
 | FR-020/SEC-011 | Human-gated feedback action | SDK approval tool plus serialized exact-action state/revision | Approval approve/reject/resume/stale/hash tests | Verified locally; no publication side effect exists |
 | SEC-006/SEC-009/NFR-003/NFR-010/NFR-012 | OpenAI provider, privacy, cost, and observability boundary | Fake default, deterministic guards, redacted traces, live budget/transfer gate | Guardrail/session/trace/budget/live-skip tests | Phase 10 local baseline verified |
+| FR-004/FR-013/FR-015/NFR-009 | ADR-0023 A2A capability interoperability | Official versioned cards/tasks, trusted registry, three runtime adapters | Card, compatibility, lifecycle, API contract tests | Verified for local fake-first Phase 11 scope |
+| SEC-001/SEC-003/SEC-006/NFR-010/NFR-012 | Tenant-safe delegated task control | Authenticated resource policy, scoped IDs, correlation, timeout/cancel/error mapping, no fallback | Unauthorized, foreign tenant, duplicate, timeout, outage tests | Verified locally; production transport deferred |
 
 ## Mapping rules for future phases
 
