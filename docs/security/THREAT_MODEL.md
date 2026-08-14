@@ -142,3 +142,15 @@ exact version/skill checks, authenticated resource authorization, tenant/actor t
 bounded strict input, fingerprints, explicit terminal states, safe errors, and no fallback.
 Production JSON-RPC, workload credentials, card signing/provenance, revocation, SSRF, rate
 limits, and durable cancellation remain open threat-model work before exposure.
+
+## Phase 12 Temporal boundary
+
+Threats include unauthorized workflow starts/signals, stale approval, PII copied into
+durable history, task-queue spoofing, replay nondeterminism, duplicate activity effects,
+retry-driven denial of wallet, cancellation without compensation, and sensitive visibility
+or heartbeat details. Local controls are opaque validated contracts, exact approval
+binding, stable idempotency keys, bounded retry/timeouts, metadata-only heartbeats,
+deterministic sandbox/replay tests, reverse idempotent compensation, and no provider call.
+Production requires authenticated gateway and workload identity, namespace/task-queue IAM,
+TLS, per-activity authorization, visibility/search-attribute policy, rate/budget controls,
+retention/deletion, encryption, audit integration, and operational recovery exercises.

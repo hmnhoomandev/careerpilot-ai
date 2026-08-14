@@ -17,7 +17,100 @@ Every phase plan must state:
 
 Plans are living documents. Update status without erasing decisions or evidence.
 
-## Active implementation plan: Phase 11
+## Active implementation plan: Phase 12
+
+**Objective:** implement a crash-resilient Temporal job-application preparation workflow
+that durably coordinates analysis, research, truthful drafts, exact human approval,
+application tracking, a follow-up timer, cancellation, and compensation without placing
+model calls or external side effects in deterministic workflow code.
+
+### Scope and acceptance mapping
+
+- Add a dedicated Temporal worker boundary with versioned, data-minimized workflow,
+  signal, query, activity, status, and result contracts.
+- Orchestrate analysis, supplied-source research, resume/cover-letter preparation,
+  approval wait, tracking, and one scheduled follow-up through activities.
+- Implement activity retry/timeouts/heartbeat policy, scoped idempotency, approval and
+  cancellation signals, read-only status queries, reverse-order compensation, workflow
+  versioning, and metadata-only correlation.
+- Distinguish Temporal workflow state from LangGraph graph state, application records,
+  agent sessions, audit history, and external effects in source, tests, and documentation.
+- Cover FR-012/013/020 and NFR-002/003/009/010/011/013/016/020 without claiming that
+  the local fake activity ledger is production persistence.
+
+### Deliverables and expected files
+
+- New `services/temporal-worker/` uv workspace package containing contracts, deterministic
+  workflow, activities/ports, worker/client composition, and a local fake implementation.
+- Tests for time skipping, signals/queries, exact approval, restart/recovery, retry,
+  idempotency, cancellation, compensation, heartbeat, and replay compatibility.
+- `temporalio>=1.30,<1.31` (MIT; Python 3.13 supported) plus a locked dependency review.
+- ADR-0024, workflow-state architecture note, annotated source, tutorial, exercises and
+  answers, traceability/security/privacy/state/roadmap updates, and Phase 12 review.
+
+### Architecture, security, privacy, migration, deployment, and cost
+
+- Temporal owns durable orchestration history, waits, timers, retries, signals, queries,
+  and compensation. PostgreSQL remains authoritative for product/business records;
+  LangGraph owns only bounded agent-graph execution and checkpoints.
+- Workflow code performs no network, filesystem, database, random wall-clock, model, or
+  authorization side effect. Activities reauthorize and operate through bounded ports.
+- Workflow inputs/history contain opaque tenant, actor, resource, correlation, artifact,
+  and idempotency identifiers rather than resume, job, research, or draft content.
+- Approval signals bind the expected draft reference/version and cannot themselves email,
+  submit, publish, spend, or mutate inferred profile facts.
+- Local tests use the free Temporal time-skipping test server and synthetic fake activities.
+  No Temporal Cloud, cloud resource, deployment, billing, paid call, or live model is used.
+- No PostgreSQL migration is planned. Production task queues, namespace, TLS/workload
+  identity, persistence retention, visibility, and deployment remain later decisions.
+
+### Risks and mitigations
+
+- Non-deterministic replay: sandboxed workflow imports, deterministic APIs only, explicit
+  version marker, history replay tests, and no I/O in workflow code.
+- Duplicate activity effects: tenant/workflow/step idempotency keys, an activity ledger,
+  retry tests, and compensation that is itself idempotent.
+- Approval spoofing/staleness: server-owned workflow identity, expected draft reference and
+  version in the signal, one terminal decision, and rejected mismatch tests.
+- Cancellation during side effects: heartbeat-aware activities, cancellation signal plus
+  Temporal cancellation tests, reverse-order compensation, and visible terminal state.
+- Sensitive history growth/leakage: identifier-only contracts, bounded status summaries,
+  no prompts/content/hidden reasoning, and retention/legal-review documentation.
+- Test-server download/platform limits: verify the official local server explicitly; if it
+  is unavailable, keep unit/activity/replay evidence distinct and report the blocked gate.
+
+### Automated verification
+
+- Temporal time-skipping integration tests for approval wait and scheduled follow-up.
+- Workflow query/signal, retry, activity heartbeat, duplicate/idempotency, cancellation,
+  compensation, worker restart/recovery, and replay/determinism tests.
+- Ruff, strict MyPy, complete Pytest, architecture boundaries, frontend/build regression,
+  dependency/license audit, SAST, secrets, docs/link/Mermaid, pre-commit, governance, and
+  complete diff review with every skip/warning/environment limitation disclosed.
+
+### Manual verification
+
+- Start a synthetic workflow, query its stage, and observe it pause for exact approval.
+- Stop the worker while approval is pending, restart it, send approval, and observe resume.
+- Advance the local test clock and inspect the scheduled follow-up result.
+- Inject a transient activity failure and observe retry without a duplicate effect.
+- Cancel after preparatory work and inspect reverse-order compensation and terminal status.
+
+### Explicit exclusions
+
+- Temporal Cloud, production namespace/worker deployment, paid resources, real credentials,
+  customer data, model calls, emails, submissions, external sharing, browser automation,
+  Pub/Sub, Dapr, notifications, Phase 13, and DBOS/Restate comparisons.
+- Production PostgreSQL workflow projections/outbox, final retention schedules, encryption
+  keys, backups, multi-region recovery, and production SLO/load claims.
+
+### Stop condition
+
+Complete `docs/reviews/phase-12-review.md`, report exact evidence, and wait for:
+
+`APPROVE PHASE 12 AND START PHASE 13`
+
+## Completed implementation plan: Phase 11
 
 **Objective:** connect the LangGraph application, Google ADK specialist, and OpenAI
 Agents specialist through versioned, discoverable, policy-controlled A2A capabilities and

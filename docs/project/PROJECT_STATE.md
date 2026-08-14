@@ -1,11 +1,11 @@
 # Project State
 
 - **Project:** CareerPilot AI
-- **Current phase:** Phase 11 — A2A interoperability and agent registry
+- **Current phase:** Phase 12 — Temporal durable application workflow
 - **Phase status:** Complete — awaiting owner acceptance
 - **Last updated:** 2026-08-14
-- **Working tree at phase start:** Clean at `5e964d3` on `main`
-- **Production code:** Accepted through Phase 9; Phase 10 implementation complete
+- **Working tree at phase start:** Clean at `410fdc3` on `main`
+- **Production code:** Accepted through Phase 11; Phase 12 implementation complete
 - **Cloud resources created:** None
 - **Paid calls made:** None
 
@@ -187,8 +187,26 @@
 - No live model, external transfer, cloud resource, deployment, billing, or paid operation
   occurred.
 
+## Phase 12 implementation and verification evidence
+
+- A dedicated Temporal 1.30 worker coordinates analysis, research, drafts, exact approval,
+  tracking, a durable follow-up timer, cancellation, and reverse compensation while all
+  effects remain heartbeat-aware idempotent activities.
+- Frozen validated contracts limit workflow history to opaque references. The official
+  local time-skipping server proves signals, queries, week-long timers, worker replacement,
+  retry after commit, cancellation, compensation, patching, and history replay.
+- Full Python checks passed: Ruff, strict MyPy on 116 files, and 164 Pytest tests with four
+  PostgreSQL and two explicitly unauthorized live-model skips. Four upstream ADK
+  deprecation warnings remain.
+- Frontend format/lint/type, five Vitest tests and build passed. Markdown lint, ten Mermaid
+  renders, governance, pre-commit, secrets, Semgrep (zero findings), pip-audit and both npm
+  audits passed. External link checking remained inconclusive with network `Status: 0` on
+  pre-existing links.
+- No live model, customer data, Temporal Cloud, cloud resource, deployment, billing, paid
+  call, external communication, or submission occurred.
+
 ## Next action
 
-Review and accept Phase 11; then, and only then, start Phase 12 with:
+Review and accept Phase 12; then, and only then, start Phase 13 with:
 
-`APPROVE PHASE 11 AND START PHASE 12`
+`APPROVE PHASE 12 AND START PHASE 13`

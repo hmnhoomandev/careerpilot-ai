@@ -157,3 +157,15 @@ Before remote execution, CareerPilot must minimize/redact data, verify consent a
 authorization, record provider and purpose, and apply retention/deletion to tasks and
 derived artifacts. Provider region, subprocessors, transfer mechanism, lawful basis, and
 final retention periods require professional legal review; no compliance claim is made.
+
+## Phase 12 Temporal assessment
+
+Workflow event history is durable and replicated by its storage owner, so Phase 12 permits
+only opaque tenant/actor/application/artifact/correlation references and concise status.
+Resume, job, research, draft, signal comments, prompts, hidden reasoning, and secrets are
+excluded and contract-tested. The local test server processes synthetic references only.
+Production needs a documented access/export/deletion mapping across Temporal history and
+PostgreSQL records, an approved retention period, encryption/key policy, backup lifecycle,
+regional placement, subprocessor/transfer assessment, lawful basis, and professional legal
+review. Erasing immutable history may require namespace retention and crypto/deletion
+design rather than ad hoc mutation; no compliance guarantee is claimed.

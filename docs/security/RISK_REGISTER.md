@@ -53,3 +53,14 @@ not named individuals.
 | Delegated task leaks across tenants | Server-derived context, resource policy, composite key, non-enumerating lookup, hostile tests | Low locally |
 | Runtime outage silently changes provider | Stable failed/unavailable result and prohibition on fallback | Low locally |
 | Process restart loses tasks/cancellation | Explicit prototype limitation; durable store required before production | Open |
+
+## Phase 12 additions
+
+| Risk | Treatment | Residual status |
+|---|---|---|
+| Personal content persists in workflow history | Opaque-prefix/character/length validation and synthetic tests | Low locally; gateway review open |
+| Activity retry duplicates an external effect | Stable step key, ledger port and fail-after-commit test | Low locally; production transaction design open |
+| Workflow code change breaks replay | Sandboxed deterministic code, patch marker and history replay test | Low for captured baseline |
+| Unauthorized/stale approval signal | Exact draft/version/actor check; authoritative gateway verification required | Open for production |
+| Cancelled process leaves partial effects | Reverse idempotent compensation and Temporal cancellation tests | Medium; not every real effect is reversible |
+| Temporal history/visibility residency or retention conflicts | No cloud use; production region/retention/legal review required | Open |

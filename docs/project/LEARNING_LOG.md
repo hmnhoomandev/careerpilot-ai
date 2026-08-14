@@ -221,3 +221,18 @@ Tutorial: `docs/tutorials/phase-11-a2a-interoperability.md`
 Exercises: `docs/exercises/phase-11-exercises.md`
 
 Answers: `docs/exercises/phase-11-answers.md`
+
+## Phase 12 — Temporal durable application workflow
+
+- Separated deterministic workflow history from activity side effects, LangGraph state,
+  PostgreSQL business records, specialist sessions, and audit evidence.
+- Practiced durable signals, queries, timers, worker restart recovery, activity retry,
+  heartbeat, idempotency, cancellation, reverse compensation, patching, and replay.
+- Demonstrated at-least-once activity behavior by failing after a fake effect committed.
+- Restricted workflow history to bounded opaque references rather than personal content.
+
+Tutorial: `docs/tutorials/phase-12-temporal-durable-workflows.md`
+
+Exercises: `docs/exercises/phase-12-exercises.md`
+
+Answers: `docs/exercises/phase-12-answers.md`

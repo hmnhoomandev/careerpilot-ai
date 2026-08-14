@@ -29,6 +29,7 @@ members = [
   "packages/core",
   "services/google-adk",
   "services/openai-agents",
+  "services/temporal-worker",
 ]
 
 [tool.ruff]
@@ -102,6 +103,7 @@ mypy_path = [
   "packages/core/src",
   "services/google-adk/src",
   "services/openai-agents/src",
+  "services/temporal-worker/src",
 ]
 exclude = ["apps/web", ".venv"]
 
@@ -120,4 +122,5 @@ markers = [
   "e2e: deterministic tests crossing HTTP, application, and repository boundaries",
   "live_model: opt-in tests that require explicit cost confirmation",
   "postgres: integration tests requiring a real PostgreSQL database",
+  "temporal: integration tests using the free local Temporal test server",
 ]

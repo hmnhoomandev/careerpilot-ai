@@ -71,3 +71,13 @@ Card/Task validation. It is Apache-2.0 licensed. Phase 11 does not activate its 
 server/client or cloud integrations. Lock changes and transitive protobuf/Google API
 packages are dependency-audited; a minor `uv` normalization warning for an upstream
 `>=3.6.*` specifier is recorded as non-blocking.
+
+## Phase 12 Temporal dependency
+
+`temporalio>=1.30,<1.31` is locked at 1.30.0. The official SDK is MIT licensed, supports
+Python 3.13, and brings `nexus-rpc` plus protobuf typing metadata. The minor line is bounded
+because workflow replay compatibility requires deliberate upgrades. Default integration
+tests use the SDK's downloaded local time-skipping server; Temporal Cloud and production
+server images are not dependencies or authorized services. Upgrade review must run history
+replay, security/license audit, Python compatibility, and test-server checksum/provenance
+checks before changing the bound.

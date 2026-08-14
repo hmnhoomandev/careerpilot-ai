@@ -51,6 +51,8 @@
 | SEC-006/SEC-009/NFR-003/NFR-010/NFR-012 | OpenAI provider, privacy, cost, and observability boundary | Fake default, deterministic guards, redacted traces, live budget/transfer gate | Guardrail/session/trace/budget/live-skip tests | Phase 10 local baseline verified |
 | FR-004/FR-013/FR-015/NFR-009 | ADR-0023 A2A capability interoperability | Official versioned cards/tasks, trusted registry, three runtime adapters | Card, compatibility, lifecycle, API contract tests | Verified for local fake-first Phase 11 scope |
 | SEC-001/SEC-003/SEC-006/NFR-010/NFR-012 | Tenant-safe delegated task control | Authenticated resource policy, scoped IDs, correlation, timeout/cancel/error mapping, no fallback | Unauthorized, foreign tenant, duplicate, timeout, outage tests | Verified locally; production transport deferred |
+| FR-012/FR-013/FR-020/NFR-013 | ADR-0024 durable application preparation | Temporal workflow, exact approval signal, tracking/follow-up activities, cancellation and reverse compensation | Time-skipping, restart, signal/query, cancellation, compensation and replay tests | Verified with local Temporal test server; production adapters deferred |
+| NFR-002/NFR-003/NFR-009/NFR-010/NFR-011/NFR-016/NFR-020 | Versioned cost-free durable execution boundary | Opaque history contracts, versioned task queue/patch, activity timeout/retry/heartbeat/idempotency, fake ledger | Contract, heartbeat, retry-after-commit, MyPy and complete regression gates | Phase 12 local baseline verified |
 
 ## Mapping rules for future phases
 
