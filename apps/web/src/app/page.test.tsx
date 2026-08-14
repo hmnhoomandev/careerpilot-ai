@@ -82,6 +82,38 @@ describe("HomePage", () => {
     });
   });
 
+  it("provides landmark navigation and a keyboard skip link in the workspace", async () => {
+    vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(jsonResponse(ADA_SESSION));
+    const { container } = render(<HomePage />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Start local session" }));
+    expect(
+      await screen.findByRole("navigation", { name: "Workspace navigation" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("link", { name: "Skip to workspace content" }),
+    ).toHaveAttribute("href", "#workspace-content");
+    expect(screen.getByRole("link", { name: "Drafts & approval" })).toHaveAttribute(
+      "href",
+      "#review",
+    );
+    const results = await axe.run(container, {
+      rules: { "color-contrast": { enabled: false } },
+    });
+    expect(results.violations).toEqual([]);
+  });
+
+  it("shows an offline recovery state without losing the local page", async () => {
+    vi.spyOn(globalThis, "fetch").mockRejectedValueOnce(new TypeError("offline"));
+    render(<HomePage />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Start local session" }));
+    expect(await screen.findByRole("alert")).toHaveTextContent(
+      "local API is unavailable",
+    );
+    expect(screen.getByText(/entered data remains in this tab/i)).toBeInTheDocument();
+  });
+
   it("shows a safe authorization denial for a member audit request", async () => {
     const samSession = {
       ...ADA_SESSION,

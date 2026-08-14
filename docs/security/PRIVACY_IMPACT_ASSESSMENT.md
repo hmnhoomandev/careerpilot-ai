@@ -177,3 +177,10 @@ drafts, prompts, email addresses, secrets, and hidden reasoning. Invalid raw mes
 only a digest. Production retention, deletion propagation across outbox/inbox/dead letters,
 Pub/Sub regional placement, lawful basis, data-subject export/deletion, and processor terms
 require privacy and professional legal review. No compliance certification is claimed.
+
+## Phase 14 browser addendum
+
+Career content remains tab-local and is not written to localStorage, sessionStorage, URLs or
+frontend telemetry. The UI shows minimized correlation metadata and synthetic fixtures.
+Production session storage, cache headers, browser/device threat assumptions, accessibility
+data, translation governance and user-facing retention/export/deletion copy require review.

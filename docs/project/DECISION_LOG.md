@@ -38,3 +38,5 @@
 | DEC-034 | 2026-08-14 | Temporal owns durable application orchestration while PostgreSQL owns business records and LangGraph owns bounded graph state | Accepted for Phase 12 | ADR-0024 |
 | DEC-035 | 2026-08-14 | Use strict versioned metadata events with transactional outbox/inbox semantics and assume Pub/Sub is at-least-once | Accepted for Phase 13 | ADR-0025 |
 | DEC-036 | 2026-08-14 | Keep Dapr deferred until a measured cross-runtime benefit exceeds its operational cost | Accepted | ADR-0025 |
+| DEC-037 | 2026-08-14 | Use a semantic responsive dashboard with FastAPI retaining all authorization and business authority | Accepted for Phase 14 | ADR-0026 |
+| DEC-038 | 2026-08-14 | Render A2UI-compatible messages through a closed schema/component/action allowlist with text escaping | Accepted | ADR-0026 |

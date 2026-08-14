@@ -162,3 +162,11 @@ poison-message retry storms, dead-letter disclosure, replay abuse, and publisher
 identity compromise. Strict envelopes, tenant-bound handlers, inbox uniqueness, sequence
 cursors, bounded attempts, digest-only poison records, explicit replay, and least-privilege
 future IAM mitigate the local design. Production broker and database controls remain open.
+
+## Phase 14 browser and A2UI addendum
+
+New threats include component/schema injection, XSS-shaped content, arbitrary action or URL
+execution, client-side authorization assumptions, stale approval, sensitive browser storage
+and misleading capability states. Closed A2UI validation, React text escaping, no dynamic HTML
+or links, server reauthorization, exact draft binding, no browser persistence, confirmations,
+safe errors and labelled local-only states mitigate the activated surface.

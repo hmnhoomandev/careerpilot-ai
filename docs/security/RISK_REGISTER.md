@@ -73,3 +73,12 @@ not named individuals.
   availability are unverified because no cloud resource was authorized.
 - Replay is an operator capability and requires production authorization, audit, rate limits,
   runbooks, and retention controls before activation.
+
+## Phase 14 open risks
+
+- Authenticated web state is tab-local and the local identity adapter is not production auth;
+  production session, CSRF/cache/header and device-threat controls remain Phase 16/17 work.
+- Interview and application tracking panels are labelled local fixtures; confusing them with
+  active external automation is mitigated by disabled actions and explicit copy.
+- Automated semantic/axe checks do not replace assistive-technology and browser/device testing;
+  manual keyboard, zoom, screen-reader and mobile review remains required before release.

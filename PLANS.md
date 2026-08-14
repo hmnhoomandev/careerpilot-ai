@@ -17,6 +17,103 @@ Every phase plan must state:
 
 Plans are living documents. Update status without erasing decisions or evidence.
 
+## Completed implementation plan: Phase 14
+
+**Objective:** replace the development-preview page with a coherent, responsive,
+keyboard-accessible CareerPilot workspace that exposes the already implemented journey,
+evidence, citations, agent progress, drafts/approval, notifications, tracking and audit
+concepts without expanding backend authority or exposing hidden reasoning.
+
+### Scope and acceptance mapping
+
+- Build a dashboard shell with skip link, landmark navigation, workspace identity, clear
+  focus, mobile/desktop layouts, and English copy structured for later localization.
+- Present profile/evidence management, job workspace, match/gap results, cited retrieval,
+  workflow timeline, agent activity, editable draft/approval inbox, interview preparation,
+  application tracker, notifications/settings and audit controls using activated APIs where
+  available and explicit local/demo states where backend behavior remains future work.
+- Add a strict A2UI-compatible renderer for allowlisted `text`, `citation`, `status`, and
+  `action` presentation components. Render all content as React text; unknown components,
+  unsafe URLs/HTML and unapproved actions fail closed.
+- Cover loading, empty, denied, offline, partial-failure, stale-data and cancellation states
+  with actionable, non-technical recovery guidance and correlation references.
+- Display concise decision summaries, source provenance and state transitions only. Never
+  display prompts, hidden chain-of-thought, model reasoning, secrets or raw audit payloads.
+
+### Deliverables and expected files
+
+- Modular web components, view models and API adapters under `apps/web/src`, replacing the
+  single-page preview while preserving existing safe local workflows.
+- Component/integration tests for navigation, keyboard/focus behavior, responsive semantics,
+  citations, unsafe A2UI content, loading/empty/error/offline/stale/cancel states, draft review,
+  notifications and audit authorization; maintain the axe accessibility gate.
+- ADR-0026, UI architecture/annotated source/tutorial/exercises, product/security/privacy,
+  traceability/state/roadmap/learning updates and mandatory Phase 14 review.
+- No new production dependency is planned. Use React/Next.js, CSS and existing test tools.
+
+### Architecture, security, privacy, migration, deployment, and cost
+
+- Next.js owns presentation and interaction state; FastAPI remains the authority for identity,
+  tenancy, permissions, business transitions and validation. Browser state never grants access.
+- A2UI messages are untrusted presentation data. The renderer uses a closed discriminated
+  union and action registry; it never evaluates HTML, scripts, arbitrary URLs or component names.
+- Forms retain server-derived tenant/session headers, bounded fields, explicit confirmation for
+  deletion/approval/cancellation and safe non-enumerating errors. Sensitive career content is
+  excluded from browser persistence, URLs, logs and telemetry.
+- UI strings use stable message keys/view labels and centralized navigation metadata as an
+  i18n-ready boundary; translation delivery remains later work.
+- No schema migration, cloud resource, deployment, model call, external send, billing change,
+  paid dependency or real personal data is authorized. Local synthetic APIs/fakes remain default.
+
+### Risks and mitigations
+
+- UI implying unavailable capability: visibly label local/demo-only states and disable actions
+  whose production backend is not activated; test the labels and disabled semantics.
+- Authorization bypass through hidden buttons/routes: server remains authoritative; UI also
+  presents denied state without assuming absence of controls is security.
+- A2UI injection/action abuse: closed schemas, text rendering, no `dangerouslySetInnerHTML`,
+  allowlisted action IDs, safe citation references, and adversarial tests.
+- Accessibility regression: semantic landmarks/headings, skip link, focus-visible styles,
+  live regions, keyboard tests, axe checks, motion preference and responsive CSS.
+- State overload and partial failure: independent workspace panels, explicit status model,
+  retry controls, last-updated/stale labels and cancellation confirmation.
+- Privacy in the browser: tab-local state only, no localStorage/sessionStorage, minimized errors,
+  synthetic fixtures and documented production session/retention gaps.
+
+### Automated verification
+
+- Vitest/Testing Library component and integration coverage including axe, keyboard navigation,
+  A2UI allowlist/unsafe content, citations, loading/error/offline/stale/cancel and responsive
+  landmark tests; Next.js production build and TypeScript/ESLint/Prettier gates.
+- Existing OpenAPI and backend regression suites plus Ruff/MyPy/Pytest, architecture checks,
+  secret/SAST/SCA, documentation/link/Mermaid, governance, pre-commit and complete diff review.
+- Visual regression is evaluated but not added unless a stable local screenshot runner exists;
+  semantic component/state tests are the zero-cost maintainable baseline.
+
+### Manual verification
+
+- Sign in as Ada and complete profile → job comparison → cited evidence → review workspace,
+  using keyboard only; confirm focus order, visible focus and status announcements.
+- Test at 375px and desktop widths; zoom to 200%; inspect navigation and no horizontal overflow.
+- Open citations, edit a draft presentation, inspect approval controls and confirm unavailable
+  consequential actions are disabled or require explicit confirmation.
+- Simulate offline, denied, partial error, stale and cancellation states and follow recovery copy.
+- Inspect A2UI output and page source to confirm no executable markup or hidden reasoning.
+
+### Explicit exclusions
+
+- New backend business workflows, real Temporal gateway, automatic application submission,
+  email/SMS/push, scraping, live interviews/models, file export/PDF generation, organization/
+  coach activation, production authentication, browser persistence, analytics and deployment.
+- Arbitrary A2UI component loading, arbitrary links/actions, hidden reasoning, final translations,
+  paid visual-regression services and Phase 15 observability/routing/cost work.
+
+### Stop condition
+
+Complete `docs/reviews/phase-14-review.md`, report exact evidence, and wait for:
+
+`APPROVE PHASE 14 AND START PHASE 15`
+
 ## Completed implementation plan: Phase 13
 
 **Objective:** add reliable, tenant-safe asynchronous integration events and in-app

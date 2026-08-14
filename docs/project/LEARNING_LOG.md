@@ -250,3 +250,17 @@ Tutorial: `docs/tutorials/phase-13-events-and-notifications.md`
 Exercises: `docs/exercises/phase-13-exercises.md`
 
 Answers: `docs/exercises/phase-13-answers.md`
+
+## Phase 14 — accessible product UI and safe A2UI
+
+- Reorganized API demonstrations into a coherent responsive career workspace.
+- Practiced landmarks, heading/focus order, skip navigation, live regions, reduced motion,
+  keyboard interaction, mobile collapse and automated axe checks.
+- Treated A2UI as untrusted presentation data with closed components/actions and text escaping.
+- Distinguished UI affordance from server authorization and honest demo state from capability.
+
+Tutorial: `docs/tutorials/phase-14-accessible-product-ui.md`
+
+Exercises: `docs/exercises/phase-14-exercises.md`
+
+Answers: `docs/exercises/phase-14-answers.md`

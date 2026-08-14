@@ -1,11 +1,11 @@
 # Project State
 
 - **Project:** CareerPilot AI
-- **Current phase:** Phase 13 — Pub/Sub, Dapr boundary, and notifications
+- **Current phase:** Phase 14 — Complete production UI and A2UI experience
 - **Phase status:** Complete — awaiting owner acceptance
 - **Last updated:** 2026-08-14
-- **Working tree at phase start:** Clean at `8bc45ec` on `main`
-- **Production code:** Accepted through Phase 12; Phase 13 complete and awaiting acceptance
+- **Working tree at phase start:** Clean at `0517066` on `main`
+- **Production code:** Accepted through Phase 13; Phase 14 complete and awaiting acceptance
 - **Cloud resources created:** None
 - **Paid calls made:** None
 
@@ -219,8 +219,28 @@
   and secret detection passed. Registry-dependent advisory/link checks were inconclusive
   because DNS was unavailable; Semgrep was blocked by its sandboxed uv tool cache.
 
+## Phase 14 implementation and verification evidence
+
+- The former long development preview is now a responsive dashboard with skip/navigation
+  landmarks, overview metrics, profile/evidence, job and cited result views, workflow status,
+  draft approval, interview/tracker states, notifications, audit and safe recovery messaging.
+- A closed A2UI renderer accepts only the versioned draft/review components and allowed actions,
+  escapes content as text, blocks unknown messages and leaves authorization to FastAPI.
+- Frontend Prettier, ESLint, TypeScript, nine Vitest tests including two axe scans, and the
+  Next.js build passed. Full Python regression passed 182 with six expected skips and four ADK
+  deprecation warnings; Ruff and strict MyPy passed 123 source files.
+- Markdown lint passed 141 files, governance passed 149 Markdown files/74 requirement IDs,
+  12 Mermaid diagrams rendered, secret detection passed, Semgrep scanned 129 Python targets
+  with zero findings, pip-audit found no known vulnerabilities (five internal packages skipped),
+  and both production/full npm audits found zero vulnerabilities. External link checking stayed
+  inconclusive for pre-existing links with network `Status: 0`.
+- Applicable pre-commit hooks passed across all Phase 14 modified/untracked files; Python-only
+  Ruff hooks had no matching file in that explicit file set and the complete Ruff gate passed.
+- No live model, real personal data, cloud resource, deployment, billing, paid operation,
+  external communication or automatic submission occurred.
+
 ## Next action
 
-Review and accept Phase 13; then, and only then, start Phase 14 with:
+Review and accept Phase 14; then, and only then, start Phase 15 with:
 
-`APPROVE PHASE 13 AND START PHASE 14`
+`APPROVE PHASE 14 AND START PHASE 15`

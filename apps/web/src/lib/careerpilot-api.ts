@@ -100,6 +100,52 @@ export type RetrievalResult = {
   }>;
 };
 
+export type A2UIMessage = {
+  schema: "careerpilot.a2ui.v1";
+  component: "editable_career_draft" | "approval_review";
+  actions: Array<"edit" | "approve" | "reject" | "request_more_information" | "cancel">;
+  data: Record<string, unknown>;
+};
+
+export type CareerDraft = {
+  draft_id: string;
+  version: number;
+  kind: "resume" | "cover_letter";
+  title: string;
+  sections: string[];
+  claims: Array<{
+    claim_id: string;
+    text: string;
+    status: string;
+    citations: Array<{
+      document_id: string;
+      chunk_id: string;
+      filename: string;
+      page_number: number;
+      start_offset: number;
+      end_offset: number;
+    }>;
+  }>;
+  content_hash: string;
+  pii_flags: string[];
+  policy_flags: string[];
+  approval_id: string;
+  approval_status: string;
+  approval_revision: number;
+  correlation_id: string;
+  messages: A2UIMessage[];
+};
+
+export type NotificationItem = {
+  notification_id: string;
+  event_id: string;
+  category: "application" | "follow_up" | "approval";
+  subject_ref: string;
+  message_key: string;
+  created_at: string;
+  read_at: string | null;
+};
+
 type ErrorResponse = {
   error?: {
     message?: string;
@@ -304,4 +350,70 @@ export async function deleteDocument(input: {
     },
   );
   if (!response.ok) await parseResponse(response);
+}
+
+export async function createCareerDraft(input: {
+  session: LocalSession;
+  tenantId: string;
+  profileId: string;
+  kind: "resume" | "cover_letter";
+  jobDescription: string;
+}): Promise<CareerDraft> {
+  const response = await fetch(`${API_BASE_URL}/api/v1/drafts`, {
+    method: "POST",
+    headers: authenticatedHeaders(input.session, input.tenantId),
+    body: JSON.stringify({
+      profile_id: input.profileId,
+      kind: input.kind,
+      job_description: input.jobDescription,
+    }),
+  });
+  return parseResponse<CareerDraft>(response);
+}
+
+export async function decideCareerDraft(input: {
+  session: LocalSession;
+  tenantId: string;
+  draft: CareerDraft;
+  decision: "approve" | "reject" | "request_more_information" | "cancel";
+  feedback?: string;
+}): Promise<void> {
+  const response = await fetch(
+    `${API_BASE_URL}/api/v1/approvals/${input.draft.approval_id}/decisions`,
+    {
+      method: "POST",
+      headers: authenticatedHeaders(input.session, input.tenantId),
+      body: JSON.stringify({
+        decision: input.decision,
+        expected_revision: input.draft.approval_revision,
+        expected_draft_version: input.draft.version,
+        expected_draft_hash: input.draft.content_hash,
+        feedback: input.feedback || null,
+      }),
+    },
+  );
+  await parseResponse(response);
+}
+
+export async function loadNotifications(
+  session: LocalSession,
+  tenantId: string,
+): Promise<NotificationItem[]> {
+  const response = await fetch(`${API_BASE_URL}/api/v1/notifications`, {
+    headers: authenticatedHeaders(session, tenantId),
+  });
+  return parseResponse<NotificationItem[]>(response);
+}
+
+export async function saveNotificationPreferences(
+  session: LocalSession,
+  tenantId: string,
+  enabledCategories: NotificationItem["category"][],
+): Promise<void> {
+  const response = await fetch(`${API_BASE_URL}/api/v1/notification-preferences`, {
+    method: "PUT",
+    headers: authenticatedHeaders(session, tenantId),
+    body: JSON.stringify({ enabled_categories: enabledCategories }),
+  });
+  await parseResponse(response);
 }
