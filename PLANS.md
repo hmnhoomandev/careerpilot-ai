@@ -17,7 +17,83 @@ Every phase plan must state:
 
 Plans are living documents. Update status without erasing decisions or evidence.
 
-## Active implementation plan: Phase 9
+## Active implementation plan: Phase 10
+
+**Objective:** deliver an isolated OpenAI Agents SDK interview-simulation service and
+learning laboratory that compares manager delegation, agent-as-tool, and direct handoff
+using equivalent synthetic fixtures and fake execution by default.
+
+### Scope and acceptance mapping
+
+- Define interview manager, interviewer, and feedback specialist agents with structured
+  outputs; demonstrate direct handoff and agent-as-tool using the real SDK definitions.
+- Provide a deterministic fake runtime for default tests, scoped sessions, input/output/
+  tool guardrails, approval pause/serialize/resume, and metadata-only local tracing.
+- Expose a narrow authenticated service API and explicit disabled/unavailable behavior.
+- Keep OpenAI imports inside `services/openai-agents`; no provider fallback or live call.
+- Add an opt-in live test with an explicit per-run budget ceiling and cost approval gate.
+
+### Deliverables and expected files
+
+- New uv workspace package under `services/openai-agents/` with SDK agent definitions,
+  contracts, fake/live ports, orchestration comparison, guardrails, sessions, approvals,
+  traces, configuration, and API.
+- Unit/contract/live tests for handoff paths, agent-as-tool comparison, session isolation,
+  guardrails, approval serialization/resume/stale decisions, trace redaction, disabled
+  service, and budget gating.
+- ADR, annotated source, tutorial, exercises/answers, security/privacy/traceability,
+  decision/learning/state/roadmap updates, and mandatory phase review.
+
+### Architecture, security, privacy, migration, deployment, and cost
+
+- The manager pattern retains final-response ownership; direct handoff transfers active
+  conversation ownership. Equivalent fixtures make this difference observable.
+- Only a bounded feedback-publication demonstration requires approval; it performs no
+  external publication, email, submission, or profile mutation after approval.
+- SDK tracing export is disabled by default and sensitive trace data is excluded. Local
+  trace evidence contains IDs, route, outcome, turns, and provider only.
+- Fake runtime is default. Live OpenAI requires explicit provider selection, credentials,
+  consent/transfer authority, cost approval, and a positive CHF ceiling; no fallback.
+- No schema migration, cloud resource, deployment, paid call, or external transfer.
+
+### Risks and mitigations
+
+- Wrong specialist/control transfer: explicit route enum, equivalent scenario tests, SDK
+  shape assertions, and stable route trace metadata.
+- Guardrail gaps: deterministic blocking input/output/tool gates outside model authority.
+- Approval replay/race: exact session/run/action hash and revision binding plus serialized
+  pending state and terminal transition tests.
+- PII/hidden reasoning leakage: synthetic fixtures, minimized contracts, redacted traces,
+  no prompts/tool payloads in telemetry, and concise decision summaries only.
+- Unbounded spend: fake default, max turns, live marker, explicit CHF budget gate, no
+  retries/fallback, and zero live execution under current approval.
+
+### Automated verification
+
+- Focused service tests, then complete Ruff, MyPy, Pytest, frontend/build, dependency
+  audits, SAST, secrets, docs/links/Mermaid, pre-commit, governance, and diff review.
+- Live OpenAI test must skip unless explicit cost/data authorization and budget exist.
+
+### Manual verification
+
+- Start the synthetic interview through direct handoff and inspect active specialist.
+- Run the same fixture through agent-as-tool and inspect manager-owned final output.
+- Trigger an input/tool/output guardrail and inspect the safe error.
+- Pause a feedback action, serialize, approve/reject, resume, and inspect redacted traces.
+
+### Explicit exclusions
+
+- Real candidate data, automatic communications/submissions/profile mutations, voice or
+  realtime interview, hosted tools, web search, A2A, deployment, cloud tracing, durable
+  production sessions, Temporal, and Phase 11 work.
+
+### Stop condition
+
+Complete `docs/reviews/phase-10-review.md`, report exact evidence, and wait for:
+
+`APPROVE PHASE 10 AND START PHASE 11`
+
+## Completed implementation plan: Phase 9
 
 **Objective:** deliver an isolated, bounded Google ADK specialist service for
 company/job research over explicitly supplied sources, with fake-first execution and an

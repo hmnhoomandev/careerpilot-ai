@@ -121,3 +121,14 @@ versions, and synthetic test data.
   identity. Workload identity/mTLS remains required before deployment.
 - Gemini requires explicit selection, consent, transfer authorization, and cost approval;
   timeout, quota, malformed output, and outage never trigger fallback.
+
+## Phase 10 OpenAI Agents laboratory controls
+
+- Direct handoff and agent-as-tool have explicit ownership semantics and equivalent tests.
+- Input, output, and tool gates run deterministically outside model authority.
+- Feedback preparation requires approval bound to tenant/actor/session/action hash/revision
+  and has no external publishing side effect.
+- SDK trace export and sensitive trace inclusion are disabled; local traces exclude
+  prompts, answers, payloads, secrets, and hidden reasoning.
+- Live OpenAI execution requires explicit selection, consent/transfer/cost approval and a
+  positive CHF ceiling; no fallback is permitted.

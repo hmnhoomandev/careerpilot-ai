@@ -42,3 +42,5 @@ not named individuals.
 | RSK-027 | Draft persistence conflicts with privacy deletion | Medium | Critical | Source linkage, retention design, deletion propagation and legal review later | Privacy/Data | Open |
 | RSK-028 | ADK specialist cites unsupported or cross-session source data | Medium | Critical | Request-local tool, scoped session key, schema/citation validation, hostile tests | Security/AI | Mitigated locally |
 | RSK-029 | Gemini incurs cost or transfers personal data without authority | Low | Critical | Fake default, explicit provider, consent/transfer/cost gates, no fallback | Privacy/Owner | Open until production review |
+| RSK-030 | Agent handoff transfers control or context to the wrong specialist | Medium | High | Explicit routes, bounded agents, equivalent ownership tests, redacted trace metadata | Security/AI | Mitigated locally |
+| RSK-031 | OpenAI tracing or live execution leaks interview data or incurs cost | Low | Critical | Export/sensitive trace off, fake default, consent/transfer/budget gates, no fallback | Privacy/Owner | Open until production review |

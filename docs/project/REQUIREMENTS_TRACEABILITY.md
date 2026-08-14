@@ -46,6 +46,9 @@
 | FR-013/FR-014 | ADR-0021 bounded company/job research | Isolated ADK agent, approved-source tool, structured cited result | ADK unit/API contract/citation tests | Verified for supplied-source fake-first scope |
 | SEC-003/SEC-006/SEC-010/SEC-011 | ADK service and model boundary | Service identity, scoped sessions, safety callback, consent/transfer gate, no fallback | Injection, cross-tenant, disabled/live-denial tests | Phase 9 local baseline verified |
 | NFR-003/NFR-009/NFR-010/NFR-012 | Cost-safe specialist reliability | Fake default, stable timeout/quota/outage errors, metadata metrics, opt-in live marker | Failure injection, OpenAPI, live skip tests | Verified locally; production telemetry/deployment deferred |
+| FR-015/FR-016 | ADR-0022 interview simulation and feedback | SDK manager/interviewer/feedback agents and equivalent orchestration modes | Handoff/agent-tool/manager comparison tests | Verified for synthetic fake-first scope |
+| FR-020/SEC-011 | Human-gated feedback action | SDK approval tool plus serialized exact-action state/revision | Approval approve/reject/resume/stale/hash tests | Verified locally; no publication side effect exists |
+| SEC-006/SEC-009/NFR-003/NFR-010/NFR-012 | OpenAI provider, privacy, cost, and observability boundary | Fake default, deterministic guards, redacted traces, live budget/transfer gate | Guardrail/session/trace/budget/live-skip tests | Phase 10 local baseline verified |
 
 ## Mapping rules for future phases
 

@@ -24,7 +24,12 @@ package = false
 default-groups = ["dev"]
 
 [tool.uv.workspace]
-members = ["apps/api", "packages/core", "services/google-adk"]
+members = [
+  "apps/api",
+  "packages/core",
+  "services/google-adk",
+  "services/openai-agents",
+]
 
 [tool.ruff]
 target-version = "py313"
@@ -92,7 +97,12 @@ strict = true
 warn_unreachable = true
 show_error_codes = true
 pretty = true
-mypy_path = ["apps/api/src", "packages/core/src", "services/google-adk/src"]
+mypy_path = [
+  "apps/api/src",
+  "packages/core/src",
+  "services/google-adk/src",
+  "services/openai-agents/src",
+]
 exclude = ["apps/web", ".venv"]
 
 [[tool.mypy.overrides]]

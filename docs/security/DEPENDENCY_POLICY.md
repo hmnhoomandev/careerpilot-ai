@@ -28,6 +28,7 @@
 | langgraph >=1.2.9,<1.3 | Typed graph, retry, and checkpoint runtime | MIT | Custom state machine | Bounded in-process ownership in ADR-0019; no LangSmith service configured |
 | google-genai >=2.13,<2.14 | Official future Gemini adapter SDK | Apache-2.0 | Handwritten HTTP | No client/default call; explicit transfer authorization and no fallback |
 | google-adk >=2.5,<2.6 | Isolated Google agent/session/tool runtime | Apache-2.0 | Custom specialist loop | Service-only import, fake default, no deployment or model call by default; ADR-0021 |
+| openai-agents >=0.8,<0.9 | Isolated handoff/tool/session/approval learning runtime | MIT | Custom orchestration loop | Service-only import, trace export off, fake default, opt-in live path; ADR-0022 |
 
 ## Development dependencies
 

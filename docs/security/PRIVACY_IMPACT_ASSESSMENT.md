@@ -130,6 +130,16 @@ and transfer authorization are recorded and cost is separately approved. Provide
 training/retention terms, region, lawful basis, deletion, data-subject rights, workload
 identity, and final retention require professional review before customer-data use.
 
+## Phase 10 OpenAI Agents SDK boundary
+
+Interview answers are potentially sensitive career data. Default fixtures are synthetic
+and local. SDK trace export is off, sensitive trace inclusion is false, and local events
+store only scoped IDs, provider, route, and outcome. Any live OpenAI call requires data
+minimization, consent, authorization, purpose, positive cost approval, credentials, and
+reviewed provider training/retention/region/deletion terms. Durable session and approval
+retention, lawful basis, access/export/deletion, and production identity require legal and
+privacy review. No compliance certification is claimed.
+
 ## Phase 8 draft and approval boundary
 
 Draft content and citations are high-risk personal data. PostgreSQL stores structured

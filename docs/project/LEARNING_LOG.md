@@ -191,3 +191,17 @@ Tutorial: `docs/tutorials/phase-09-adk-versus-langgraph.md`
 Exercises: `docs/exercises/phase-09-exercises.md`
 
 Answers: `docs/exercises/phase-09-answers.md`
+
+## Phase 10 — OpenAI Agents SDK orchestration laboratory
+
+- Compared direct handoff, agent-as-tool, and manager delegation on one fixture.
+- Practiced SDK agent definitions, function-tool approval, sessions, structured output,
+  safe run configuration, exact-action resume, and redacted trace evidence.
+- Kept authorization, guardrails, spending, truth, and external action outside the model.
+- Preserved fake-first execution and a separate live cost/data gate with no fallback.
+
+Tutorial: `docs/tutorials/phase-10-openai-agent-orchestration.md`
+
+Exercises: `docs/exercises/phase-10-exercises.md`
+
+Answers: `docs/exercises/phase-10-answers.md`

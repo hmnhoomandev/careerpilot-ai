@@ -32,3 +32,5 @@
 | DEC-028 | 2026-08-13 | Use LangGraph interrupt for review interaction and PostgreSQL for authoritative restart-safe approval records | Accepted for Phase 8 | ADR-0020 |
 | DEC-029 | 2026-08-13 | Isolate Google ADK as a supplied-source research specialist with fake default and no fallback | Accepted for Phase 9 | ADR-0021 |
 | DEC-030 | 2026-08-13 | Upgrade OpenTelemetry API to 1.42.x for ADK 2.5 compatibility without enabling export | Accepted | ADR-0021 |
+| DEC-031 | 2026-08-14 | Isolate OpenAI Agents SDK as a fake-first interview orchestration laboratory | Accepted for Phase 10 | ADR-0022 |
+| DEC-032 | 2026-08-14 | Use direct handoff only when the specialist should own the conversation; otherwise retain manager ownership | Accepted | ADR-0022 |
