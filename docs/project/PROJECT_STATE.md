@@ -1,11 +1,11 @@
 # Project State
 
 - **Project:** CareerPilot AI
-- **Current phase:** Phase 16 — Security hardening and adversarial verification
-- **Phase status:** Complete — awaiting owner acceptance
-- **Last updated:** 2026-08-14
-- **Working tree at phase start:** Clean at `d75320c` on `main`
-- **Production code:** Accepted through Phase 15; Phase 16 complete and awaiting acceptance
+- **Current phase:** Phase 17 — Containers, supply chain, IaC, and Cloud Run
+- **Phase status:** In progress
+- **Last updated:** 2026-08-15
+- **Working tree at phase start:** Clean at `942aea8` on `main`
+- **Production code:** Accepted through Phase 16; Phase 17 in progress
 - **Cloud resources created:** None
 - **Paid calls made:** None
 
@@ -277,6 +277,6 @@
 
 ## Next action
 
-Review and accept Phase 16. Do not start Phase 17 without the exact gate:
-
-`APPROVE PHASE 16 AND START PHASE 17`
+Complete the blocked native Docker image build/inspection and Terraform
+format/validate/security/plan checks, then finish the Phase 17 review. Do not
+start Phase 18 without the exact gate.

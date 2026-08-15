@@ -1,22 +1,116 @@
 name: careerpilot
 
+x-python-service: &python-service
+  build: {context: ., dockerfile: docker/python-service.Dockerfile}
+  init: true
+  read_only: true
+  security_opt: ["no-new-privileges:true"]
+  cap_drop: ["ALL"]
+  tmpfs: ["/tmp:rw,noexec,nosuid,size=64m"]
+  networks: [application]
+  restart: unless-stopped
+
 services:
   postgres:
-    image: pgvector/pgvector:pg17-bookworm
+    image: pgvector/pgvector:0.8.5-pg17-bookworm@sha256:95fe32215935b52034b5164d7a9f4be0948f04365954fb4444ef37929517a25c
     environment:
-      POSTGRES_DB: ${CAREERPILOT_POSTGRES_DB:-careerpilot}
-      POSTGRES_PASSWORD: ${CAREERPILOT_POSTGRES_PASSWORD:?Set in an ignored .env file}
-      POSTGRES_USER: ${CAREERPILOT_POSTGRES_USER:-careerpilot_local}
-    ports:
-      - "127.0.0.1:${CAREERPILOT_POSTGRES_PORT:-5432}:5432"
+      POSTGRES_DB: careerpilot
+      POSTGRES_USER: careerpilot
+      POSTGRES_PASSWORD: ${CAREERPILOT_POSTGRES_PASSWORD:?Set CAREERPILOT_POSTGRES_PASSWORD in .env}
+    ports: ["127.0.0.1:${CAREERPILOT_POSTGRES_PORT:-5432}:5432"]
+    volumes: ["postgres-data:/var/lib/postgresql/data"]
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      test: ["CMD-SHELL", "pg_isready -U careerpilot -d careerpilot"]
       interval: 5s
-      timeout: 5s
-      retries: 10
-      start_period: 10s
-    volumes:
-      - careerpilot-postgres:/var/lib/postgresql/data
+      timeout: 3s
+      retries: 20
+    networks: [data]
+    restart: unless-stopped
+
+  api:
+    <<: *python-service
+    command: ["uvicorn", "careerpilot_api.main:create_app", "--factory", "--host", "0.0.0.0", "--port", "8080", "--no-server-header"]
+    environment:
+      CAREERPILOT_DATABASE_URL: postgresql+psycopg://careerpilot:${CAREERPILOT_POSTGRES_PASSWORD:?Set CAREERPILOT_POSTGRES_PASSWORD in .env}@postgres:5432/careerpilot
+      CAREERPILOT_DOCUMENT_ROOT: /app/.data/documents
+      CAREERPILOT_ENVIRONMENT: local
+    ports: ["127.0.0.1:${CAREERPILOT_API_PORT:-8000}:8080"]
+    volumes: ["document-data:/app/.data/documents"]
+    depends_on:
+      postgres: {condition: service_healthy}
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8080/health/ready', timeout=2)"]
+      interval: 10s
+      timeout: 3s
+      retries: 12
+    networks: [application, data]
+
+  web:
+    build: {context: ., dockerfile: apps/web/Dockerfile}
+    init: true
+    read_only: true
+    security_opt: ["no-new-privileges:true"]
+    cap_drop: ["ALL"]
+    tmpfs: ["/tmp:rw,noexec,nosuid,size=64m"]
+    environment:
+      NEXT_PUBLIC_CAREERPILOT_API_URL: http://localhost:${CAREERPILOT_API_PORT:-8000}
+    ports: ["127.0.0.1:${CAREERPILOT_WEB_PORT:-3000}:3000"]
+    depends_on:
+      api: {condition: service_healthy}
+    networks: [application]
+    restart: unless-stopped
+
+  google-adk:
+    <<: *python-service
+    profiles: ["specialists"]
+    command: ["uvicorn", "careerpilot_google_adk.api:app", "--host", "0.0.0.0", "--port", "8080", "--no-server-header"]
+    environment: {CAREERPILOT_ADK_PROVIDER: fake}
+    ports: ["127.0.0.1:${CAREERPILOT_ADK_PORT:-8101}:8080"]
+
+  openai-agents:
+    <<: *python-service
+    profiles: ["specialists"]
+    command: ["uvicorn", "careerpilot_openai_agents.api:app", "--host", "0.0.0.0", "--port", "8080", "--no-server-header"]
+    environment: {CAREERPILOT_OPENAI_AGENTS_PROVIDER: fake}
+    ports: ["127.0.0.1:${CAREERPILOT_OPENAI_PORT:-8102}:8080"]
+
+  temporal:
+    image: temporalio/auto-setup:1.29.1
+    profiles: ["durable"]
+    environment:
+      DB: postgres12
+      DB_PORT: 5432
+      POSTGRES_USER: careerpilot
+      POSTGRES_PWD: ${CAREERPILOT_POSTGRES_PASSWORD:?Set CAREERPILOT_POSTGRES_PASSWORD in .env}
+      POSTGRES_SEEDS: postgres
+    ports: ["127.0.0.1:${CAREERPILOT_TEMPORAL_PORT:-7233}:7233"]
+    depends_on:
+      postgres: {condition: service_healthy}
+    networks: [application, data]
+    restart: unless-stopped
+
+  temporal-ui:
+    image: temporalio/ui:2.43.3
+    profiles: ["durable"]
+    environment:
+      TEMPORAL_ADDRESS: temporal:7233
+      TEMPORAL_CORS_ORIGINS: http://localhost:${CAREERPILOT_TEMPORAL_UI_PORT:-8233}
+    ports: ["127.0.0.1:${CAREERPILOT_TEMPORAL_UI_PORT:-8233}:8080"]
+    depends_on: [temporal]
+    networks: [application]
+    restart: unless-stopped
+
+  temporal-worker:
+    <<: *python-service
+    profiles: ["durable"]
+    command: ["python", "-m", "careerpilot_temporal"]
+    environment: {CAREERPILOT_TEMPORAL_TARGET: "temporal:7233"}
+    depends_on: [temporal]
 
 volumes:
-  careerpilot-postgres:
+  postgres-data:
+  document-data:
+
+networks:
+  application:
+  data: {internal: true}

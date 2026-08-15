@@ -29,4 +29,7 @@ coverage/
 
 # Local infrastructure
 .data/
+.artifacts/
+.terraform/
+*.tfstate*
 tmp/

@@ -18,8 +18,8 @@
 | 13 | Pub/Sub, optional Dapr boundary, notifications | Accepted |
 | 14 | Complete accessible UI and A2UI-compatible messages | Accepted |
 | 15 | Observability, evaluation, routing, and cost control | Accepted |
-| 16 | Security hardening and adversarial verification | Complete — awaiting acceptance |
-| 17 | Containers, supply chain, IaC, Cloud Run | Not started |
+| 16 | Security hardening and adversarial verification | Accepted |
+| 17 | Containers, supply chain, IaC, Cloud Run | In progress |
 | 18 | Optional GKE reference architecture | Not started |
 | 19 | Isolated DBOS and Restate comparison labs | Not started |
 | 20 | Production-readiness release candidate and curriculum | Not started |

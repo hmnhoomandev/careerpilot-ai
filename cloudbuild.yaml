@@ -1,0 +1,25 @@
+options:
+  logging: CLOUD_LOGGING_ONLY
+  pool:
+    name: projects/${PROJECT_ID}/locations/europe-west6/workerPools/careerpilot-build
+
+substitutions:
+  _REGION: europe-west6
+  _REPOSITORY: careerpilot-test
+
+steps:
+  - id: build-api
+    name: gcr.io/cloud-builders/docker
+    args: ["build", "--build-arg", "VCS_REF=$COMMIT_SHA", "-f", "docker/python-service.Dockerfile", "-t", "${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/api:$COMMIT_SHA", "."]
+  - id: build-web
+    name: gcr.io/cloud-builders/docker
+    args: ["build", "--build-arg", "VCS_REF=$COMMIT_SHA", "-f", "apps/web/Dockerfile", "-t", "${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/web:$COMMIT_SHA", "."]
+  - id: test
+    name: python:3.13.11-slim-bookworm
+    entrypoint: bash
+    args: ["-ceu", "python scripts/generate_sbom.py --output /workspace/sbom.cdx.json"]
+
+images:
+  - "${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/api:$COMMIT_SHA"
+  - "${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/web:$COMMIT_SHA"
+

@@ -45,3 +45,5 @@
 | DEC-041 | 2026-08-14 | Use step-up, exact approval and recoverable states for data-rights requests | Accepted for Phase 16 | ADR-0028 |
 | DEC-042 | 2026-08-14 | Require HTTPS, allowlist and global addresses before outbound connection | Accepted | ADR-0028 |
 | DEC-043 | 2026-08-14 | Keep separate security gates and never call absent Phase 17 artifact scans passing | Accepted | ADR-0028 |
+| DEC-044 | 2026-08-15 | Use hardened digest-pinned Cloud Run artifacts and Zurich-only Terraform with no CI apply | Accepted for Phase 17 | ADR-0029 |
+| DEC-045 | 2026-08-15 | Use ADC for human planning, WIF for CI, and prohibit service-account keys | Accepted | ADR-0029 |

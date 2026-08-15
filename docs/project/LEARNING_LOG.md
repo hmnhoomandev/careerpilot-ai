@@ -293,3 +293,16 @@ Tutorial: `docs/tutorials/phase-16-defense-in-depth.md`
 Exercises: `docs/exercises/phase-16-exercises.md`
 
 Answers: `docs/exercises/phase-16-answers.md`
+
+## Phase 17 — containers, supply chain, IaC, and Cloud Run
+
+- Connected locked dependencies, minimal runtime images, SBOM, provenance, digest and signature as one chain of evidence.
+- Practiced defense-in-depth container controls and isolated local networks/profiles.
+- Modeled Zurich residency, private managed PostgreSQL, regional messaging/secrets/keys and least-privilege identities in Terraform.
+- Separated plan from apply, runtime from migration identity, compute rollback from data recovery, and CI identity from service-account keys.
+
+Tutorial: `docs/tutorials/phase-17-containers-supply-chain-iac.md`
+
+Exercises: `docs/exercises/phase-17-exercises.md`
+
+Answers: `docs/exercises/phase-17-answers.md`

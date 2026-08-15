@@ -17,6 +17,118 @@ Every phase plan must state:
 
 Plans are living documents. Update status without erasing decisions or evidence.
 
+## Active implementation plan: Phase 17
+
+**Objective:** create a reproducible, hardened and supply-chain-aware Cloud Run release path with
+local container/IaC evidence while preserving the CHF 0 budget and performing no cloud mutation.
+
+### Scope and acceptance mapping
+
+- Build multi-stage non-root containers for the FastAPI API, Next.js web app and bounded specialist
+  services; use read-only/runtime-minimized filesystems where practical and explicit health probes.
+- Extend Compose into a complete local profile for PostgreSQL/pgvector, API, web, specialist
+  services and Temporal development dependencies, with loopback exposure and health ordering.
+- Generate CycloneDX/SPDX SBOMs, vulnerability/secret/license policy evidence, image metadata and
+  unsigned local provenance; define keyless signing/attestation gates for authorized CI releases.
+- Add Terraform for isolated test/staging/production inputs and Zurich-first Artifact Registry,
+  Cloud Run services/jobs, Cloud SQL architecture, regional storage, Pub/Sub location policy,
+  regional Secret Manager/KMS, observability, networking, IAM, backups and migration jobs.
+- Use separate runtime and CI service accounts, least privilege and WIF/OIDC; never store a long-
+  lived Google service-account key or provider credential.
+- Add plan-only CI with format/validate/security/policy gates, immutable-image promotion and an
+  explicit protected-environment approval before production. No workflow may auto-apply production.
+- Add deployment, migration, rollback, restore and incident runbooks plus local smoke tests.
+
+### Deliverables and expected files
+
+- Root/service Dockerfiles, `.dockerignore`, health/entrypoint configuration, expanded `compose.yaml`
+  and container contract/security tests.
+- `infrastructure/terraform` root/module/environment variable files and policy tests; plan output
+  stays ignored and contains no secrets. Provider/tool versions are pinned and documented.
+- Supply-chain scripts/workflows for SBOM, provenance statement, container/IaC scanners and policy;
+  generated verification artifacts go to an ignored local reports directory, not source control.
+- ADR-0029, deployment/residency/cost architecture, annotated source, tutorial/exercises,
+  runbooks, traceability/state/roadmap/security/privacy/learning and mandatory Phase 17 review.
+- No production application dependency is planned. Free development tooling may be downloaded only
+  from official sources with pinned versions/checksums and documented licenses/alternatives.
+
+### Architecture, security, privacy, migration, deployment, and cost
+
+- Cloud Run remains the production compute target; GKE remains Phase 18 reference-only. Services
+  use one async process and scale horizontally; sizing is a tested input, not an asserted optimum.
+- `europe-west6` is available for Cloud Run, Cloud SQL, Artifact Registry, Cloud Build, regional
+  Secret Manager and Cloud KMS as of 2026-08-15. No core-service EU fallback is proposed.
+- Pub/Sub topics explicitly allow only `europe-west6` and enforce in-transit location policy.
+  Regional endpoints and organization policy remain production-administration decisions.
+- Cloud SQL is private-IP architecture with deletion protection in production, PITR/backups,
+  separate database/runtime identities and a migration job; no public database endpoint is planned.
+- Web ingress may be public behind the approved identity/edge design; API/specialists are private
+  and authenticated. Current local auth cannot be activated in production and startup must fail.
+- Secrets use regional Secret Manager references; CMEK uses Zurich Cloud KMS. Terraform values and
+  CI logs contain resource names only, never secret payloads or long-lived keys.
+- Terraform plan is the review artifact. Apply/deploy/API enablement/project/IAM/resource mutation
+  requires a new explicit owner approval and a current cost estimate; this phase authorizes none.
+- Estimated paid staging/production shapes and shutdown controls are documented separately. Local
+  builds, scans, emulators and plans must remain CHF 0.
+
+### Risks and mitigations
+
+- Supply-chain substitution: pinned base/tool/action versions, digest lock records, SBOM, SCA,
+  provenance subject digests, protected promotion and keyless signing design.
+- Root/escape/writable-container abuse: numeric non-root users, dropped capabilities, no-new-
+  privileges, read-only roots, bounded tmpfs and container policy tests.
+- Secret/image leakage: narrow build contexts, `.dockerignore`, BuildKit secret prohibition tests,
+  secret scan, no credentials in layers/args/provenance and private Artifact Registry repositories.
+- Terraform drift/destruction: remote versioned state design, locking, plan review, lifecycle guards,
+  protected production environment and no apply in Phase 17.
+- Cross-environment/tenant leakage: separate project IDs/service accounts/databases/secrets/state,
+  explicit environment validation and deny-default IAM.
+- Residency drift: fixed Zurich variables/policies, CI policy assertions and a documented exception
+  workflow before any EU fallback.
+- Cost surprise: min instances default zero for non-production plans, bounded max/concurrency,
+  budgets/alerts architecture, no apply and explicit paid-deployment gate.
+- Tool unavailable: use official pinned local binaries/images where authorized; record exact
+  blocked build/plan/scan evidence rather than weakening policy or claiming success.
+
+### Automated verification
+
+- Docker/Compose syntax, multi-architecture build where locally possible, non-root/read-only/health
+  smoke, container vulnerability/misconfiguration/secret scan and SBOM/provenance validation.
+- Terraform/OpenTofu format, init-backend=false, validate and plan with synthetic project IDs;
+  IaC security/policy tests for Zurich, IAM, ingress, secrets, encryption, backups and deletion guards.
+- CI workflow/YAML and protected-promotion contract tests; no cloud credentials or apply command.
+- Complete Ruff/MyPy/Pytest, frontend format/lint/type/test/build, SAST/SCA/secrets/licenses,
+  docs/link/Mermaid/governance, pre-commit and complete diff review.
+- Staging smoke is represented by a reusable script and contract tests only. It is not run against
+  cloud because no staging resource/cost approval exists.
+
+### Manual verification
+
+- Build/start the full local Compose profile, inspect health and use the visible local product.
+- Inspect every runtime user, Linux capabilities, writable mounts, exposed ports and image history.
+- Generate and inspect SBOM/provenance subjects and run local container/IaC policies.
+- Review test/staging/production Terraform plans and confirm the plan contains no secret values,
+  public database, broad runtime role or non-Zurich data service.
+- Verify staging/production workflows require WIF and production environment approval.
+- Rehearse local migration, smoke, rollback and isolated restore procedures without cloud mutation.
+
+### Explicit exclusions
+
+- Terraform apply, `gcloud services enable`, project/resource/IAM creation, Artifact Registry push,
+  Cloud Build execution, Cloud Run/SQL/Pub/Sub/KMS/Secret Manager creation or staging deployment.
+- Billing enablement, paid/free-tier cloud consumption, live model/provider call, customer data,
+  DNS/domain/certificate changes, email/submission or external communication.
+- GKE/Kubernetes manifests or deployment (Phase 18), DBOS/Restate labs, production load/soak/chaos
+  and final go-live decision (Phase 20).
+- Claiming local SBOM/provenance is a signed release, claiming plan equals deployed security, or
+  claiming legal compliance/data-residency certification.
+
+### Stop condition
+
+Complete `docs/reviews/phase-17-review.md`, report exact evidence, and wait for:
+
+`APPROVE PHASE 17 AND START PHASE 18`
+
 ## Completed implementation plan: Phase 16
 
 **Objective:** harden CareerPilot's local/API security and privacy posture and prove the
