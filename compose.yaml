@@ -38,12 +38,23 @@ services:
     volumes: ["document-data:/app/.data/documents"]
     depends_on:
       postgres: {condition: service_healthy}
+      migration: {condition: service_completed_successfully}
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8080/health/ready', timeout=2)"]
       interval: 10s
       timeout: 3s
       retries: 12
     networks: [application, data]
+
+  migration:
+    <<: *python-service
+    command: ["alembic", "upgrade", "head"]
+    environment:
+      CAREERPILOT_DATABASE_URL: postgresql+psycopg://careerpilot:${CAREERPILOT_POSTGRES_PASSWORD:?Set CAREERPILOT_POSTGRES_PASSWORD in .env}@postgres:5432/careerpilot
+    depends_on:
+      postgres: {condition: service_healthy}
+    networks: [data]
+    restart: "no"
 
   web:
     build: {context: ., dockerfile: apps/web/Dockerfile}

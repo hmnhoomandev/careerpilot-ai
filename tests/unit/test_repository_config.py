@@ -18,9 +18,7 @@ def test_compose_uses_pinned_local_only_postgres() -> None:
 
     assert isinstance(document, dict)
     postgres = document["services"]["postgres"]
-    assert postgres["image"].startswith(
-        "pgvector/pgvector:0.8.5-pg17-bookworm@sha256:"
-    )
+    assert postgres["image"].startswith("pgvector/pgvector:0.8.5-pg17-bookworm@sha256:")
     assert len(postgres["image"].rsplit(":", maxsplit=1)[-1]) == 64
     assert postgres["ports"] == ["127.0.0.1:${CAREERPILOT_POSTGRES_PORT:-5432}:5432"]
     assert ":?" in postgres["environment"]["POSTGRES_PASSWORD"]

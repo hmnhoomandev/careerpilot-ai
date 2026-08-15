@@ -17,10 +17,13 @@ Every phase plan must state:
 
 Plans are living documents. Update status without erasing decisions or evidence.
 
-## Active implementation plan: Phase 17
+## Completed implementation plan: Phase 17
 
 **Objective:** create a reproducible, hardened and supply-chain-aware Cloud Run release path with
 local container/IaC evidence while preserving the CHF 0 budget and performing no cloud mutation.
+
+**Status:** Complete on 2026-08-15. The repository is stopped at the Phase 17 gate; Phase 18 has not
+started.
 
 ### Scope and acceptance mapping
 

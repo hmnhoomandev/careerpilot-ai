@@ -27,11 +27,11 @@ resource "google_service_networking_connection" "private_services" {
 }
 
 resource "google_artifact_registry_repository" "containers" {
-  location      = var.region
-  repository_id = local.name
-  description   = "Digest-pinned CareerPilot container images"
-  format        = "DOCKER"
-  labels        = local.labels
+  location               = var.region
+  repository_id          = local.name
+  description            = "Digest-pinned CareerPilot container images"
+  format                 = "DOCKER"
+  labels                 = local.labels
   cleanup_policy_dry_run = true
 }
 
@@ -51,7 +51,11 @@ resource "google_secret_manager_secret" "database" {
   secret_id = "${local.name}-database-url"
   labels    = local.labels
   replication {
-    user_managed { replicas { location = var.region } }
+    user_managed {
+      replicas {
+        location = var.region
+      }
+    }
   }
 }
 
@@ -104,7 +108,7 @@ resource "google_sql_database_instance" "main" {
     ip_configuration {
       ipv4_enabled    = false
       private_network = google_compute_network.main.id
-      require_ssl     = true
+      ssl_mode        = "ENCRYPTED_ONLY"
     }
     insights_config {
       query_insights_enabled  = true
@@ -136,8 +140,8 @@ resource "google_cloud_run_v2_service" "api" {
   deletion_protection = var.deletion_protection
   labels              = local.labels
   template {
-    service_account = google_service_account.api.email
-    timeout         = "60s"
+    service_account                  = google_service_account.api.email
+    timeout                          = "60s"
     max_instance_request_concurrency = 40
     scaling {
       min_instance_count = 0
@@ -171,14 +175,18 @@ resource "google_cloud_run_v2_service" "api" {
         }
       }
       startup_probe {
-        http_get { path = "/health/live" }
+        http_get {
+          path = "/health/live"
+        }
         initial_delay_seconds = 2
         timeout_seconds       = 2
         period_seconds        = 5
         failure_threshold     = 12
       }
       liveness_probe {
-        http_get { path = "/health/live" }
+        http_get {
+          path = "/health/live"
+        }
         timeout_seconds   = 2
         period_seconds    = 10
         failure_threshold = 3
@@ -194,7 +202,7 @@ resource "google_cloud_run_v2_service" "web" {
   deletion_protection = var.deletion_protection
   labels              = local.labels
   template {
-    service_account = google_service_account.web.email
+    service_account                  = google_service_account.web.email
     max_instance_request_concurrency = 80
     scaling {
       min_instance_count = 0

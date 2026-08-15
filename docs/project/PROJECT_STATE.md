@@ -2,10 +2,10 @@
 
 - **Project:** CareerPilot AI
 - **Current phase:** Phase 17 — Containers, supply chain, IaC, and Cloud Run
-- **Phase status:** In progress
+- **Phase status:** Complete; awaiting owner acceptance
 - **Last updated:** 2026-08-15
 - **Working tree at phase start:** Clean at `942aea8` on `main`
-- **Production code:** Accepted through Phase 16; Phase 17 in progress
+- **Production code:** Implemented and verified through Phase 17; accepted through Phase 16
 - **Cloud resources created:** None
 - **Paid calls made:** None
 
@@ -275,8 +275,19 @@
   SBOM and IaC scans are not applicable until Phase 17 and were not called passing.
 - No real data, model, transfer/fetch, cloud KMS/WAF/scanner/backup, deployment, billing or paid API.
 
+## Phase 17 implementation and verification evidence
+
+- Hardened API/web images run as numeric non-root user 10001 with read-only roots, dropped
+  capabilities, runtime health checks and no fixable High/Critical Trivy findings.
+- Fresh local PostgreSQL ran Alembic migrations 0001–0003 before API startup. Default,
+  specialist and durable Compose profiles reached healthy state using only synthetic data/fakes.
+- OpenTofu 1.12.5 format/validate and synthetic test/staging/production plans passed; every plan
+  contained 19 additions, no changes/destruction, and no cloud apply. Terraform Trivy was clean.
+- Full Pytest passed 230 with six intentional skips and four ADK deprecation warnings; frontend
+  format/lint/typecheck, ten tests and production build passed.
+- No cloud resource, billing, paid/model call, external data transfer or real personal data was used.
+
 ## Next action
 
-Complete the blocked native Docker image build/inspection and Terraform
-format/validate/security/plan checks, then finish the Phase 17 review. Do not
-start Phase 18 without the exact gate.
+Review and accept Phase 17. Do not start Phase 18 without the exact gate:
+`APPROVE PHASE 17 AND START PHASE 18`.
