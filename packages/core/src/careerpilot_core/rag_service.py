@@ -63,6 +63,9 @@ INJECTION_PATTERNS = tuple(
         r"exfiltrat(e|ion)",
         r"send\s+.*\s+to\s+https?://",
         r"act\s+as\s+(an?\s+)?(administrator|system)",
+        r"(reveal|print|return)\s+.*(secret|token|credential)",
+        r"(disable|bypass)\s+.*(guardrail|authorization|policy)",
+        r"(call|invoke|execute)\s+.*(delete|export|submit|email).*(tool|function)",
     )
 )
 

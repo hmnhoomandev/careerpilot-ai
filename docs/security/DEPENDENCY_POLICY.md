@@ -39,6 +39,15 @@ adds SAST and has stronger copyleft licensing considerations than runtime tools;
 it is development-only and not distributed with production artifacts. Exact
 licenses must be rechecked from locked package metadata during release review.
 
+## Phase 16 security gate policy
+
+`scripts/audit_licenses.py` scans installed Python distribution metadata, rejects AGPL/GPL
+prefixes and fails on unreviewed missing metadata. The reviewed missing-metadata allowlist includes
+only repository packages and already locked tools whose licenses remain documented here/upstream.
+Pip/npm advisory scans, Semgrep and detect-secrets remain separate gates. DAST and the adversarial
+corpus are now CI gates. Container, SBOM and IaC scanners are not applicable before Phase 17 creates
+those artifacts and cannot be reported as passing in Phase 16.
+
 Phase 2 adds BSD-3-Clause `httpx2` for Starlette's supported test client and
 MPL-2.0 `axe-core` as a development-only accessibility test engine. Neither is
 part of the browser production dependency graph. The previous `httpx` fallback

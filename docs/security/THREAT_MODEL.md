@@ -179,3 +179,14 @@ fallback. Closed metadata, bounded local retention, owner-only tenant queries, e
 pre-execution estimates/reservations, tenant-scoped cache keys, deterministic route reasons and no
 fallback mitigate the local design. Export IAM, durable ledgers, signed price data, sampling,
 alerts and analytics retention remain production controls.
+
+## Phase 16 hardening and adversarial-verification addendum
+
+The complete boundary/control/residual-risk mapping is maintained in
+`PHASE_16_CONTROL_MATRIX.md`. Activated controls now include subject/tenant-scoped rights,
+step-up plus approval, recoverable deletion, restore tombstones, hashed request paths, security
+headers, identity rate limiting, pre-connect SSRF policy, active-PDF rejection, production
+configuration/KMS ports and a category-balanced red-team corpus. Local DAST probes success,
+authentication failure and hostile paths. Distributed WAF/rate limits, real workload identity,
+database RLS, managed scanner/KMS, egress pinning, durable purge ledger and cloud recovery remain
+residual Phase 17/20 work; legal questions remain `LEGAL REVIEW`.

@@ -193,3 +193,13 @@ cost estimates. Prompts, responses and career content are prohibited. ADK span c
 LangSmith/OpenAI exports. Production purpose/lawful basis, processor terms, regional availability,
 retention, access, data-subject rights, pseudonym rotation and reidentification risk require a DPIA
 update and professional legal review.
+
+## Phase 16 data-rights and recovery addendum
+
+The local reference path exposes a minimized inventory, purpose-specific consent withdrawal,
+access/correction/export/deletion request states, step-up and exact-approval gates, a 30-day
+recoverable deletion window and restore-time tombstones. It is tenant/subject scoped and records no
+career content in the lifecycle store. Physical multi-store purge, durable request/consent evidence,
+identity verification, legal holds, final retention, portability format, Temporal/event erasure,
+backup expiry, lawful basis and response deadlines remain `LEGAL REVIEW` under LEG-001/002/004/008.
+No compliance certification or guaranteed response workflow is claimed.

@@ -17,6 +17,114 @@ Every phase plan must state:
 
 Plans are living documents. Update status without erasing decisions or evidence.
 
+## Completed implementation plan: Phase 16
+
+**Objective:** harden CareerPilot's local/API security and privacy posture and prove the
+controls with deterministic adversarial tests, without claiming legal compliance or creating
+cloud, paid, production-network, or container/IaC resources owned by Phase 17.
+
+### Scope and acceptance mapping
+
+- Complete the STRIDE threat/control/residual-risk mapping for every activated trust boundary.
+- Add tenant-safe data-subject access, correction-plan, portable export, recoverable deletion,
+  consent withdrawal and retention-plan workflows with explicit step-up/approval boundaries.
+- Define fail-closed secret-manager/KMS/envelope-encryption ports, key rotation/recovery runbook,
+  and production configuration rules; local implementations use no real secrets or cloud KMS.
+- Add API security headers/CSP, cache prevention, bounded request/rate controls, trusted-host and
+  HTTPS-production policy, plus a DNS/IP/redirect-safe outbound URL policy with no network fetch.
+- Strengthen upload/scanner boundary and test malicious signatures, polyglots, parser limits and
+  path traversal. Preserve quarantine and fail-closed behavior.
+- Add a versioned agent red-team corpus for direct/indirect injection, exfiltration, tool abuse,
+  authorization bypass, malicious files and denial-of-wallet; gate deterministic protections.
+- Add local DAST, backup/export/restore rehearsal and data-deletion propagation verification.
+- Define severity/blocking policy and CI gates for SAST, SCA, DAST, secrets and licenses. Container,
+  SBOM and IaC scans are configured/documented for Phase 17 artifacts but cannot claim a pass
+  before those artifacts exist.
+
+### Deliverables and expected files
+
+- Core privacy lifecycle, consent, retention and security-policy types/services with API adapters
+  and strict contracts; no provider SDK in the domain.
+- Security middleware/policies, SSRF destination validator, hardened local upload scanner, local
+  DAST and backup/restore verification scripts, synthetic adversarial fixtures and tests.
+- CI/Makefile/security policy updates using already locked tools where possible; no production
+  dependency is planned unless inspection proves it necessary and the dependency policy is updated.
+- ADR-0028, complete threat/control matrix, privacy lifecycle and incident/key/backup runbooks,
+  annotated source, tutorial, exercises/answers, traceability/governance and Phase 16 review.
+
+### Architecture, security, privacy, migration, deployment, and cost
+
+- Domain services express lifecycle decisions; FastAPI authenticates and reauthorizes every data-
+  subject action. Export/deletion are consequential actions and require exact, auditable approval.
+- Recoverable deletion defaults to 30 days and is a state transition, not immediate erasure. Legal
+  holds, identity verification, exceptions and final schedules remain `LEGAL REVIEW`.
+- Backup rehearsal uses encrypted-by-boundary synthetic local artifacts and an isolated restore
+  target. It proves integrity/tenant scoping, not production durability or cloud recovery.
+- SSRF policy resolves/validates all addresses, rejects private/reserved/link-local/metadata ranges,
+  credentials, non-HTTPS schemes and redirects unless each destination is revalidated. Phase 16
+  introduces no unrestricted fetch or scraping.
+- Browser/API headers are local-safe and production-fail-closed. CSP permits the current local UI
+  contract only; production TLS/WAF/CDN policy is documented for Phase 17 deployment decisions.
+- No database migration is planned: lifecycle orchestration is a bounded local reference over the
+  existing repositories. Production durable deletion/backup ledgers require later migration review.
+- CHF cost remains zero: no model, cloud scanner, KMS, WAF, DAST SaaS, paid API or resource is used.
+
+### Risks and mitigations
+
+- False compliance claim: label engineering controls and every unresolved legal determination;
+  keep LEG-001–008 explicit in the review and user-facing workflow documentation.
+- Export leakage/IDOR: owner/subject binding, step-up evidence, exact approval, minimized manifest,
+  deterministic archive shape, safe errors, tenant and hostile-ID tests.
+- Deletion incompleteness: source-to-derivative inventory, explicit pending/recoverable/purge states,
+  idempotency, deletion ledger, backup tombstone handling and failure-injection tests.
+- SSRF/DNS rebinding: canonical URL parsing, address classification, bounded resolver interface,
+  destination allowlist and redirect revalidation; no socket call in default tests.
+- Header/rate-control regressions: route-aware deterministic middleware, proxy-trust assumptions,
+  retry guidance and DAST assertions without using attacker-controlled high-cardinality keys.
+- Red-team overfitting: versioned category-balanced corpus, expected policy outcomes and mutation/
+  bypass variants; report deterministic detector limits and keep model-based red teaming excluded.
+- Scanner/tool supply-chain gaps: fail closed when scanner is unavailable, keep strict input limits,
+  scan locks/licenses/advisories, and defer container/IaC evidence honestly to Phase 17.
+
+### Automated verification
+
+- Ruff format/lint, strict MyPy and complete Pytest, including data-subject, retention/deletion,
+  consent, cross-tenant/privilege, headers/CSP/rate, SSRF, upload and adversarial-agent tests.
+- OpenAPI/contract tests, local DAST baseline, isolated synthetic backup/restore/deletion rehearsal,
+  architecture boundaries and deterministic red-team threshold gate.
+- Frontend format/lint/type/test/build; Semgrep SAST, pip/npm SCA, secret and license policy checks;
+  Markdown/link/Mermaid/governance, pre-commit and complete diff review.
+- Record skipped PostgreSQL/live-model/network/container/IaC checks precisely; never substitute one
+  class of security test for another or claim absent Phase 17 artifacts were scanned.
+
+### Manual verification
+
+- Sign in as a synthetic owner, inspect/access/export the account manifest, request correction,
+  withdraw consent, request recoverable deletion, cancel within the window and inspect audit events.
+- Attempt the same actions across tenants and as a non-owner; observe non-enumerating denial.
+- Inspect response security headers/CSP/cache policy and exceed a local rate limit safely.
+- Run SSRF and agent red-team fixtures and inspect categorized allow/block decisions.
+- Create a synthetic local backup, restore into an isolated temporary store, apply deletion
+  tombstones and verify deleted material is not reactivated.
+- Review STRIDE residual risks, incident/key-rotation runbooks and all `LEGAL REVIEW` items.
+
+### Explicit exclusions
+
+- Legal certification, guaranteed GDPR/FADP compliance, final lawful bases/retention/notification
+  timelines, production identity proofing, real customer data or legal-hold adjudication.
+- Cloud KMS/Secret Manager, WAF/CDN, managed malware scanning, real outbound fetch, cloud backup,
+  cloud deployment, paid DAST/red-team service, credentials, billing or any paid/live provider call.
+- Container build/hardening, SBOM/signing/provenance and concrete IaC plans/scans, which belong to
+  Phase 17; only their release-blocking policy and expected interfaces are prepared here.
+- Immediate irreversible account purge, automatic external communication/submission, unrestricted
+  scraping, organization/coach activation, Phase 17 implementation or later comparison labs.
+
+### Stop condition
+
+Complete `docs/reviews/phase-16-review.md`, report exact evidence, and wait for:
+
+`APPROVE PHASE 16 AND START PHASE 17`
+
 ## Completed implementation plan: Phase 15
 
 **Objective:** make CareerPilot measurable and cost-controlled through privacy-safe local

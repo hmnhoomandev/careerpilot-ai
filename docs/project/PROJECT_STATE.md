@@ -1,11 +1,11 @@
 # Project State
 
 - **Project:** CareerPilot AI
-- **Current phase:** Phase 15 — Observability, evaluation, routing, and cost control
+- **Current phase:** Phase 16 — Security hardening and adversarial verification
 - **Phase status:** Complete — awaiting owner acceptance
 - **Last updated:** 2026-08-14
-- **Working tree at phase start:** Clean at `2fc849e` on `main`
-- **Production code:** Accepted through Phase 14; Phase 15 complete and awaiting acceptance
+- **Working tree at phase start:** Clean at `d75320c` on `main`
+- **Production code:** Accepted through Phase 15; Phase 16 complete and awaiting acceptance
 - **Cloud resources created:** None
 - **Paid calls made:** None
 
@@ -259,8 +259,24 @@
 - No live/managed ADK evaluation, LLM judge, exporter, cloud analytics resource, personal-data
   transfer, model call, deployment, billing or paid operation occurred.
 
+## Phase 16 implementation and verification evidence
+
+- Owner-only inventory, consent/withdrawal, rights states, minimized portable export, step-up/exact
+  approval contract and a 30-day recoverable deletion/cancel/purge-due lifecycle exist locally.
+- Headers/no-store, identity rate control, path hashing, SSRF policy, active-PDF rejection,
+  production config/KMS boundaries and tombstone-aware isolated backup restore are implemented.
+- A nine-case corpus covers injection, exfiltration, tool/auth abuse, SSRF, malicious files,
+  denial-of-wallet and a benign control.
+- Full Pytest passed 227 with six expected skips/four ADK warnings. Ruff and strict MyPy (117 files),
+  frontend checks/ten tests/build, three-probe DAST and 148-distribution license policy passed.
+- Secrets passed; Semgrep scanned 144 Python files with zero findings; 13 Mermaid diagrams rendered;
+  Markdown lint passed 159 files and governance passed 167 Markdown files/74 IDs.
+- Registry-backed pip/npm advisory checks were inconclusive because DNS was unavailable. Container,
+  SBOM and IaC scans are not applicable until Phase 17 and were not called passing.
+- No real data, model, transfer/fetch, cloud KMS/WAF/scanner/backup, deployment, billing or paid API.
+
 ## Next action
 
-Review and accept Phase 15; then, and only then, start Phase 16 with:
+Review and accept Phase 16. Do not start Phase 17 without the exact gate:
 
-`APPROVE PHASE 15 AND START PHASE 16`
+`APPROVE PHASE 16 AND START PHASE 17`

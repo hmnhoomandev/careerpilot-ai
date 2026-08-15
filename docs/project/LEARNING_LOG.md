@@ -278,3 +278,18 @@ Tutorial: `docs/tutorials/phase-15-observability-routing-and-evaluation.md`
 Exercises: `docs/exercises/phase-15-exercises.md`
 
 Answers: `docs/exercises/phase-15-answers.md`
+
+## Phase 16 — security hardening and adversarial verification
+
+- Separated identity, authorization, validation, approval, audit and recovery controls.
+- Modeled deletion across source, derivatives and backups instead of one SQL statement.
+- Validated scheme, host and every resolved IP before outbound connection or redirect.
+- Distinguished backup integrity from KMS-backed production confidentiality/authenticity.
+- Treated SAST, SCA, DAST, secrets, licenses, container and IaC as complementary evidence.
+- Kept lawful bases, retention and breach-notification duties under professional legal review.
+
+Tutorial: `docs/tutorials/phase-16-defense-in-depth.md`
+
+Exercises: `docs/exercises/phase-16-exercises.md`
+
+Answers: `docs/exercises/phase-16-answers.md`

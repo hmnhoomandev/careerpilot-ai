@@ -21,6 +21,7 @@ MAX_EXTRACTED_CHARACTERS = 500_000
 MAX_TEXT_CHARACTERS = 500_000
 TOKEN_PATTERN = re.compile(r"[a-z][a-z0-9+#.-]{1,}")
 EICAR_MARKER = b"EICAR-STANDARD-ANTIVIRUS-TEST-FILE"
+ACTIVE_PDF_MARKERS = (b"/JavaScript", b"/JS", b"/Launch", b"/EmbeddedFile")
 FIRST_PRINTABLE_CODEPOINT = 32
 
 
@@ -34,6 +35,10 @@ class LocalDocumentScanner:
             return ScanResult(clean=False, reason="malware_signature_detected")
         if media_type == "application/pdf" and not content.startswith(b"%PDF-"):
             return ScanResult(clean=False, reason="content_type_mismatch")
+        if media_type == "application/pdf" and any(
+            marker in content for marker in ACTIVE_PDF_MARKERS
+        ):
+            return ScanResult(clean=False, reason="active_pdf_content_rejected")
         if media_type == "text/plain" and b"\x00" in content:
             return ScanResult(clean=False, reason="binary_text_rejected")
         return ScanResult(clean=True, reason="local_policy_clean")

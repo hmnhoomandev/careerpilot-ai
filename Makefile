@@ -1,4 +1,4 @@
-.PHONY: setup dev mcp-local db-up db-down db-migrate db-integration-test format format-check lint typecheck test audit security docs-check frontend-check check
+.PHONY: setup dev mcp-local db-up db-down db-migrate db-integration-test format format-check lint typecheck test audit security security-phase16 docs-check frontend-check check
 
 setup:
 	uv sync --all-packages --locked
@@ -51,6 +51,11 @@ security:
 	uvx --from semgrep==1.172.0 semgrep scan --no-git-ignore --config security/semgrep.yml --error --metrics off .
 	uv run detect-secrets-hook --baseline .secrets.baseline $$(git ls-files -co --exclude-standard)
 
+security-phase16:
+	uv run python scripts/dast_baseline.py
+	uv run python scripts/audit_licenses.py
+	uv run pytest tests/e2e/test_security_red_team.py tests/api/test_privacy_security_api.py
+
 docs-check:
 	cd tools/documentation && npm run lint
 	cd tools/documentation && npm run links
@@ -63,6 +68,6 @@ frontend-check:
 	cd apps/web && npm test
 	cd apps/web && npm run build
 
-check: format-check lint typecheck test audit security docs-check frontend-check
+check: format-check lint typecheck test audit security security-phase16 docs-check frontend-check
 	uv run pre-commit run --all-files
 	uv run python scripts/validate_phase0.py

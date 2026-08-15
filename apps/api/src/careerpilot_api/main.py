@@ -113,6 +113,16 @@ from careerpilot_api.observability import (
     get_tracer,
 )
 from careerpilot_api.platform_contracts import PlatformMetricsResponse
+from careerpilot_api.privacy_contracts import (
+    CancelDeletionRequest,
+    ConsentRequest,
+    ConsentResponse,
+    DataExportRequest,
+    DataExportResponse,
+    DataInventoryResponse,
+    DataRightRequest,
+    DataRightResponse,
+)
 from careerpilot_api.repository import InMemoryProfileRepository
 from careerpilot_api.retrieval_repository import (
     InMemoryDocumentRepository,
@@ -124,6 +134,7 @@ from careerpilot_api.security import (
     LastOwnerError,
     TenantMembershipError,
 )
+from careerpilot_api.security_hardening import SECURITY_HEADERS, LocalRateLimiter
 from careerpilot_api.tool_catalog import build_tool_registry
 from careerpilot_api.tool_contracts import (
     ToolCapabilityResponse,
@@ -132,6 +143,7 @@ from careerpilot_api.tool_contracts import (
 )
 from careerpilot_api.tool_runtime import ToolExecutor
 from careerpilot_core import (
+    RECOVERY_WINDOW_DAYS,
     AccessDeniedError,
     AccessPolicy,
     ApprovalConflictError,
@@ -143,6 +155,7 @@ from careerpilot_core import (
     BudgetLedger,
     CareerDraft,
     CareerJourneyService,
+    DataRight,
     DeletionConfirmationError,
     DocumentNotFoundError,
     DocumentValidationError,
@@ -153,6 +166,8 @@ from careerpilot_core import (
     LocalTelemetryCollector,
     OperationKind,
     Permission,
+    PrivacyControlError,
+    PrivacyControlService,
     ProfileConflictError,
     ProfileNotFoundError,
     ProfileValidationError,
@@ -274,6 +289,8 @@ def create_app(
     logger = configure_logging()
     tracer = get_tracer()
     telemetry = LocalTelemetryCollector()
+    privacy_control = PrivacyControlService()
+    rate_limiter = LocalRateLimiter()
     budget_ledger = BudgetLedger({"tenant-ada": 0, "tenant-grace": 0})
     exporter_configuration = ExporterConfiguration(
         destination="local-only",
@@ -295,8 +312,8 @@ def create_app(
 
     app = FastAPI(
         title="CareerPilot API",
-        version="0.15.0",
-        description="Policy-controlled career workflows with local platform metrics.",
+        version="0.16.0",
+        description="Policy-controlled career workflows with local security controls.",
         lifespan=lifespan,
         responses={500: {"model": ErrorResponse}},
     )
@@ -319,6 +336,8 @@ def create_app(
     app.state.telemetry = telemetry
     app.state.budget_ledger = budget_ledger
     app.state.exporter_configuration = exporter_configuration
+    app.state.privacy_control = privacy_control
+    app.state.rate_limiter = rate_limiter
     app.add_middleware(
         CORSMiddleware,
         allow_origins=["http://127.0.0.1:3000", "http://localhost:3000"],
@@ -394,6 +413,15 @@ def create_app(
                     message="You do not have permission to perform this action.",
                     status_code=status.HTTP_403_FORBIDDEN,
                 )
+            context = request.state.authorization_context
+            if not rate_limiter.allow(f"{context.tenant_id}:{context.actor_id}"):
+                return _safe_error(
+                    request,
+                    code="rate_limited",
+                    message="Too many requests. Wait briefly and try again.",
+                    status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+                    headers={"Retry-After": "60"},
+                )
         return await call_next(request)
 
     @app.middleware("http")
@@ -442,11 +470,21 @@ def create_app(
             extra={
                 "correlation_id": correlation_id,
                 "method": request.method,
-                "path": request.url.path,
+                "path_hash": hashlib.sha256(request.url.path.encode()).hexdigest()[:16],
                 "status_code": response.status_code,
                 "duration_ms": round((time.perf_counter() - started) * 1000, 2),
             },
         )
+        return response
+
+    @app.middleware("http")
+    async def security_headers_middleware(
+        request: Request, call_next: RequestResponseEndpoint
+    ) -> Response:
+        """Apply content-free browser defenses to success and safe error responses."""
+        response = await call_next(request)
+        for header, value in SECURITY_HEADERS.items():
+            response.headers[header] = value
         return response
 
     @app.exception_handler(RequestValidationError)
@@ -669,6 +707,17 @@ def create_app(
             ),
         )
 
+    @app.exception_handler(PrivacyControlError)
+    async def privacy_control_error(
+        request: Request, error: PrivacyControlError
+    ) -> JSONResponse:
+        return _safe_error(
+            request,
+            code=str(error),
+            message="The privacy request could not be completed in its current state.",
+            status_code=status.HTTP_409_CONFLICT,
+        )
+
     @app.exception_handler(Exception)
     async def unexpected_error(request: Request, _error: Exception) -> JSONResponse:
         logger.error(
@@ -745,6 +794,142 @@ def create_app(
             budget_remaining_chf=budget_ledger.remaining(context.tenant_id),
             export_status="disabled_local_only",
             content_capture=exporter_configuration.content_capture,
+        )
+
+    def privacy_context(request: Request) -> AuthorizationContext:
+        context = request_context(request)
+        audit_policy(
+            context,
+            Permission.DATA_RIGHTS_MANAGE,
+            allowed_reason="data_rights_allowed",
+        )
+        return context
+
+    @app.get(
+        "/api/v1/privacy/inventory",
+        response_model=DataInventoryResponse,
+        tags=["privacy"],
+    )
+    async def privacy_inventory(request: Request) -> DataInventoryResponse:
+        context = privacy_context(request)
+        return DataInventoryResponse(
+            schema_version="careerpilot.data-inventory.v1",
+            tenant_id=context.tenant_id,
+            actor_id=context.actor_id,
+            items=[
+                {
+                    "category": item.category,
+                    "record_count": item.record_count,
+                    "lifecycle": item.lifecycle,
+                }
+                for item in privacy_control.inventory(context)
+            ],
+        )
+
+    @app.post(
+        "/api/v1/privacy/consents",
+        response_model=ConsentResponse,
+        tags=["privacy"],
+    )
+    async def record_privacy_consent(
+        body: ConsentRequest, request: Request
+    ) -> ConsentResponse:
+        record = privacy_control.record_consent(
+            privacy_context(request), body.purpose, granted=body.granted
+        )
+        return ConsentResponse.model_validate(record, from_attributes=True)
+
+    @app.post(
+        "/api/v1/privacy/requests",
+        response_model=DataRightResponse,
+        status_code=status.HTTP_201_CREATED,
+        tags=["privacy"],
+    )
+    async def create_privacy_request(
+        body: DataRightRequest, request: Request
+    ) -> DataRightResponse:
+        item = privacy_control.request(
+            privacy_context(request),
+            DataRight(body.right),
+            step_up_verified=body.step_up_verified,
+            approval_reference=body.approval_reference,
+        )
+        return DataRightResponse(
+            request_id=item.request_id,
+            right=item.right,
+            status=item.status,
+            requested_at=item.requested_at,
+            purge_after=item.purge_after,
+            recovery_window_days=RECOVERY_WINDOW_DAYS,
+        )
+
+    @app.post(
+        "/api/v1/privacy/exports",
+        response_model=DataExportResponse,
+        tags=["privacy"],
+    )
+    async def export_privacy_data(
+        body: DataExportRequest, request: Request
+    ) -> DataExportResponse:
+        context = privacy_context(request)
+        data_request = privacy_control.request(
+            context,
+            DataRight.EXPORT,
+            step_up_verified=body.step_up_verified,
+            approval_reference=body.approval_reference,
+        )
+        profile = service.get_profile(context, body.profile_id)
+        evidence = service.list_evidence(context, body.profile_id)
+        return DataExportResponse(
+            schema_version="careerpilot.portable-export.v1",
+            request_id=data_request.request_id,
+            tenant_id=context.tenant_id,
+            actor_id=context.actor_id,
+            profile={
+                "profile_id": profile.profile_id,
+                "display_name": profile.display_name,
+                "professional_summary": profile.professional_summary,
+                "version": profile.version,
+                "skills": [item.name for item in profile.skills],
+            },
+            evidence=[
+                {
+                    "evidence_id": item.evidence_id,
+                    "title": item.title,
+                    "filename": item.filename,
+                    "media_type": item.media_type,
+                    "size_bytes": item.size_bytes,
+                    "state": item.state,
+                    "version": item.version,
+                }
+                for item in evidence
+            ],
+            excluded_categories=[
+                "raw_document_bytes",
+                "derived_chunks_and_embeddings",
+                "security_and_audit_records",
+                "workflow_and_provider_records",
+            ],
+        )
+
+    @app.post(
+        "/api/v1/privacy/requests/{request_id}/cancel-deletion",
+        response_model=DataRightResponse,
+        tags=["privacy"],
+    )
+    async def cancel_privacy_deletion(
+        request_id: str, body: CancelDeletionRequest, request: Request
+    ) -> DataRightResponse:
+        if not body.confirmed:
+            raise PrivacyControlError("confirmation_required")
+        item = privacy_control.cancel_deletion(privacy_context(request), request_id)
+        return DataRightResponse(
+            request_id=item.request_id,
+            right=item.right,
+            status=item.status,
+            requested_at=item.requested_at,
+            purge_after=item.purge_after,
+            recovery_window_days=RECOVERY_WINDOW_DAYS,
         )
 
     @app.get(

@@ -91,3 +91,12 @@ not named individuals.
   retention, cost and operational behavior remain unverified.
 - Offline synthetic evaluation can regress differently from consented production traffic; live
   and LLM-judge evaluation needs separate data-transfer, region and budget approval.
+
+## Phase 16 residual risks
+
+| ID | Risk | Likelihood | Impact | Mitigation | Owner | Status |
+|---|---|---|---|---|---|---|
+| RSK-038 | Rights API implies physical deletion/legal completion | Medium | Critical | Explicit states, purge boundary, legal labels | Privacy/Data | Open pending durable purge/legal review |
+| RSK-039 | Restore reactivates deleted/foreign data | Low | Critical | Integrity, tenant isolation, tombstones, tests | Platform/Data | Open pending cloud restore |
+| RSK-040 | SSRF bypass through DNS, redirect or address form | Medium | Critical | No fetcher, allowlist, address validation | Security | Open pending production egress |
+| RSK-041 | Local rate limit is bypassed across instances | High | High | Require shared edge/application limits | Security/Platform | Open for Phase 17 |

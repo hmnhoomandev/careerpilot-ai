@@ -60,6 +60,12 @@ jobs:
         run: uvx --from semgrep==1.172.0 semgrep scan --config security/semgrep.yml --error --metrics off .
       - name: Secret scan
         run: uv run detect-secrets-hook --baseline .secrets.baseline $(git ls-files)
+      - name: Local DAST baseline
+        run: uv run python scripts/dast_baseline.py
+      - name: Dependency license policy
+        run: uv run python scripts/audit_licenses.py
+      - name: Adversarial security corpus
+        run: uv run pytest tests/e2e/test_security_red_team.py
       - name: Documentation baseline
         run: uv run python scripts/validate_phase0.py
 

@@ -42,3 +42,6 @@
 | DEC-038 | 2026-08-14 | Render A2UI-compatible messages through a closed schema/component/action allowlist with text escaping | Accepted | ADR-0026 |
 | DEC-039 | 2026-08-14 | Use one bounded metadata-only telemetry schema and keep all external exporters/content capture disabled by default | Accepted for Phase 15 | ADR-0027 |
 | DEC-040 | 2026-08-14 | Route only an explicitly requested versioned model and fail visibly on privacy, quality, latency, availability or budget constraints without fallback | Accepted | ADR-0027 |
+| DEC-041 | 2026-08-14 | Use step-up, exact approval and recoverable states for data-rights requests | Accepted for Phase 16 | ADR-0028 |
+| DEC-042 | 2026-08-14 | Require HTTPS, allowlist and global addresses before outbound connection | Accepted | ADR-0028 |
+| DEC-043 | 2026-08-14 | Keep separate security gates and never call absent Phase 17 artifact scans passing | Accepted | ADR-0028 |

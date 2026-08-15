@@ -21,6 +21,13 @@ from careerpilot_core.agents import (
     RouteDecision,
 )
 from careerpilot_core.audit import AuditEvent, AuditEventDraft, AuditSink
+from careerpilot_core.backup_control import (
+    BackupIntegrityError,
+    BackupRecord,
+    BackupSnapshot,
+    create_backup_snapshot,
+    restore_backup_snapshot,
+)
 from careerpilot_core.drafting import (
     ApprovalConflictError,
     ApprovalDecision,
@@ -41,6 +48,7 @@ from careerpilot_core.events import (
     NotificationCategory,
     NotificationPreference,
 )
+from careerpilot_core.key_management import KeyManagementPort, KeyRotationPlan
 from careerpilot_core.models import (
     Education,
     EvidenceItem,
@@ -79,6 +87,16 @@ from careerpilot_core.ports import (
     MalwareScanner,
     ProfileRepository,
 )
+from careerpilot_core.privacy_control import (
+    RECOVERY_WINDOW_DAYS,
+    ConsentRecord,
+    DataInventoryItem,
+    DataRequestStatus,
+    DataRight,
+    DataSubjectRequest,
+    PrivacyControlError,
+    PrivacyControlService,
+)
 from careerpilot_core.rag_service import (
     DeletionConfirmationError,
     DocumentNotFoundError,
@@ -115,6 +133,7 @@ __all__ = [
     "EVENT_CATEGORIES",
     "EVENT_SCHEMA_VERSION",
     "PHASE_7_ROLES",
+    "RECOVERY_WINDOW_DAYS",
     "TELEMETRY_SCHEMA_VERSION",
     "AccessDeniedError",
     "AccessPolicy",
@@ -130,6 +149,9 @@ __all__ = [
     "AuditEventDraft",
     "AuditSink",
     "AuthorizationContext",
+    "BackupIntegrityError",
+    "BackupRecord",
+    "BackupSnapshot",
     "BudgetLedger",
     "BudgetReservation",
     "CachePolicy",
@@ -137,6 +159,11 @@ __all__ = [
     "CareerJourneyService",
     "Citation",
     "ClaimStatus",
+    "ConsentRecord",
+    "DataInventoryItem",
+    "DataRequestStatus",
+    "DataRight",
+    "DataSubjectRequest",
     "DeletionConfirmationError",
     "DocumentChunk",
     "DocumentNotFoundError",
@@ -161,6 +188,8 @@ __all__ = [
     "IntegrationEvent",
     "JobAnalysis",
     "JobRequirements",
+    "KeyManagementPort",
+    "KeyRotationPlan",
     "LocalTelemetryCollector",
     "MalwareScanner",
     "Membership",
@@ -174,6 +203,8 @@ __all__ = [
     "Permission",
     "PolicyDecision",
     "PrivacyClass",
+    "PrivacyControlError",
+    "PrivacyControlService",
     "ProfessionalProfile",
     "ProfileConflictError",
     "ProfileNotFoundError",
@@ -202,4 +233,6 @@ __all__ = [
     "ToolErrorCode",
     "ToolExecutionError",
     "ToolRisk",
+    "create_backup_snapshot",
+    "restore_backup_snapshot",
 ]
