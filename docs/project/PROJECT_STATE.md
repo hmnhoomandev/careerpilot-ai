@@ -1,11 +1,11 @@
 # Project State
 
 - **Project:** CareerPilot AI
-- **Current phase:** Phase 17 — Containers, supply chain, IaC, and Cloud Run
+- **Current phase:** Phase 18 — Optional GKE reference architecture
 - **Phase status:** Complete; awaiting owner acceptance
-- **Last updated:** 2026-08-15
-- **Working tree at phase start:** Clean at `942aea8` on `main`
-- **Production code:** Implemented and verified through Phase 17; accepted through Phase 16
+- **Last updated:** 2026-08-16
+- **Working tree at phase start:** Clean at `1053307` on `main`
+- **Production code:** Accepted through Phase 17; Phase 18 reference implemented and verified
 - **Cloud resources created:** None
 - **Paid calls made:** None
 
@@ -287,7 +287,18 @@
   format/lint/typecheck, ten tests and production build passed.
 - No cloud resource, billing, paid/model call, external data transfer or real personal data was used.
 
+## Phase 18 implementation and verification evidence
+
+- A Kustomize base renders 21 Kubernetes 1.33 resources for restricted API/web workloads,
+  separate Workload Identity placeholders, migration, HPA/PDB, probes and default-deny networks.
+- Kubeconform strict schema validation accepted all 21 resources; four GKE policy tests and three
+  Phase 17 deployment regression tests passed; Trivy found zero High/Critical misconfigurations.
+- Full Pytest passed 234 with six expected skips/four ADK warnings; Ruff, strict MyPy (115 files),
+  frontend format/lint/typecheck/ten tests/build, Semgrep (149 targets), secrets and hooks passed.
+- Documentation lint/links, 13 Mermaid renders and governance validation passed. No application
+  dependency, schema/migration, cloud/Kubernetes resource, customer data, model call or cost exists.
+
 ## Next action
 
-Review and accept Phase 17. Do not start Phase 18 without the exact gate:
-`APPROVE PHASE 17 AND START PHASE 18`.
+Review and accept Phase 18. Do not start Phase 19 without the exact gate:
+`APPROVE PHASE 18 AND START PHASE 19`.

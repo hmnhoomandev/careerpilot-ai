@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: runtime
+data:
+  CAREERPILOT_ENVIRONMENT: reference
+  CAREERPILOT_DOCUMENT_ROOT: /app/.data/documents
+  NEXT_PUBLIC_CAREERPILOT_API_URL: http://api:8080

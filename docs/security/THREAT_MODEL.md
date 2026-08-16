@@ -190,3 +190,16 @@ configuration/KMS ports and a category-balanced red-team corpus. Local DAST prob
 authentication failure and hostile paths. Distributed WAF/rate limits, real workload identity,
 database RLS, managed scanner/KMS, egress pinning, durable purge ledger and cloud recovery remain
 residual Phase 17/20 work; legal questions remain `LEGAL REVIEW`.
+
+## Phase 18 GKE reference addendum
+
+New reference threats include privileged Pods, mutable image substitution, exposed
+services, lateral Pod traffic, stolen service-account tokens, overbroad Google IAM,
+plaintext Kubernetes Secrets, migration privilege reuse, resource exhaustion and
+unsafe rollout. Restricted Pod security, digest-only images, ClusterIP services,
+default-deny network policy, disabled token automount, separate Workload Identity
+placeholders, external secret references, dedicated migration identity, resources,
+probes, HPA/PDB and policy tests reduce configuration risk. Enforcement by a real
+CNI/admission plane, IAM bindings, secret CSI, ingress/TLS/WAF, cluster upgrades,
+runtime detection and incident recovery remain unverified until an explicitly
+approved staging deployment.

@@ -47,3 +47,4 @@
 | DEC-043 | 2026-08-14 | Keep separate security gates and never call absent Phase 17 artifact scans passing | Accepted | ADR-0028 |
 | DEC-044 | 2026-08-15 | Use hardened digest-pinned Cloud Run artifacts and Zurich-only Terraform with no CI apply | Accepted for Phase 17 | ADR-0029 |
 | DEC-045 | 2026-08-15 | Use ADC for human planning, WIF for CI, and prohibit service-account keys | Accepted | ADR-0029 |
+| DEC-046 | 2026-08-16 | Keep Cloud Run as production default and GKE as a render-only option requiring demonstrated Kubernetes-native value | Accepted for Phase 18 | ADR-0030 |

@@ -100,3 +100,12 @@ not named individuals.
 | RSK-039 | Restore reactivates deleted/foreign data | Low | Critical | Integrity, tenant isolation, tombstones, tests | Platform/Data | Open pending cloud restore |
 | RSK-040 | SSRF bypass through DNS, redirect or address form | Medium | Critical | No fetcher, allowlist, address validation | Security | Open pending production egress |
 | RSK-041 | Local rate limit is bypassed across instances | High | High | Require shared edge/application limits | Security/Platform | Open for Phase 17 |
+
+## Phase 18 GKE reference risks
+
+| ID | Risk | Likelihood | Impact | Mitigation | Owner | Status |
+|---|---|---|---|---|---|---|
+| RSK-042 | Rendered reference is mistaken for deployed security | Medium | Critical | Explicit placeholders, no apply path, staging/admission evidence gate | Platform/Security | Open before deployment |
+| RSK-043 | NetworkPolicy/CIDR error blocks dependencies or permits lateral movement | Medium | Critical | Default deny, policy tests, exact CNI/CIDR staging verification | Network/Security | Open before deployment |
+| RSK-044 | Workload Identity or secret synchronization grants excess access | Medium | Critical | Separate identities, no keys/values, least-privilege IAM review | Security/Platform | Open before deployment |
+| RSK-045 | GKE baseline creates unapproved recurring spend or operational overload | High | High | Cloud Run default, cost/staffing decision gate, no cluster creation | Owner/Platform | Mitigated in reference scope |

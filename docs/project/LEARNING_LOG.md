@@ -306,3 +306,17 @@ Tutorial: `docs/tutorials/phase-17-containers-supply-chain-iac.md`
 Exercises: `docs/exercises/phase-17-exercises.md`
 
 Answers: `docs/exercises/phase-17-answers.md`
+
+## Phase 18 — optional GKE reference architecture
+
+- Compared serverless operational ownership with Kubernetes control and responsibility.
+- Practiced Kustomize composition, restricted Pod security, Workload Identity, default-deny
+  networking, probes, resources, HPA, PDB, topology spread and safe rolling updates.
+- Separated secret reference from secret value and schema migration from workload rollout.
+- Kept render/schema/policy evidence distinct from live cluster, IAM, network and SLO evidence.
+
+Tutorial: `docs/tutorials/phase-18-gke-reference.md`
+
+Exercises: `docs/exercises/phase-18-exercises.md`
+
+Answers: `docs/exercises/phase-18-answers.md`

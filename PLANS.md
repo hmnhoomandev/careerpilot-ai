@@ -17,6 +17,94 @@ Every phase plan must state:
 
 Plans are living documents. Update status without erasing decisions or evidence.
 
+## Completed implementation plan: Phase 18
+
+**Objective:** provide a validated, educational GKE reference deployment for CareerPilot while
+keeping Cloud Run as the production default, preserving CHF 0 local development, and creating no
+cloud or Kubernetes resources.
+
+**Status:** Complete on 2026-08-16. The repository is stopped at the Phase 18 gate; Phase 19 has not
+started.
+
+### Scope and acceptance mapping
+
+- Record the measurable decision criteria that could justify GKE over Cloud Run; GKE remains an
+  optional reference and may not become a production dependency implicitly.
+- Add Kustomize-renderable Kubernetes resources for namespace, workload identities, API/web
+  deployments and services, one-shot migration, configuration, probes, resource bounds,
+  autoscaling, disruption budgets and default-deny network policies.
+- Reference external secret material without committing values; use GKE Workload Identity rather
+  than service-account keys and document Secret Manager/Cloud SQL integration prerequisites.
+- Document Zurich regionality, private-cluster/network assumptions, observability, rollout,
+  rollback, migration ordering, Pod Security, image provenance and operational ownership.
+- Compare Cloud Run and GKE cost/complexity honestly and identify the paid baseline that would
+  require a fresh estimate and explicit approval before any deployment.
+
+### Deliverables and expected files
+
+- `infrastructure/kubernetes/base/` and environment-neutral reference manifests rendered by the
+  kubectl-integrated Kustomize version; no new runtime dependency or cluster is required.
+- Policy/schema tests under `tests/architecture/` covering digest-only images, non-root security,
+  resource requests/limits, probes, identity, autoscaling, disruption and network isolation.
+- ADR-0030, GKE operations/decision documentation, annotated source, tutorial, exercises/answers,
+  cost/security records, traceability, roadmap/state/learning/decision updates and Phase 18 review.
+
+### Architecture, security, privacy, migration, deployment, and cost
+
+- Cloud Run remains the production default. GKE becomes preferable only for demonstrated needs
+  such as Kubernetes-native scheduling, sidecars, fine-grained Pod networking or platform tenancy.
+- Reference workloads use digest-only images, restricted security contexts, read-only roots,
+  dropped capabilities, bounded resources, probes and least-privilege Kubernetes service accounts.
+- Workload Identity maps Kubernetes identities to separately managed Google service accounts;
+  service-account keys and committed Kubernetes Secret values are prohibited.
+- Default-deny ingress/egress is explicit. Real cluster, DNS, ingress, TLS, Cloud Armor, private
+  control-plane access, authorized networks and exact Cloud SQL CIDRs remain pre-deployment work.
+- The migration Job is a separately invoked release gate and never runs automatically from a Pod
+  startup hook. It must complete before workload rollout and retains no schema secret in source.
+- A GKE cluster, control plane, load balancer, nodes, NAT/egress, logging and support can incur
+  recurring cost. No API enablement, cluster creation, image push, apply or paid call is authorized.
+
+### Risks and mitigations
+
+- Reference drift: render manifests in tests and enforce security/identity/image policies in code.
+- False production confidence: label placeholders and prerequisites; a local render is not a live
+  cluster, network, IAM, cost, performance, residency or availability proof.
+- Secret leakage: reference secret names only, deny literal secret resources/data, scan repository.
+- Lateral movement: namespace default-deny policies plus narrow web-to-API and monitoring ingress.
+- Availability illusion: HPA/PDB/topology spread are documented mechanisms, not an SLO guarantee;
+  live multi-zone disruption evidence remains a separately approved production-readiness task.
+- Cost/operational burden: keep GKE out of local/Cloud Run dependencies and require decision and
+  cost gates before adoption.
+
+### Automated verification
+
+- `kubectl kustomize` deterministic render and client-side structural checks without cluster access.
+- Pytest manifest-policy tests for image digests, security contexts, resources, probes, network,
+  identity, HPA, PDB, migration ordering and absence of secret values/cloud mutation commands.
+- Trivy Kubernetes/IaC configuration scan with High/Critical release policy.
+- Existing Ruff/MyPy/Pytest, frontend, supply-chain, documentation, Mermaid, secrets, Semgrep,
+  pre-commit and governance regression checks as relevant to the diff.
+
+### Manual verification
+
+- Render the reference and inspect every resource without applying it.
+- Compare GKE/Cloud Run criteria and confirm Cloud Run/local Compose behavior is unchanged.
+- Trace identity, network, secret, migration, rollout and rollback paths in the documentation.
+
+### Explicit exclusions
+
+- `kubectl apply`, Terraform apply, cluster/project/API/IAM/network/resource creation, image push,
+  live admission validation, GKE credential retrieval, billing/free-tier use or deployment.
+- A public Ingress/Gateway, DNS, TLS certificate, Cloud Armor, production secret value, real project
+  identity, customer data, model call, external communication, production SLO or compliance claim.
+- DBOS/Restate comparison labs (Phase 19) and production-readiness/load/chaos work (Phase 20).
+
+### Stop condition
+
+Complete `docs/reviews/phase-18-review.md`, report exact evidence, and wait for:
+
+`APPROVE PHASE 18 AND START PHASE 19`
+
 ## Completed implementation plan: Phase 17
 
 **Objective:** create a reproducible, hardened and supply-chain-aware Cloud Run release path with

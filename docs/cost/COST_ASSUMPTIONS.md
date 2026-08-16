@@ -48,3 +48,18 @@ positive estimates require explicit approval and remaining budget before reserva
 routes cost zero. Estimates are not invoices. Production requires provider price-version records,
 currency conversion policy, atomic durable reservations, usage reconciliation, alerts and owner-
 approved budgets. No cloud analytics/export resource or model call was created in Phase 15.
+
+## Phase 18 GKE comparison
+
+The render-only reference costs CHF 0. A real GKE choice adds cluster/control-plane,
+Pod compute and memory, persistent/network storage, load balancing, NAT/egress,
+logging/metrics and operational labor/support to the existing database, messaging,
+secrets, KMS and model costs. Unlike Cloud Run's current scale-to-zero design, a
+two-replica availability floor consumes capacity continuously.
+
+Prices are time-sensitive and no deployment shape is approved, so Phase 18 does
+not assert a numeric monthly estimate. Before any staging cluster, obtain current
+Zurich prices, specify cluster mode/zones/replicas/resources/traffic/log volume,
+estimate one-time and monthly CHF including tax/currency assumptions, compare the
+same load on Cloud Run, configure budgets/quotas/shutdown, and receive explicit
+owner approval. Local Kustomize remains the free alternative.
