@@ -1,0 +1,41 @@
+[project]
+name = "careerpilot-dbos-lab"
+version = "0.1.0"
+description = "Isolated CareerPilot DBOS durable-execution comparison lab."
+requires-python = ">=3.13,<3.14"
+dependencies = [
+  "dbos==2.22.0",
+]
+
+[dependency-groups]
+dev = [
+  "mypy>=1.17,<2",
+  "pytest>=9.0,<10",
+  "ruff>=0.12,<1",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/careerpilot_dbos_lab"]
+
+[tool.ruff]
+target-version = "py313"
+line-length = 88
+
+[tool.ruff.lint]
+select = ["B", "E", "F", "I", "RUF", "S", "UP"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**/*.py" = ["ANN", "S101"]
+
+[tool.mypy]
+python_version = "3.13"
+strict = true
+
+[tool.pytest.ini_options]
+addopts = ["--strict-config", "-ra"]
+testpaths = ["tests"]
+pythonpath = ["src"]

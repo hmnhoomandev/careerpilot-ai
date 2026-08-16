@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "tenant_id": "tenant_synthetic_alpha",
+  "application_id": "application_synthetic_001",
+  "operation": "record_preparation",
+  "idempotency_key": "application_synthetic_001:record_preparation:v1",
+  "expected_artifact_ref": "artifact:application_synthetic_001:record_preparation",
+  "recovery": {
+    "failure": "synthetic_transient_failure_after_commit",
+    "expected_attempts": 2,
+    "expected_unique_effects": 1
+  }
+}

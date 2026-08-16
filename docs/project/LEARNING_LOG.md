@@ -320,3 +320,17 @@ Tutorial: `docs/tutorials/phase-18-gke-reference.md`
 Exercises: `docs/exercises/phase-18-exercises.md`
 
 Answers: `docs/exercises/phase-18-answers.md`
+
+## Phase 19 — durable-execution comparison labs
+
+- Proved that durable retry and effect idempotency are separate responsibilities.
+- Compared Temporal activities, DBOS steps and Restate durable runs using one synthetic contract.
+- Used independent locks and negative import tests to protect production architecture from a lab.
+- Distinguished permissive SDK licensing from the Restate server's BSL boundary.
+- Kept local executable evidence separate from production maturity, migration, SLO and cost claims.
+
+Tutorial: `docs/tutorials/phase-19-durable-execution-comparison.md`
+
+Exercises: `docs/exercises/phase-19-exercises.md`
+
+Answers: `docs/exercises/phase-19-answers.md`

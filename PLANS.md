@@ -17,6 +17,85 @@ Every phase plan must state:
 
 Plans are living documents. Update status without erasing decisions or evidence.
 
+## Completed implementation plan: Phase 19
+
+**Objective:** compare DBOS and Restate with CareerPilot's existing Temporal durable-workflow
+scenario in small, executable, isolated labs without changing production routing or dependencies.
+
+**Status:** Complete on 2026-08-16. The repository is stopped at the Phase 19 gate; Phase 20 has not
+started.
+
+### Scope and acceptance mapping
+
+- Implement one bounded, metadata-only application-preparation effect in DBOS and Restate using the
+  same idempotent happy-path and failure-after-commit recovery semantics already tested in Temporal.
+- Prove each lab completes the happy path once and recovers a synthetic post-commit failure without
+  duplicating its durable effect.
+- Compare programming model, durable state, retry/recovery, observability, deployment, testing,
+  lock-in, maturity, licensing and operational cost using executable evidence and primary sources.
+- Prove DBOS, Restate and their test harnesses remain absent from production dependency graphs and
+  runtime routing. Temporal remains the production durable-workflow owner.
+
+### Deliverables and expected files
+
+- Independent `labs/dbos/` and `labs/restate/` Python projects, each with its own manifest, lock,
+  source, tests and usage notes; neither becomes a root uv workspace member.
+- A shared synthetic scenario contract plus architecture tests that enforce lab isolation.
+- ADR-0031, durable-execution comparison, annotated source, tutorial, exercises/answers, dependency
+  assessment, traceability, decision/learning/state/roadmap updates and Phase 19 review.
+
+### Architecture, security, privacy, migration, deployment, and cost
+
+- Labs accept opaque tenant/application identifiers only; they contain no document text, secrets,
+  customer data, external model calls or network integration.
+- Idempotency is explicit at the effect boundary. A retry after a simulated failure that occurs
+  after commit must return the prior result and must not duplicate the effect.
+- DBOS may use an isolated local SQLite system database for tests. Restate may use its local test
+  harness/container. Neither database, service or SDK is a production dependency or migration.
+- All work is local and CHF 0. No cloud resource, paid API, deployment or production route is
+  authorized. Adoption of either comparison technology requires a new ADR, license/security review,
+  operational estimate and explicit phase approval.
+
+### Risks and mitigations
+
+- Misleading equivalence: use one versioned scenario and identical observable assertions while
+  documenting semantic differences instead of claiming framework interchangeability.
+- Duplicate side effects: require a stable idempotency key and test failure after the first commit.
+- Dependency contamination: use separate lockfiles and an architecture test over root manifests and
+  production source imports.
+- License or maturity surprise: inventory direct/transitive packages and explicitly record the
+  Restate server license boundary before any future adoption.
+- Container/tool availability: keep harness prerequisites explicit and report skips or limitations;
+  do not substitute simulated framework behavior while claiming integration evidence.
+
+### Automated verification
+
+- Run each lab's Ruff, MyPy and Pytest commands inside its independent uv project.
+- Run the equivalent targeted Temporal recovery test and root architecture isolation tests.
+- Run existing backend/frontend, security, supply-chain, documentation, Mermaid, pre-commit and
+  governance regression checks relevant to the complete diff.
+
+### Manual verification
+
+- Inspect each lab's successful response, attempt count and unique-effect count for happy/recovery
+  cases, then compare them with the Temporal test evidence.
+- Inspect root and production dependency graphs/imports and confirm no DBOS/Restate/runtime route.
+- Trace comparison claims to executable tests and primary documentation; confirm no production or
+  cloud process was started.
+
+### Explicit exclusions
+
+- Production adoption, routing, migration, deployment, benchmarking, cloud resources, paid calls,
+  real personal data, external models, customer traffic and claims of legal/compliance approval.
+- Replacing Temporal, combining multiple durable engines in one business workflow, exposing a new
+  public API, or beginning Phase 20 production-readiness work.
+
+### Stop condition
+
+Complete `docs/reviews/phase-19-review.md`, report exact evidence, and wait for:
+
+`APPROVE PHASE 19 AND START PHASE 20`
+
 ## Completed implementation plan: Phase 18
 
 **Objective:** provide a validated, educational GKE reference deployment for CareerPilot while

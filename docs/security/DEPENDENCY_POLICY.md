@@ -97,3 +97,19 @@ checks before changing the bound.
 runtime. It is used only behind an injected adapter; default execution does not instantiate
 a client or use credentials/network. Review advisories, transitive gRPC changes, release
 notes, and the lock diff before upgrades.
+
+## Phase 19 isolated lab dependencies
+
+`dbos==2.22.0` and `restate-sdk[harness]==1.0.3` are pinned in independent lab
+projects and absent from the root workspace and lock. Both Python SDKs report MIT
+licenses. DBOS tests use local SQLite. The Restate harness adds MIT-licensed
+Hypercorn/httpx and Apache-2.0 Testcontainers/Docker client dependencies and runs
+the pinned `restatedev/restate:1.7.0` server image.
+
+The Restate server's BSL 1.1 plus additional-use grant is not equivalent to the
+SDK's MIT license. The repository records an engineering interpretation only;
+professional license review is mandatory before adoption or redistribution.
+Alternatives are the existing Temporal implementation or framework-free local
+tests. Upgrade review must re-run SDK/server compatibility, SCA, license metadata,
+framework recovery tests, image provenance/vulnerability checks and lock diffs.
+No lab package or image is a production distribution dependency.

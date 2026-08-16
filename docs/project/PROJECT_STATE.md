@@ -1,11 +1,11 @@
 # Project State
 
 - **Project:** CareerPilot AI
-- **Current phase:** Phase 18 — Optional GKE reference architecture
+- **Current phase:** Phase 19 — Isolated DBOS and Restate comparison labs
 - **Phase status:** Complete; awaiting owner acceptance
 - **Last updated:** 2026-08-16
-- **Working tree at phase start:** Clean at `1053307` on `main`
-- **Production code:** Accepted through Phase 17; Phase 18 reference implemented and verified
+- **Working tree at phase start:** Clean at `69e77e9` on `main`
+- **Production code:** Accepted through Phase 18; Phase 19 changes are isolated comparison labs
 - **Cloud resources created:** None
 - **Paid calls made:** None
 
@@ -298,7 +298,24 @@
 - Documentation lint/links, 13 Mermaid renders and governance validation passed. No application
   dependency, schema/migration, cloud/Kubernetes resource, customer data, model call or cost exists.
 
+## Phase 19 implementation and verification evidence
+
+- DBOS 2.22.0 and Restate SDK 1.0.3 live in independent projects and locks outside the root uv
+  workspace. Temporal remains the only production durable-workflow dependency and route.
+- Both labs implement the same opaque synthetic preparation effect and recover a single injected
+  failure after commit with two attempts and one unique effect.
+- DBOS uses a temporary local SQLite system database. Restate uses the official harness with a
+  pinned local Restate 1.7.0 container. No cloud, model, personal data or paid operation is used.
+- DBOS and Restate each passed Ruff, strict MyPy and two framework tests. Root Pytest passed 237
+  with six intentional skips and four known ADK deprecation warnings; all five Temporal integration
+  tests passed, including retry-after-commit recovery.
+- Root Ruff and strict MyPy (144 files), frontend format/lint/typecheck/ten tests/build, Semgrep
+  (156 targets), secrets, 148-distribution license policy, root/lab advisory checks and pre-commit
+  passed. Markdown lint/links, 13 Mermaid renders and governance validation also passed.
+- No application route/dependency/schema/migration, cloud resource, personal data, model call,
+  billing or paid operation was introduced. Restate server BSL review remains an adoption gate.
+
 ## Next action
 
-Review and accept Phase 18. Do not start Phase 19 without the exact gate:
-`APPROVE PHASE 18 AND START PHASE 19`.
+Review and accept Phase 19. Do not start Phase 20 without the exact gate:
+`APPROVE PHASE 19 AND START PHASE 20`.

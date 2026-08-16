@@ -1,0 +1,43 @@
+[project]
+name = "careerpilot-restate-lab"
+version = "0.1.0"
+description = "Isolated CareerPilot Restate durable-execution comparison lab."
+requires-python = ">=3.13,<3.14"
+dependencies = [
+  "restate-sdk[harness]==1.0.3",
+]
+
+[dependency-groups]
+dev = [
+  "mypy>=1.17,<2",
+  "pytest>=9.0,<10",
+  "pytest-asyncio>=1.1,<2",
+  "ruff>=0.12,<1",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/careerpilot_restate_lab"]
+
+[tool.ruff]
+target-version = "py313"
+line-length = 88
+
+[tool.ruff.lint]
+select = ["B", "E", "F", "I", "RUF", "S", "UP"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**/*.py" = ["ANN", "S101"]
+
+[tool.mypy]
+python_version = "3.13"
+strict = true
+
+[tool.pytest.ini_options]
+addopts = ["--strict-config", "-ra"]
+asyncio_mode = "strict"
+testpaths = ["tests"]
+pythonpath = ["src"]

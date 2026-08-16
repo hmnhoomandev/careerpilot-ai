@@ -63,3 +63,13 @@ Zurich prices, specify cluster mode/zones/replicas/resources/traffic/log volume,
 estimate one-time and monthly CHF including tax/currency assumptions, compare the
 same load on Cloud Run, configure budgets/quotas/shutdown, and receive explicit
 owner approval. Local Kustomize remains the free alternative.
+
+## Phase 19 durable-execution labs
+
+The DBOS SQLite test and Restate Docker harness use local compute and cost CHF 0;
+no hosted console, cloud database, deployment, model or paid API is used. A future
+DBOS design would at least require production PostgreSQL, backups, telemetry and
+operational ownership. A future Restate design would add server capacity/storage,
+SDK endpoints, networking, backup and operational ownership. Prices and deployment
+shapes are deliberately not estimated because adoption is not approved. Temporal
+remains the baseline, and local isolated labs remain the free alternative.

@@ -109,3 +109,13 @@ not named individuals.
 | RSK-043 | NetworkPolicy/CIDR error blocks dependencies or permits lateral movement | Medium | Critical | Default deny, policy tests, exact CNI/CIDR staging verification | Network/Security | Open before deployment |
 | RSK-044 | Workload Identity or secret synchronization grants excess access | Medium | Critical | Separate identities, no keys/values, least-privilege IAM review | Security/Platform | Open before deployment |
 | RSK-045 | GKE baseline creates unapproved recurring spend or operational overload | High | High | Cloud Run default, cost/staffing decision gate, no cluster creation | Owner/Platform | Mitigated in reference scope |
+
+## Phase 19 durable-execution lab risks
+
+| ID | Risk | Likelihood | Impact | Mitigation | Owner | Status |
+|---|---|---|---|---|---|---|
+| RSK-046 | Comparison SDK becomes an accidental production dependency or route | Low | High | Separate projects/locks plus manifest and import-boundary tests | Architecture | Mitigated |
+| RSK-047 | Runtime retry duplicates a committed external effect | Medium | Critical | Stable effect key and equivalent post-commit-failure tests | Workflow/Data | Mitigated in labs; production adapter remains open |
+| RSK-048 | Tiny local lab is mistaken for production recovery/maturity evidence | Medium | High | Explicit scope, comparison limitations and new adoption ADR gate | Platform | Open before adoption |
+| RSK-049 | Restate server use violates license terms or distribution constraints | Low | Critical | BSL boundary recorded; professional license review required | Legal/Owner | Open before adoption |
+| RSK-050 | Durable history contains personal data outside deletion/residency controls | Medium | Critical | Synthetic opaque input only; privacy/residency/retention design gate | Privacy/Data | Open before adoption |
