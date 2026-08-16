@@ -1,4 +1,4 @@
-.PHONY: setup dev mcp-local db-up db-down db-migrate db-integration-test format format-check lint typecheck test audit security security-phase16 docs-check frontend-check check
+.PHONY: setup dev mcp-local db-up db-down db-migrate db-integration-test format format-check lint typecheck test audit security security-phase16 docs-check frontend-check release-readiness check
 
 setup:
 	uv sync --all-packages --locked
@@ -67,6 +67,9 @@ frontend-check:
 	cd apps/web && npm run typecheck
 	cd apps/web && npm test
 	cd apps/web && npm run build
+
+release-readiness:
+	uv run python scripts/run_release_readiness.py
 
 check: format-check lint typecheck test audit security security-phase16 docs-check frontend-check
 	uv run pre-commit run --all-files

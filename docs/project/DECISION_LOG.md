@@ -49,3 +49,4 @@
 | DEC-045 | 2026-08-15 | Use ADC for human planning, WIF for CI, and prohibit service-account keys | Accepted | ADR-0029 |
 | DEC-046 | 2026-08-16 | Keep Cloud Run as production default and GKE as a render-only option requiring demonstrated Kubernetes-native value | Accepted for Phase 18 | ADR-0030 |
 | DEC-047 | 2026-08-16 | Keep Temporal as production durable-workflow owner and DBOS/Restate in separately locked, non-routed comparison labs | Accepted for Phase 19 | ADR-0031 |
+| DEC-048 | 2026-08-16 | Require environment-scoped evidence and keep 0.20.0-rc.1 production NO-GO until every production gate is satisfied | Accepted for Phase 20 | ADR-0032 |

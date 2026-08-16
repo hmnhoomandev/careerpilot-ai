@@ -1,11 +1,11 @@
 # Project State
 
 - **Project:** CareerPilot AI
-- **Current phase:** Phase 19 — Isolated DBOS and Restate comparison labs
-- **Phase status:** Complete; awaiting owner acceptance
+- **Current phase:** Phase 20 — Production readiness, release candidate, and curriculum
+- **Phase status:** Complete — awaiting owner review
 - **Last updated:** 2026-08-16
-- **Working tree at phase start:** Clean at `69e77e9` on `main`
-- **Production code:** Accepted through Phase 18; Phase 19 changes are isolated comparison labs
+- **Working tree at phase start:** Clean at `07b7858` on `main`
+- **Production code:** Accepted through Phase 19; Phase 20 local release candidate awaits owner review
 - **Cloud resources created:** None
 - **Paid calls made:** None
 
@@ -315,7 +315,36 @@
 - No application route/dependency/schema/migration, cloud resource, personal data, model call,
   billing or paid operation was introduced. Restate server BSL review remains an adoption gate.
 
+## Phase 20 implementation state
+
+- Release candidate `0.20.0-rc.1` has a scope-aware local readiness policy and explicit
+  production `NO-GO` manifest. No artifact is published, deployed or claimed signed.
+- The bounded harness measures 400 concurrent health requests, a 1,000-request soak, local
+  restore isolation, visible provider outage/no fallback and CHF 0 behavior. Production targets
+  remain missing by design and cannot pass from local evidence.
+- SLO/error-budget, capacity/DR, support/on-call, release, user, operator, developer, API,
+  architecture and curriculum documents are complete. Local gates passed; production remains
+  `NO-GO` because staging/production evidence, signing, publishing and operational approval are absent.
+
+## Phase 20 verification evidence
+
+- The readiness harness passed 400 concurrent local health requests at 100% success and 35.188 ms
+  p95, a 1,000-request soak at 100%, three isolated restore checks, explicit provider-outage
+  visibility/no fallback and CHF 0 execution. The report correctly returned `no_go_production`.
+- Full Pytest passed 244 tests with six intentional external PostgreSQL/live-provider skips and four
+  known upstream ADK deprecation warnings. Disposable PostgreSQL migrations `0001`–`0003` and
+  `alembic check` passed; DBOS and Docker-backed Restate labs each passed two tests.
+- Ruff, strict MyPy (155 files), frontend format/lint/typecheck/10 tests/production build, DAST,
+  red-team tests, Semgrep (161 targets, zero findings), secret detection, license policy, Python/npm
+  audits and all pre-commit hooks passed.
+- Markdown lint passed 199 files; external links passed, 13 Mermaid diagrams rendered, and governance
+  validation passed 213 Markdown files and 74 requirement IDs. Local SBOM and unsigned provenance
+  JSON were generated and parsed successfully.
+- The Phase 20 ephemeral PostgreSQL container was removed and the existing repository PostgreSQL
+  service was stopped without deleting its user-owned volume. No cloud, registry, model or paid call
+  occurred.
+
 ## Next action
 
-Review and accept Phase 19. Do not start Phase 20 without the exact gate:
-`APPROVE PHASE 19 AND START PHASE 20`.
+Review the terminal Phase 20 release-candidate evidence. Production promotion remains a separate,
+explicitly authorized future decision; no later roadmap phase is approved.

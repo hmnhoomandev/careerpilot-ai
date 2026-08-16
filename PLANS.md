@@ -17,6 +17,107 @@ Every phase plan must state:
 
 Plans are living documents. Update status without erasing decisions or evidence.
 
+## Active implementation plan: Phase 20
+
+**Objective:** assemble and evaluate a reproducible local release candidate, close the educational
+curriculum, and issue an evidence-based go/no-go decision without representing local evidence as a
+production deployment or spending beyond the CHF 0 budget.
+
+**Status:** Complete on 2026-08-16. The terminal roadmap phase is stopped at owner review with a
+local release candidate and an explicit production `NO-GO`; no Phase 21 exists or is approved.
+
+### Scope and acceptance mapping
+
+- Define versioned SLO/SLI, error-budget, capacity, support and release policies for the initial
+  99.5% monthly availability design target and every reliability target in the owner decisions.
+- Add a deterministic local readiness harness covering bounded load, soak, concurrency, injected
+  dependency/provider outage, recovery, backup/restore, security, accessibility, evaluation and
+  zero-cost policy evidence. Separate measured local results from unperformed production evidence.
+- Exercise the complete synthetic user journey and existing Temporal recovery, PostgreSQL restore,
+  adversarial security, accessibility, supply-chain and infrastructure gates as far as local tools
+  safely permit.
+- Create a semantic release-candidate version, release manifest/checklist/notes and explicit go/no-
+  go report. Artifact signing must remain blocked rather than fabricated until approved registry,
+  workload identity and protected release environment exist.
+- Complete user, operator, developer, API and architecture guides; create an annotated-source index,
+  tutorial index, capstone assessment and answers.
+
+### Deliverables and expected files
+
+- A dependency-free typed readiness module/script, versioned readiness policy fixture, unit/e2e
+  tests and machine-readable local report generated under ignored `.artifacts/`.
+- Release/SLO/capacity/support/operations documentation, `VERSION`, release notes, release manifest,
+  ADR-0032 and go/no-go report with blockers and evidence provenance.
+- Documentation handbooks and curriculum indexes/capstone, plus synchronized traceability, risk,
+  cost, decision, learning, roadmap/state and mandatory Phase 20 review.
+- CI/Makefile release-verification entry points that run safe local gates and never deploy, publish,
+  sign, spend or make live provider calls.
+
+### Architecture, security, privacy, migration, deployment, and cost
+
+- The release candidate is source/local-container evidence only. Cloud Run remains the intended
+  production target, but no staging/production resource or production SLO evidence is authorized.
+- Readiness reports contain aggregate timings/counts and opaque synthetic identifiers only. No
+  prompts, resumes, job text, secrets, hidden reasoning or customer data may enter artifacts.
+- Performance thresholds are labelled local regression budgets, not capacity promises. Production
+  capacity needs an approved Zurich staging environment, representative consented data shape and
+  measured concurrency/latency/resource/cost evidence.
+- Existing migrations are exercised on disposable PostgreSQL only. No schema change is planned.
+  Restore evidence remains synthetic and isolated; managed PITR/regional DR remains unverified.
+- CHF 0 remains binding. No paid resource, billing, live model, external communication, artifact
+  registry push or recurring service is authorized. Keyless signing is documented but not run.
+
+### Risks and mitigations
+
+- False readiness claim: issue an explicit conditional/no-go decision when production-only evidence
+  is absent; every gate records scope, command, result and limitation.
+- Flaky performance tests: use bounded local budgets, warm-up, aggregate percentiles and generous
+  regression thresholds; keep hardware-specific observations outside correctness assertions.
+- Load/chaos damages data: use in-process synthetic stores or disposable local containers only and
+  validate targets before any reset/restore action.
+- Security/privacy regression: retain all existing tenant, adversarial, DAST, SAST, SCA, secret,
+  license and deletion gates and inspect generated reports for content leakage.
+- Unsigned artifact represented as signed: release manifest records signature status as blocked;
+  production promotion fails until trusted CI identity, immutable registry and approval exist.
+- Documentation drift: machine-check guide/index/release links and trace each final requirement to
+  code/test/manual evidence or an explicit open production gate.
+
+### Automated verification
+
+- Run the new readiness harness/tests plus complete Ruff, strict MyPy, Pytest including disposable
+  PostgreSQL and Temporal, frontend format/lint/type/test/build/accessibility, and evaluation gates.
+- Run bounded local load/soak/concurrency/chaos/provider-outage/recovery and backup/restore checks;
+  record exact samples, percentiles, completion/error rates and limitations.
+- Run container build/smoke/SBOM/provenance and vulnerability policy where local tools permit;
+  Terraform/Kubernetes render/validate/security policy remains plan-only and no apply is allowed.
+- Run SAST, SCA, DAST, secrets, licenses, documentation lint/links/examples/Mermaid, clean setup
+  simulation, pre-commit, governance and complete diff review.
+
+### Manual verification
+
+- Follow the user guide through the synthetic profile-to-tracked-application journey, inspecting
+  citations, truthful drafts, exact approval, audit, recovery, telemetry and zero-cost behavior.
+- Follow the operator release checklist, inspect the readiness report and rehearse incident,
+  rollback and restore decisions without production mutation.
+- Follow the clean developer setup in an isolated temporary checkout/environment and run the smoke
+  path; complete the capstone assessment using the separate answers only afterward.
+- Review every go/no-go blocker and confirm no local result is labelled production evidence.
+
+### Explicit exclusions
+
+- Cloud apply/deploy, staging/production traffic, load against external systems, billing/free-tier
+  consumption, live models, real personal data, email/submission, registry push, signature or public
+  release. These require separate explicit authority, current cost/residency/security review and
+  operational ownership.
+- Claims of legal certification, guaranteed GDPR/FADP compliance, achieved production SLO, managed
+  backup/PITR recovery, multi-zone/region resilience or production capacity.
+- New product features, provider fallback, organization/coach activation or work beyond Phase 20.
+
+### Stop condition
+
+Complete `docs/reviews/phase-20-review.md`, report exact evidence and the go/no-go decision, and stop.
+There is no implicitly approved Phase 21.
+
 ## Completed implementation plan: Phase 19
 
 **Objective:** compare DBOS and Restate with CareerPilot's existing Temporal durable-workflow

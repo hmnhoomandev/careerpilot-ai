@@ -1,0 +1,22 @@
+{
+  "schema_version": "careerpilot.release-manifest.v1",
+  "release_version": "0.20.0-rc.1",
+  "release_kind": "local_source_release_candidate",
+  "production_decision": "no_go",
+  "source_commit": "record_at_commit_time",
+  "artifact_publication": "not_authorized",
+  "artifact_signature": "blocked_pending_trusted_ci_identity_and_registry",
+  "deployment": "not_authorized",
+  "data_class": "synthetic_only",
+  "cost_chf": 0,
+  "required_production_evidence": [
+    "approved_zurich_staging_environment",
+    "production_identity_and_workload_authorization",
+    "representative_load_soak_and_capacity",
+    "managed_backup_pitr_restore_and_disaster_recovery",
+    "signed_immutable_artifact_promotion",
+    "production_sli_alert_and_error_budget_observation",
+    "security_privacy_legal_and_operational_approval",
+    "current_provider_and_cloud_cost_approval"
+  ]
+}

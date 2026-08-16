@@ -66,6 +66,13 @@ jobs:
         run: uv run python scripts/audit_licenses.py
       - name: Adversarial security corpus
         run: uv run pytest tests/e2e/test_security_red_team.py
+      - name: Bounded local release readiness
+        run: uv run python scripts/run_release_readiness.py
+      - name: Upload local readiness evidence
+        uses: actions/upload-artifact@v7
+        with:
+          name: local-release-readiness
+          path: .artifacts/release-readiness.json
       - name: Documentation baseline
         run: uv run python scripts/validate_phase0.py
 

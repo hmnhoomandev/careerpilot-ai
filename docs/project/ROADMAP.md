@@ -21,8 +21,8 @@
 | 16 | Security hardening and adversarial verification | Accepted |
 | 17 | Containers, supply chain, IaC, Cloud Run | Accepted |
 | 18 | Optional GKE reference architecture | Accepted |
-| 19 | Isolated DBOS and Restate comparison labs | Complete; awaiting acceptance |
-| 20 | Production-readiness release candidate and curriculum | Not started |
+| 19 | Isolated DBOS and Restate comparison labs | Accepted |
+| 20 | Production-readiness release candidate and curriculum | Complete — awaiting owner review |
 
 ## Gate policy
 

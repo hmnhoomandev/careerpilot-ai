@@ -119,3 +119,13 @@ not named individuals.
 | RSK-048 | Tiny local lab is mistaken for production recovery/maturity evidence | Medium | High | Explicit scope, comparison limitations and new adoption ADR gate | Platform | Open before adoption |
 | RSK-049 | Restate server use violates license terms or distribution constraints | Low | Critical | BSL boundary recorded; professional license review required | Legal/Owner | Open before adoption |
 | RSK-050 | Durable history contains personal data outside deletion/residency controls | Medium | Critical | Synthetic opaque input only; privacy/residency/retention design gate | Privacy/Data | Open before adoption |
+
+## Phase 20 release-candidate risks
+
+| ID | Risk | Likelihood | Impact | Mitigation | Owner | Status |
+|---|---|---|---|---|---|---|
+| RSK-051 | Local health benchmark is mistaken for production capacity/SLO evidence | Medium | Critical | Scope-aware gates, explicit limitations and production NO-GO | Platform/Owner | Mitigated for candidate |
+| RSK-052 | Unsigned/unpublished artifact is promoted or described as trusted | Medium | Critical | Manifest block, architecture test and protected signing/registry prerequisite | Supply chain | Open before production |
+| RSK-053 | Production incident occurs without staffed on-call or alert routing | High | Critical | Support process and named rota/alert activation gate | Owner/Operations | Open before production |
+| RSK-054 | Restore succeeds locally but managed PITR violates RPO/RTO or deletion | Medium | Critical | Approved isolated managed restore and tombstone drill required | Data/Privacy | Open before production |
+| RSK-055 | Representative traffic exceeds database/provider/cost capacity | High | High | Zurich staging load/soak/saturation, quotas and cost approval | Platform/Owner | Open before production |

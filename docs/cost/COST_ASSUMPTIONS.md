@@ -73,3 +73,12 @@ operational ownership. A future Restate design would add server capacity/storage
 SDK endpoints, networking, backup and operational ownership. Prices and deployment
 shapes are deliberately not estimated because adoption is not approved. Temporal
 remains the baseline, and local isolated labs remain the free alternative.
+
+## Phase 20 release candidate
+
+The local readiness harness, test suites, documentation and source candidate cost CHF 0.
+No cloud environment, registry push, signing service, model call or paid traffic test is
+used. Production remains `NO-GO` until a current Zurich staging/production estimate covers
+compute, database, backups/PITR, storage/vector growth, messaging/workflow, egress, secrets/
+KMS, telemetry/security, provider tokens, support and tax/currency assumptions. The owner
+must approve the estimate, quotas, alerts and shutdown path before resource creation.

@@ -1,51 +1,36 @@
-# Documentation Index
+# Documentation index
 
-## Product
+## Start here
 
-- `product/PRODUCT_VISION.md`
-- `product/USER_JOURNEYS.md`
-- `product/SUCCESS_METRICS.md`
-- `product/REQUIREMENTS.md`
-- `product/DOMAIN_GLOSSARY.md`
-- `product/DOMAIN_MODEL.md`
+- [User guide](guides/USER_GUIDE.md)
+- [Operator guide](guides/OPERATOR_GUIDE.md)
+- [Developer guide](guides/DEVELOPER_GUIDE.md)
+- [API guide](guides/API_GUIDE.md)
+- [Architecture handbook](guides/ARCHITECTURE_HANDBOOK.md)
+- [Release checklist](../release/RELEASE_CHECKLIST.md)
+- [Go/no-go report](../release/GO_NO_GO_REPORT.md)
 
-## Architecture
+## Product and architecture
 
-- `architecture/ARCHITECTURE.md`
-- `architecture/TECHNOLOGY_DECISION_MATRIX.md`
-- `architecture/AGENT_ROLE_CLASSIFICATION.md`
-- `architecture/PRODUCTION_AND_LABS.md`
-- `architecture/REPOSITORY_STRUCTURE.md`
-- `architecture/diagrams/`
-- `adr/`
+- [Product vision](product/PRODUCT_VISION.md), [journeys](product/USER_JOURNEYS.md),
+  [requirements](product/REQUIREMENTS.md), [metrics](product/SUCCESS_METRICS.md),
+  [glossary](product/DOMAIN_GLOSSARY.md) and [domain model](product/DOMAIN_MODEL.md)
+- [Architecture](architecture/ARCHITECTURE.md), [technology matrix](architecture/TECHNOLOGY_DECISION_MATRIX.md),
+  [production/labs](architecture/PRODUCTION_AND_LABS.md), [diagrams](architecture/diagrams/)
+  and [ADRs](adr/)
 
-## Security, privacy, cost, and governance
+## Operations, security, privacy, and cost
 
-- `security/THREAT_MODEL.md`
-- `security/PRIVACY_IMPACT_ASSESSMENT.md`
-- `security/RISK_REGISTER.md`
-- `cost/COST_ASSUMPTIONS.md`
-- `project/`
+- [SLOs/SLIs/error budgets](operations/SLO_SLI_AND_ERROR_BUDGETS.md)
+- [Capacity/resilience/DR](operations/CAPACITY_RESILIENCE_AND_DR.md)
+- [Support/on-call](operations/SUPPORT_AND_ON_CALL.md) and [runbooks](runbooks/)
+- [Threat model](security/THREAT_MODEL.md), [privacy assessment](security/PRIVACY_IMPACT_ASSESSMENT.md),
+  [risk register](security/RISK_REGISTER.md), [dependency policy](security/DEPENDENCY_POLICY.md)
+  and [cost assumptions](cost/COST_ASSUMPTIONS.md)
 
-## Learning and review
+## Learning, evidence, and governance
 
-- `tutorials/phase-00-architecture-baseline.md`
-- `tutorials/phase-01-developer-setup.md`
-- `tutorials/phase-02-deterministic-walking-skeleton.md`
-- `tutorials/phase-03-local-identity-and-authorization.md`
-- `tutorials/phase-04-postgresql-profile-evidence.md`
-- `exercises/phase-00-exercises.md`
-- `exercises/phase-00-answers.md`
-- `exercises/phase-01-exercises.md`
-- `exercises/phase-01-answers.md`
-- `exercises/phase-02-exercises.md`
-- `exercises/phase-02-answers.md`
-- `exercises/phase-03-exercises.md`
-- `exercises/phase-03-answers.md`
-- `exercises/phase-04-exercises.md`
-- `exercises/phase-04-answers.md`
-- `reviews/phase-00-review.md`
-- `reviews/phase-01-review.md`
-- `reviews/phase-02-review.md`
-- `reviews/phase-03-review.md`
-- `reviews/phase-04-review.md`
+- [Curriculum index](curriculum/INDEX.md) and [capstone](curriculum/CAPSTONE.md)
+- [Tutorials](tutorials/), [exercises](exercises/) and [annotated-source index](annotated-source/INDEX.md)
+- [Phase reviews](reviews/), [project state](project/PROJECT_STATE.md),
+  [roadmap](project/ROADMAP.md) and [traceability](project/REQUIREMENTS_TRACEABILITY.md)

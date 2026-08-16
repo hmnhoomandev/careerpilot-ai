@@ -1,0 +1,29 @@
+{
+  "schema_version": "careerpilot.release-policy.v1",
+  "release_version": "0.20.0-rc.1",
+  "local_profile": {
+    "concurrency": 16,
+    "load_requests": 400,
+    "soak_requests": 1000,
+    "warmup_requests": 20
+  },
+  "targets": [
+    {"name": "local_api_success_rate", "threshold": 0.995, "direction": "at_least", "required_scope": "local"},
+    {"name": "local_api_p95_latency_ms", "threshold": 250.0, "direction": "at_most", "required_scope": "local"},
+    {"name": "local_concurrent_completion_rate", "threshold": 1.0, "direction": "at_least", "required_scope": "local"},
+    {"name": "local_soak_completion_rate", "threshold": 1.0, "direction": "at_least", "required_scope": "local"},
+    {"name": "local_backup_restore_success", "threshold": 1.0, "direction": "at_least", "required_scope": "local"},
+    {"name": "local_provider_outage_visible", "threshold": 1.0, "direction": "at_least", "required_scope": "local"},
+    {"name": "local_default_cost_chf", "threshold": 0.0, "direction": "at_most", "required_scope": "local"},
+    {"name": "production_monthly_availability", "threshold": 0.995, "direction": "at_least", "required_scope": "production"},
+    {"name": "production_api_p95_latency_ms", "threshold": 500.0, "direction": "at_most", "required_scope": "production"},
+    {"name": "production_workflow_completion_rate", "threshold": 0.99, "direction": "at_least", "required_scope": "production"},
+    {"name": "production_workflow_recovery_rate", "threshold": 1.0, "direction": "at_least", "required_scope": "production"},
+    {"name": "production_data_durability", "threshold": 0.99999999999, "direction": "at_least", "required_scope": "production"},
+    {"name": "production_restore_success_rate", "threshold": 1.0, "direction": "at_least", "required_scope": "production"},
+    {"name": "production_error_rate", "threshold": 0.005, "direction": "at_most", "required_scope": "production"},
+    {"name": "production_provider_failure_rate", "threshold": 0.01, "direction": "at_most", "required_scope": "production"},
+    {"name": "production_retrieval_quality", "threshold": 0.85, "direction": "at_least", "required_scope": "production"},
+    {"name": "production_cost_per_workflow_chf", "threshold": 0.0, "direction": "at_most", "required_scope": "production"}
+  ]
+}

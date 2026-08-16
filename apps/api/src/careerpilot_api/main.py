@@ -312,7 +312,7 @@ def create_app(
 
     app = FastAPI(
         title="CareerPilot API",
-        version="0.16.0",
+        version="0.20.0-rc.1",
         description="Policy-controlled career workflows with local security controls.",
         lifespan=lifespan,
         responses={500: {"model": ErrorResponse}},

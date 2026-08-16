@@ -1,10 +1,9 @@
 # CareerPilot AI
 
 CareerPilot AI is an evidence-grounded, human-controlled career intelligence and
-job-application platform. The repository is currently in Phase 4: a PostgreSQL
-profile and quarantined evidence-metadata foundation around the authenticated
-deterministic journey. It uses only synthetic identities and makes no model or
-external-provider calls.
+job-application platform. The repository contains local source release candidate
+`0.20.0-rc.1`. It is suitable for synthetic local evaluation and is explicitly
+`NO-GO` for production until the release blockers are closed.
 
 Start with:
 
@@ -14,10 +13,11 @@ Start with:
 - [Threat model](docs/security/THREAT_MODEL.md)
 - [Project state](docs/project/PROJECT_STATE.md)
 - [Roadmap](docs/project/ROADMAP.md)
-- [Phase 1 review](docs/reviews/phase-01-review.md)
-- [Phase 2 tutorial](docs/tutorials/phase-02-deterministic-walking-skeleton.md)
-- [Phase 3 tutorial](docs/tutorials/phase-03-local-identity-and-authorization.md)
-- [Phase 4 tutorial](docs/tutorials/phase-04-postgresql-profile-evidence.md)
+- [User guide](docs/guides/USER_GUIDE.md)
+- [Developer guide](docs/guides/DEVELOPER_GUIDE.md)
+- [Operator guide](docs/guides/OPERATOR_GUIDE.md)
+- [Release decision](release/GO_NO_GO_REPORT.md)
+- [Curriculum](docs/curriculum/INDEX.md)
 
 ## Development quick start
 
@@ -35,18 +35,20 @@ make dev
 ```
 
 Open `http://127.0.0.1:3000`. Choose Ada, Grace, or Sam as a synthetic local user.
-Sessions, memberships, and audit events remain process-local. Profiles and evidence
-metadata are durable only when `CAREERPILOT_DATABASE_URL` is set and the Phase 4
-migration has run; otherwise the explicit in-memory local adapter is used. This is
-not a production login.
+Sessions and several local adapters remain process-local. Profiles, evidence, documents,
+drafts and approvals use PostgreSQL only when `CAREERPILOT_DATABASE_URL` is configured
+and migrations have run. This is not a production login.
 
 For local PostgreSQL, copy `.env.example` to ignored `.env`, choose a local-only
 password, start `make db-up`, export the values into the shell, and run
-`make db-migrate`. Evidence registration sends metadata only in Phase 4: selected
-file bytes never leave the browser and records remain quarantined.
+`make db-migrate`. Use only synthetic evidence. The local document path accepts bounded UTF-8 text and
+text-based PDF content, scans/parses/indexes locally and treats retrieved text as untrusted.
 
 The complete macOS and VS Code guide is in
 [`docs/tutorials/phase-01-developer-setup.md`](docs/tutorials/phase-01-developer-setup.md).
 
 All development uses synthetic data and CHF 0 local/fake infrastructure unless
 the owner explicitly approves a cost.
+
+Run `make release-readiness` for bounded local load/recovery evidence. A passing
+command does not change the production `NO-GO` decision.

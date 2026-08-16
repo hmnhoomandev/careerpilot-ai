@@ -334,3 +334,19 @@ Tutorial: `docs/tutorials/phase-19-durable-execution-comparison.md`
 Exercises: `docs/exercises/phase-19-exercises.md`
 
 Answers: `docs/exercises/phase-19-answers.md`
+
+## Phase 20 — production readiness and release decisions
+
+- Distinguished measurements, targets, windows and error-budget responses.
+- Made evidence scope executable so local regression cannot impersonate production proof.
+- Practiced bounded load/soak/concurrency, outage visibility and tombstone-safe restore.
+- Connected release version, checklist, supply-chain identity, operations and go/no-go blockers.
+- Completed user/operator/developer/API/architecture guides and the capstone curriculum.
+
+Tutorial: `docs/tutorials/phase-20-release-readiness.md`
+
+Exercises: `docs/exercises/phase-20-exercises.md`
+
+Answers: `docs/exercises/phase-20-answers.md`
+
+Capstone: `docs/curriculum/CAPSTONE.md`
